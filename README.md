@@ -2,13 +2,9 @@
 
 A Python interface for the [PubChem PUG REST service](http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html).
 
-## Install
-
-
-
 ## Basic usage
 
-To use PubChemPy in your Python script, just import it and make use of the functions and classes it provides.
+To use PubChemPy in your Python script, just import it and make use of the functions and classes that it provides.
 
     from pubchempy import *
     
@@ -19,32 +15,68 @@ To use PubChemPy in your Python script, just import it and make use of the funct
 
 ## Substances and compounds
 
+The `get_substances` and `get_compounds` functions allow retrieval of PubChem Substance and Compound records. The functions take a wide variety of inputs, and return a list of results, even if only a single match was found.
+
 If you what the record for a specific CID or SID:
 
-By name, smiles, inchi, formula
+    get_compound(1234)
+    get_substance(4321)[0]
 
-record_type=2d or 3d
+A second `namespace` argument allows you to use different types of input:
 
-get_compounds
-get_substances
+    get_compounds('Aspirin', 'name')
+    get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles')
+    
+Beware that line notation inputs like SMILES and InChI can return records that aren't actually present in PubChem, and therefore have no CID or SID.
+    
+By default, compounds are returned with 2D coordinates. Use the `record_type` keyword argument to specify otherwise:
 
-Substructure / Superstructure / Similarity / Identity search - options for each
+    get_compounds('Aspirin', 'name', record_type='3d')
+    
+### Advanced search types
+
+By default, requests look for an exact match with the input. Alternatively, you can specify substructure, superstructure, similarity and identity searches using the `searchtype` keyword argument:
+
+    get_compounds('CC', searchtype='superstructure', listkey_count=3)
+    
+The `listkey_count` and `listkey_start` arguments can be used for pagination. Each `searchtype` has its own options that can be specified as keyword arguments. For example, similarity searches have a `Threshold`, and super/substructure searches have `MatchIsotopes`. A full list of options is available at the [PUG REST specification](http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html).
+
+Note: These types of search are *slow*.
+
+## The Compound class
+
+The `get_compounds` function returns a list of `Compound` objects. You can also instantiate a `Compound` object from a CID:
+
+    c = Compound.from_cid(6819)
+    
+Each `Compound` has a `record` property, which is a dictionary that contains the all the information about the compound. All other properties are derived from this record.
+
+Compounds with regular 2D coordinates have the following properties: cid, record, atoms, bonds, charge, molecular_formula, molecular_weight, canonical_smiles, isomeric_smiles, inchi, inchikey, iupac_name, xlogp, exact_mass, monoisotopic_mass, tpsa, complexity, h_bond_donor_count, h_bond_acceptor_count, rotatable_bond_count, fingerprint, heavy_atom_count, isotope_atom_count, atom_stereo_count, defined_atom_stereo_count, undefined_atom_stereo_count, bond_stereo_count, defined_bond_stereo_count, undefined_bond_stereo_count, covalent_unit_count.
+
+Many of the above properties are missing from 3D records, however they do have the following additional properties: volume_3d, multipoles_3d, conformer_rmsd_3d, effective_rotor_count_3d, pharmacophore_features_3d, mmff94_partial_charges_3d, mmff94_energy_3d, conformer_id_3d, shape_selfoverlap_3d, feature_selfoverlap_3d, shape_fingerprint_3d.
 
 ## Properties
 
-get_properties
+The `get_properties` function allows the retrieval of specific properties without having to deal with entire compound records. This is especially useful for retrieving the properties of a large number of compounds at once.
 
-MolecularFormula,MolecularWeight,CanonicalSMILES,IsomericSMILES,InChI,InChIKey,IUPACName,XLogP,ExactMass,MonoisotopicMass,TPSA,Complexity,Charge,HBondDonorCount,HBondAcceptorCount,RotatableBondCount,HeavyAtomCount,IsotopeAtomCount,AtomStereoCount,DefinedAtomStereoCount,UndefinedAtomStereoCount,BondStereoCount,DefinedBondStereoCount,UndefinedBondStereoCount,CovalentUnitCount,Volume3D,XStericQuadrupole3D,YStericQuadrupole3D,ZStericQuadrupole3D,FeatureCount3D,FeatureAcceptorCount3D,FeatureDonorCount3D,FeatureAnionCount3D,FeatureCationCount3D,FeatureRingCount3D,FeatureHydrophobeCount3D,ConformerModelRMSD3D,EffectiveRotorCount3D,ConformerCount3D
+    p = get_properties('IsomericSMILES', 'CC', 'smiles', searchtype='superstructure')
+
+Multiple properties may be specified in a list, or in a comma-separated string. The available properties are: MolecularFormula,MolecularWeight, CanonicalSMILES, IsomericSMILES, InChI, InChIKey, IUPACName, XLogP, ExactMass, MonoisotopicMass, TPSA, Complexity, Charge, HBondDonorCount, HBondAcceptorCount, RotatableBondCount, HeavyAtomCount, IsotopeAtomCount, AtomStereoCount, DefinedAtomStereoCount, UndefinedAtomStereoCount, BondStereoCount, DefinedBondStereoCount, UndefinedBondStereoCount, CovalentUnitCount, Volume3D, XStericQuadrupole3D, YStericQuadrupole3D, ZStericQuadrupole3D, FeatureCount3D, FeatureAcceptorCount3D, FeatureDonorCount3D, FeatureAnionCount3D, FeatureCationCount3D, FeatureRingCount3D, FeatureHydrophobeCount3D, ConformerModelRMSD3D, EffectiveRotorCount3D, ConformerCount3D.
 
 ## Synonyms
 
-get_synonyms
+Get a list of synonyms for a given input using the `get_synonyms` function:
+
+    get_synonyms('Aspirin', 'name')
+    get_synonyms('Aspirin', 'name', 'substance')
+    
+Inputs that match more than one SID/CID will have multiple, separate synonyms lists returned.
 
 ## Identifier lists
 
-get_cids
-get_sids
-get_aids
+- get_cids
+- get_sids
+- get_aids
 
 ## Download
 
