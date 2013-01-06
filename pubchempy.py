@@ -13,6 +13,10 @@ import urllib
 import urllib2
 
 
+__author__ = 'Matt Swain'
+__email__ = 'm.swain@me.com'
+__version__ = '1.0'
+
 
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
 
@@ -52,7 +56,6 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     except urllib2.HTTPError as e:
         raise PubChemHTTPError(e)
 
-
 def get(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
     """ Request wrapper that automatically handles async requests. """
     if searchtype or namespace in ['formula']:
@@ -70,10 +73,6 @@ def get(identifier, namespace='cid', domain='compound', operation=None, output='
     else:
         response = request(identifier, namespace, domain, operation, output, searchtype, **kwargs)
     return response
-
-
-
-
 
 def get_compounds(identifier, namespace='cid', searchtype=None, **kwargs):
     """ Retrieve the specified compound records from PubChem. """
@@ -93,11 +92,11 @@ def get_assays(identifier, namespace='aid', sids=None, **kwargs):
     assays = [Assay(r) for r in results['PC_AssayContainer']]
     return assays
 
-def get_properties(properties, identifier, namespace='cid', domain='compound', searchtype=None, **kwargs):
+def get_properties(properties, identifier, namespace='cid', searchtype=None, **kwargs):
     if not isinstance(properties, basestring):
         properties = ','.join(properties)
     properties = 'property/%s' % properties
-    results = json.loads(get(identifier, namespace, domain, properties, searchtype=searchtype, **kwargs))
+    results = json.loads(get(identifier, namespace, 'compound', properties, searchtype=searchtype, **kwargs))
     results = results['PropertyTable']['Properties']
     return results
 
@@ -131,7 +130,7 @@ def get_aids(identifier, namespace='cid', domain='compound', searchtype=None, **
         results = results['InformationList']['Information']
     return results
 
-# TODO: Assay Description, Summary, Dose-reponse
+# TODO: Assay Description, Summary, Dose-response
 # TODO: Classification, Dates, XRefs operations
 
 def get_all_sources(domain='substance'):
@@ -153,20 +152,228 @@ class Compound(object):
         self.record = record
 
     @classmethod
-    def from_cid(cls, cid):
-        record = json.loads(request(cid))['PC_Compounds'][0]
+    def from_cid(cls, cid, **kwargs):
+        record = json.loads(request(cid, **kwargs))['PC_Compounds'][0]
         return cls(record)
+
+    def __repr__(self):
+        return 'Compound(%s)' % self.cid if self.cid else 'Compound()'
 
     @property
     def cid(self):
         # Note: smiles or inchi inputs can return compounds without a cid
         if 'id' in self.record and 'id' in self.record['id'] and 'cid' in self.record['id']['id']:
             return self.record['id']['id']['cid']
-        else:
-            return None
 
-    def __repr__(self):
-        return 'Compound(%s)' % self.cid if self.cid else 'Compound()'
+    @property
+    def elements(self):
+        return self.record['atoms']['element']
+
+    @property
+    def atoms(self):
+        a = {
+            'x' : self.record['coords'][0]['conformers'][0]['x'],
+            'y' : self.record['coords'][0]['conformers'][0]['y'],
+            'element' : self.record['atoms']['element']
+        }
+        if 'z' in self.record['coords'][0]['conformers'][0]:
+            a['z'] = self.record['coords'][0]['conformers'][0]['z']
+        return map(dict, zip(*[[(k, v) for v in value] for k, value in a.items()]))
+
+    @property
+    def bonds(self):
+        # TODO: Get self.record['coords'][0]['conformers'][0]['style']
+        return map(dict, zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))
+
+    @property
+    def coordinate_type(self):
+        if 'twod' in self.record['coords']['type']:
+            return '2d'
+        elif 'threed' in self.record['coords']['type']:
+            return '3d'
+
+    @property
+    def charge(self):
+        if 'charge' in self.record:
+            return self.record['charge']
+
+    @property
+    def molecular_formula(self):
+        return parse_prop({'label':'Molecular Formula'}, self.record['props'])
+
+    @property
+    def molecular_weight(self):
+        return parse_prop({'label':'Molecular Weight'}, self.record['props'])
+
+    @property
+    def canonical_smiles(self):
+        return parse_prop({'label':'SMILES','name':'Canonical'}, self.record['props'])
+
+    @property
+    def isomeric_smiles(self):
+        return parse_prop({'label':'SMILES','name':'Isomeric'}, self.record['props'])
+
+    @property
+    def inchi(self):
+        return parse_prop({'label':'InChI','name':'Standard'}, self.record['props'])
+
+    @property
+    def inchikey(self):
+        return parse_prop({'label':'InChIKey','name':'Standard'}, self.record['props'])
+
+    @property
+    def iupac_name(self):
+        # Note: Allowed, CAS-like Style, Preferred, Systematic, Traditional are available in full record
+        return parse_prop({'label':'IUPAC Name','name':'Preferred'}, self.record['props'])
+
+    @property
+    def xlogp(self):
+        return parse_prop({'label':'Log P'}, self.record['props'])
+
+    @property
+    def exact_mass(self):
+        return parse_prop({'label':'Mass','name':'Exact'}, self.record['props'])
+
+    @property
+    def monoisotopic_mass(self):
+        return parse_prop({'label':'Weight','name':'MonoIsotopic'}, self.record['props'])
+
+    @property
+    def tpsa(self):
+        return parse_prop({'implementation':'E_TPSA'}, self.record['props'])
+
+    @property
+    def complexity(self):
+        return parse_prop({'implementation':'E_COMPLEXITY'}, self.record['props'])
+
+    @property
+    def h_bond_donor_count(self):
+        return parse_prop({'implementation':'E_NHDONORS'}, self.record['props'])
+
+    @property
+    def h_bond_acceptor_count(self):
+        return parse_prop({'implementation':'E_NHACCEPTORS'}, self.record['props'])
+
+    @property
+    def rotatable_bond_count(self):
+        return parse_prop({'implementation':'E_NROTBONDS'}, self.record['props'])
+
+    @property
+    def fingerprint(self):
+        return parse_prop({'implementation':'E_SCREEN'}, self.record['props'])
+
+    @property
+    def heavy_atom_count(self):
+        if 'count' in self.record and 'heavy_atom' in self.record['count']:
+            return self.record['count']['heavy_atom']
+
+    @property
+    def isotope_atom_count(self):
+        if 'count' in self.record and 'isotope_atom' in self.record['count']:
+            return self.record['count']['isotope_atom']
+
+    @property
+    def atom_stereo_count(self):
+        if 'count' in self.record and 'atom_chiral' in self.record['count']:
+            return self.record['count']['atom_chiral']
+
+    @property
+    def defined_atom_stereo_count(self):
+        if 'count' in self.record and 'atom_chiral_def' in self.record['count']:
+            return self.record['count']['atom_chiral_def']
+
+    @property
+    def undefined_atom_stereo_count(self):
+        if 'count' in self.record and 'atom_chiral_undef' in self.record['count']:
+            return self.record['count']['atom_chiral_undef']
+
+    @property
+    def bond_stereo_count(self):
+        if 'count' in self.record and 'bond_chiral' in self.record['count']:
+            return self.record['count']['bond_chiral']
+
+    @property
+    def defined_bond_stereo_count(self):
+        if 'count' in self.record and 'bond_chiral_def' in self.record['count']:
+            return self.record['count']['bond_chiral_def']
+
+    @property
+    def undefined_bond_stereo_count(self):
+        if 'count' in self.record and 'bond_chiral_undef' in self.record['count']:
+            return self.record['count']['bond_chiral_undef']
+
+    @property
+    def covalent_unit_count(self):
+        if 'count' in self.record and 'covalent_unit' in self.record['count']:
+            return self.record['count']['covalent_unit']
+
+    @property
+    def volume_3d(self):
+        conf = self.record['coords'][0]['conformers'][0]
+        if 'data' in conf:
+            return parse_prop({'label':'Shape','name':'Volume'}, conf['data'])
+
+    @property
+    def multipoles_3d(self):
+        conf = self.record['coords'][0]['conformers'][0]
+        if 'data' in conf:
+            return parse_prop({'label':'Shape','name':'Multipoles'}, conf['data'])
+
+    @property
+    def conformer_rmsd_3d(self):
+        coords = self.record['coords'][0]
+        if 'data' in coords:
+            return parse_prop({'label':'Conformer','name':'RMSD'}, coords['data'])
+
+    @property
+    def effective_rotor_count_3d(self):
+        return parse_prop({'label':'Count','name':'Effective Rotor'}, self.record['props'])
+
+    @property
+    def pharmacophore_features_3d(self):
+        return parse_prop({'label':'Features','name':'Pharmacophore'}, self.record['props'])
+
+    @property
+    def mmff94_partial_charges_3d(self):
+        return parse_prop({'label':'Charge','name':'MMFF94 Partial'}, self.record['props'])
+
+    @property
+    def mmff94_energy_3d(self):
+        conf = self.record['coords'][0]['conformers'][0]
+        if 'data' in conf:
+            return parse_prop({'label':'Energy','name':'MMFF94 NoEstat'}, conf['data'])
+
+    @property
+    def conformer_id_3d(self):
+        conf = self.record['coords'][0]['conformers'][0]
+        if 'data' in conf:
+            return parse_prop({'label':'Conformer','name':'ID'}, conf['data'])
+
+    @property
+    def shape_selfoverlap_3d(self):
+        conf = self.record['coords'][0]['conformers'][0]
+        if 'data' in conf:
+            return parse_prop({'label':'Shape','name':'Self Overlap'}, conf['data'])
+
+    @property
+    def feature_selfoverlap_3d(self):
+        conf = self.record['coords'][0]['conformers'][0]
+        if 'data' in conf:
+            return parse_prop({'label':'Feature','name':'Self Overlap'}, conf['data'])
+
+    @property
+    def shape_fingerprint_3d(self):
+        conf = self.record['coords'][0]['conformers'][0]
+        if 'data' in conf:
+            return parse_prop({'label':'Fingerprint','name':'Shape'}, conf['data'])
+
+
+def parse_prop(filter, proplist):
+    """ Extract property value from record using the given urn filter.  """
+    props = [i for i in proplist if all(item in i['urn'].items() for item in filter.items())]
+    if len(props) > 0:
+        return props[0]['value'][props[0]['value'].keys()[0]]
+
 
 
     # TODO: Parse record to extract cid, properties
@@ -259,60 +466,4 @@ class ServerError(PubChemHTTPError):
         self.msg = msg
 
 if __name__ == '__main__':
-    #r = request('coumarin', 'name', record_type='3d')
-    #r = request('coumarin', 'name', output='PNG', image_size='50x50')
-    #r = request('coumarin', 'name')
-
-    #r = get('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles', operation='cids', searchtype='substructure')
-    #r = request('C10H21N', 'formula')
-
-    #r = request('1', 'cid', searchtype='substructure')
-    #r = request('1554905728985065490', 'listkey', operation='cids')
-
-
-
-    #r = get('C10H21N', 'formula', operation='property/MolecularFormula', output='CSV')
-    #r = get('1', 'cid', searchtype='substructure', operation='cids')
-
-    #r = request('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles', operation='cids')
-    #r = request('tris-(1,10-phenanthroline)ruthenium', 'name', operation='synonyms', output='JSON')
-    #r = request('Aspirin', 'name', operation='assaysummary', output='CSV')
-    #r = request('Aspirin', 'name', output='JSON')
-    #r = request('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles', operation='property/MolecularFormula')
-
-    #r = get_substances('Aspirin', 'name')
-    #r = get_compounds(9548754, searchtype='superstructure')
-
-    #r = get('2223', 'sid', domain='substance', operation='synonyms', searchtype="superstructure")
-
-    #r = get_all_sources('assay')
-
-    #r = get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles', searchtype='substructure', listkey_count=3)
-
-    #r = get_synonyms(1)
-
-    #r = get_assays(1000)
-    #r = get_assays(1, sid='67107,67121,67122')
-
-
-    #r = get_substances('Coumarin', 'name', listkey_count=3)
-
-    #r = get_compounds('CC', 'smiles', searchtype='superstructure', listkey_count=5)
-    #r = get('C10H21N', 'formula', listkey_count=3, listkey_start=6)
-
-    #r = get_cids('Aspirin', 'name', 'substance')
-    #r = get_cids('Aspirin', 'name', 'compound')
-    #r = get_sids('Aspirin', 'name', 'substance')
-    #r = get_aids('Aspirin', 'name', 'substance')
-    #r = get_aids('Aspirin', 'name', 'compound')
-
-    r = get_properties('IsomericSMILES', 'tris-(1,10-phenanthroline)ruthenium', 'name')
-
-    print r
-
-    #c = Compound.from_cid(9548754)
-    #print c
-
-
-
-    # TODO: Some namespaces (e.g. sourceid/<source name>) require '/' replaced with with '.' - leave to user?
+    print get_synonyms('Aspirin', 'name', 'substance')
