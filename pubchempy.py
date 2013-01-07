@@ -40,9 +40,9 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     # Build API URL
     urlid, postdata = None, None
     if namespace in ['listkey', 'formula'] or (searchtype and namespace == 'cid') or domain == 'sources':
-        urlid = urllib2.quote(identifier.replace('/','.'))
+        urlid = urllib2.quote(identifier.encode('utf8').replace('/','.'))
     else:
-        postdata = '%s=%s' % (namespace, urllib2.quote(identifier.replace('/','.')))
+        postdata = '%s=%s' % (namespace, urllib2.quote(identifier.encode('utf8').replace('/','.')))
     comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
     apiurl = '/'.join(comps)
     if kwargs:
@@ -50,7 +50,7 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
 
     # Make request
     try:
-        print apiurl
+        #print apiurl
         response = urllib2.urlopen(apiurl, postdata).read()
         return response
     except urllib2.HTTPError as e:
@@ -115,7 +115,6 @@ def get_cids(identifier, namespace='name', domain='compound', searchtype=None, *
 
 def get_sids(identifier, namespace='cid', domain='compound', searchtype=None, **kwargs):
     results = json.loads(get(identifier, namespace, domain, 'sids', searchtype=searchtype, **kwargs))
-    print results
     if 'IdentifierList' in results:
         results = results['IdentifierList']['SID']
     elif 'InformationList' in results:
@@ -143,9 +142,22 @@ def download(format, path, identifier, namespace='cid', domain='compound', opera
     """ Format can be  XML, ASNT/B, JSON, SDF, CSV, PNG, TXT.  """
     response = get(identifier, namespace, domain, operation, format, searchtype, **kwargs)
     if not overwrite and os.path.isfile(path):
-        raise IOError("%s already exists. Use 'overwrite=True' to overwrite it." % filename)
+        raise IOError("%s already exists. Use 'overwrite=True' to overwrite it." % path)
     with open(path, 'w') as file:
         file.write(response)
+
+class CacheProperty(object):
+    """ Descriptor for caching Molecule properties. """
+
+    def __init__(self, func):
+        self._func = func
+        self.__name__ = func.__name__
+        self.__doc__ = func.__doc__
+
+    def __get__(self, obj, obj_class=None):
+        if obj is None: return None
+        result = obj.__dict__[self.__name__] = self._func(obj)
+        return result
 
 class Compound(object):
     def __init__(self, record):
@@ -178,12 +190,42 @@ class Compound(object):
         }
         if 'z' in self.record['coords'][0]['conformers'][0]:
             a['z'] = self.record['coords'][0]['conformers'][0]['z']
-        return map(dict, zip(*[[(k, v) for v in value] for k, value in a.items()]))
+        atomlist = map(dict, zip(*[[(k, v) for v in value] for k, value in a.items()]))
+        if 'charge' in self.record['atoms']:
+            for charge in self.record['atoms']['charge']:
+                atomlist[charge['aid']]['charge'] = charge['value']
+        return atomlist
 
     @property
     def bonds(self):
-        # TODO: Get self.record['coords'][0]['conformers'][0]['style']
-        return map(dict, zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))
+        bondlist = map(dict, zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))
+        if 'style' in self.record['coords'][0]['conformers'][0]:
+            style = self.record['coords'][0]['conformers'][0]['style']
+            for i,annotation in enumerate(style['annotation']):
+                bond = [b for b in bondlist if all(aid in b.values() for aid in [style['aid1'][i], style['aid2'][i]])][0]
+                bond['style'] = annotation
+        return bondlist
+
+    @CacheProperty
+    def synonyms(self):
+        """ Requires an extra request. Result is cached. """
+        if self.cid:
+            results = json.loads(get(self.cid, operation='synonyms'))
+            return results['InformationList']['Information'][0]['Synonym']
+
+    @CacheProperty
+    def sids(self):
+        """ Requires an extra request. Result is cached. """
+        if self.cid:
+            results = json.loads(get(self.cid, operation='sids'))
+            return results['InformationList']['Information'][0]['SID']
+
+    @CacheProperty
+    def aids(self):
+        """ Requires an extra request. Result is cached. """
+        if self.cid:
+            results = json.loads(get(self.cid, operation='aids'))
+            return results['InformationList']['Information'][0]['AID']
 
     @property
     def coordinate_type(self):
@@ -375,14 +417,6 @@ def parse_prop(filter, proplist):
         return props[0]['value'][props[0]['value'].keys()[0]]
 
 
-
-    # TODO: Parse record to extract cid, properties
-    # property methods for different operations - record, properties, synonyms, sids, aids, assaysummary, classification
-    # Parse properties from record where possible
-    # Extra request for other properties + synonyms etc.
-    # Many methods have options too - e.g. cids, aids, sids
-    # method to print/save a certain format to file
-
 class Substance(object):
     def __init__(self, record):
         self.record = record
@@ -394,7 +428,46 @@ class Substance(object):
 
     @property
     def sid(self):
-        return self.record['id']['id']['sid']
+        return self.record['sid']['id']
+
+    @property
+    def synonyms(self):
+        if 'synonyms' in self.record:
+            return self.record['synonyms']
+
+    @property
+    def source_name(self):
+        return self.record['source']['db']['name']
+
+    @property
+    def source_id(self):
+        return self.record['source']['db']['source_id']['str']
+
+    @property
+    def deposited_compound(self):
+        """ Record of the deposited compound.  """
+        for c in self.record['compound']:
+            if c['id']['type'] == 'deposited':
+                return Compound(c)
+
+    @CacheProperty
+    def standardized_compound(self):
+        """ Record of the standardized compound. Requires an extra request. Result is cached. """
+        for c in self.record['compound']:
+            if c['id']['type'] == 'standardized':
+                return Compound.from_cid(c['id']['id']['cid'])
+
+    @CacheProperty
+    def cids(self):
+        """ Requires an extra request. Result is cached. """
+        results = json.loads(get(self.sid, 'sid', 'substance', 'cids'))
+        return results['InformationList']['Information'][0]['CID']
+
+    @CacheProperty
+    def aids(self):
+        """ Requires an extra request. Result is cached. """
+        results = json.loads(get(self.sid, 'sid', 'substance', 'aids'))
+        return results['InformationList']['Information'][0]['AID']
 
 class Assay(object):
     def __init__(self, record):
@@ -408,6 +481,8 @@ class Assay(object):
     @property
     def aid(self):
         return self.record['id']['id']['aid']
+
+    # TODO: Assay class
 
 
 class PubChemHTTPError(Exception):
@@ -434,6 +509,7 @@ class PubChemHTTPError(Exception):
 
     def __str__(self):
         return repr(self.msg)
+
 
 class BadRequestError(PubChemHTTPError):
     """ Request is improperly formed (syntax error in the URL, POST body, etc.) """
@@ -466,4 +542,4 @@ class ServerError(PubChemHTTPError):
         self.msg = msg
 
 if __name__ == '__main__':
-    print get_synonyms('Aspirin', 'name', 'substance')
+    print __version__

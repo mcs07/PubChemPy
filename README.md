@@ -27,7 +27,7 @@ A second `namespace` argument allows you to use different types of input:
     get_compounds('Aspirin', 'name')
     get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles')
     
-Beware that line notation inputs like SMILES and InChI can return records that aren't actually present in PubChem, and therefore have no CID or SID.
+Beware that line notation inputs like SMILES and InChI can return records that aren't actually present in PubChem, and therefore have no CID or SID and are missing many properties.
     
 By default, compounds are returned with 2D coordinates. Use the `record_type` keyword argument to specify otherwise:
 
