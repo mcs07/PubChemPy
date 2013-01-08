@@ -17,10 +17,10 @@ To use PubChemPy in your Python script, just import it and make use of the funct
 
 The `get_substances` and `get_compounds` functions allow retrieval of PubChem Substance and Compound records. The functions take a wide variety of inputs, and return a list of results, even if only a single match was found.
 
-If you what the record for a specific CID or SID:
+For a specific CID or SID:
 
-    get_compound(1234)
-    get_substance(4321)[0]
+    get_compounds(1234)
+    get_substances(4321)
 
 A second `namespace` argument allows you to use different types of input:
 
@@ -51,7 +51,7 @@ The `get_compounds` function returns a list of `Compound` objects. You can also 
     
 Each `Compound` has a `record` property, which is a dictionary that contains the all the information about the compound. All other properties are derived from this record.
 
-Compounds with regular 2D coordinates have the following properties: cid, record, atoms, bonds, charge, molecular_formula, molecular_weight, canonical_smiles, isomeric_smiles, inchi, inchikey, iupac_name, xlogp, exact_mass, monoisotopic_mass, tpsa, complexity, h_bond_donor_count, h_bond_acceptor_count, rotatable_bond_count, fingerprint, heavy_atom_count, isotope_atom_count, atom_stereo_count, defined_atom_stereo_count, undefined_atom_stereo_count, bond_stereo_count, defined_bond_stereo_count, undefined_bond_stereo_count, covalent_unit_count.
+Compounds with regular 2D coordinates have the following properties: cid, record, atoms, bonds, elements, synonyms, sids, aids, coordinate_type, charge, molecular_formula, molecular_weight, canonical_smiles, isomeric_smiles, inchi, inchikey, iupac_name, xlogp, exact_mass, monoisotopic_mass, tpsa, complexity, h_bond_donor_count, h_bond_acceptor_count, rotatable_bond_count, fingerprint, heavy_atom_count, isotope_atom_count, atom_stereo_count, defined_atom_stereo_count, undefined_atom_stereo_count, bond_stereo_count, defined_bond_stereo_count, undefined_bond_stereo_count, covalent_unit_count.
 
 Many of the above properties are missing from 3D records, however they do have the following additional properties: volume_3d, multipoles_3d, conformer_rmsd_3d, effective_rotor_count_3d, pharmacophore_features_3d, mmff94_partial_charges_3d, mmff94_energy_3d, conformer_id_3d, shape_selfoverlap_3d, feature_selfoverlap_3d, shape_fingerprint_3d.
 
@@ -74,16 +74,34 @@ Inputs that match more than one SID/CID will have multiple, separate synonyms li
 
 ## Identifier lists
 
+There are three functions for getting a list of identifiers for a given input:
+
 - get_cids
 - get_sids
 - get_aids
 
+For example, passing a CID to get_sids will return a list of SIDs corresponding to the Substance records that were standardised and merged to produce the given Compound.
+
 ## Download
 
-For PNG: image_size=large, small, WxH
+The download function is for saving a file to disk. The following formats are available: XML, ASNT/B, JSON, SDF, CSV, PNG, TXT. Beware that not all formats are available for all types of information. SDF and PNG are only available for full Compound and Substance records, and CSV is best suited to tables of properties and identifiers.
+
+Examples:
+
+    download('PNG', 'asp.png', 'Aspirin', 'name')
+    download('CSV', 's.csv', [1,2,3], operation='property/CanonicalSMILES,IsomericSMILES')
+
+For PNG images, the `image_size` argument can be used to specfiy `large`, `small` or `<width>x<height>`.
+
+## The Substance class
+
+This class has the following properties: sid, synonyms, source_name, source_id, cids, aids, deposited_compound and standardized_compound.
+
+The deposited_compound is a Compound object that corresponds to the deposited Substance record. The standardized_compound is the corresponding record in the Compound database.
 
 ## Assays
 
+TODO
 
 ## Custom requests
 
