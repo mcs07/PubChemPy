@@ -1,17 +1,33 @@
 # PubChemPy
 
-A Python interface for the [PubChem PUG REST service](http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html).
+A simple Python wrapper around the [PubChem PUG REST API](http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html).
+
+## Installation
+
+**Option 1**: Use [pip](http://www.pip-installer.org/en/latest/).
+
+    pip install PubChemPy
+
+**Option 2**: [Download the latest release](https://pypi.python.org/packages/source/P/PubChemPy/PubChemPy-1.0.tar.gz) and install yourself:
+
+    tar xzvf PubChemPy-1.0.tar.gz
+    cd PubChemPy-1.0
+    sudo python setup.py install
+
+**Option 3**: [Download pubchempy.py](https://github.com/mcs07/PubChemPy/raw/master/pubchempy.py) and manually place it in your project directory or anywhere on your PYTHONPATH.
+
+**Option 4**: Get the latest development version by cloning the Git repository.
+
+    git clone https://github.com/mcs07/PubChemPy.git
 
 ## Basic usage
 
-To use PubChemPy in your Python script, just import it and make use of the functions and classes that it provides.
+PubChemPy provides a variety of functions and classes that allow you to retrieve information from PubChem.
 
     from pubchempy import *
     
     c = Compound.from_cid(1423)
     cs = get_compounds('Aspirin', 'name')
-
-
 
 ## Substances and compounds
 
@@ -27,7 +43,7 @@ A second `namespace` argument allows you to use different types of input:
     get_compounds('Aspirin', 'name')
     get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles')
     
-Beware that line notation inputs like SMILES and InChI can return records that aren't actually present in PubChem, and therefore have no CID or SID and are missing many properties.
+Beware that line notation inputs like SMILES and InChI can return automatically generated records that aren't actually present in PubChem, and therefore have no CID or SID and are missing many properties.
     
 By default, compounds are returned with 2D coordinates. Use the `record_type` keyword argument to specify otherwise:
 
