@@ -60,7 +60,7 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
 
 
 def get(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
-    """ Request wrapper that automatically handles async requests. """
+    """Request wrapper that automatically handles async requests."""
     if searchtype or namespace in ['formula']:
         response = request(identifier, namespace, domain, None, 'JSON', searchtype, **kwargs)
         status = json.loads(response)
@@ -79,21 +79,21 @@ def get(identifier, namespace='cid', domain='compound', operation=None, output='
 
 
 def get_compounds(identifier, namespace='cid', searchtype=None, **kwargs):
-    """ Retrieve the specified compound records from PubChem. """
+    """Retrieve the specified compound records from PubChem."""
     results = json.loads(get(identifier, namespace, searchtype=searchtype, **kwargs))
     compounds = [Compound(r) for r in results['PC_Compounds']]
     return compounds
 
 
 def get_substances(identifier, namespace='sid', **kwargs):
-    """ Retrieve the specified substance records from PubChem. """
+    """Retrieve the specified substance records from PubChem."""
     results = json.loads(get(identifier, namespace, 'substance', **kwargs))
     substances = [Substance(r) for r in results['PC_Substances']]
     return substances
 
 
 def get_assays(identifier, namespace='aid', sids=None, **kwargs):
-    """ Retrieve the specified assay records from PubChem. """
+    """Retrieve the specified assay records from PubChem."""
     results = json.loads(get(identifier, namespace, 'assay', sids, **kwargs))
     assays = [Assay(r) for r in results['PC_AssayContainer']]
     return assays
@@ -144,7 +144,7 @@ def get_aids(identifier, namespace='cid', domain='compound', searchtype=None, **
 # TODO: Classification, Dates, XRefs operations
 
 def get_all_sources(domain='substance'):
-    """ Return a list of all current depositors of substances or assays. """
+    """Return a list of all current depositors of substances or assays."""
     results = json.loads(get(domain, None, 'sources'))
     sources = results['InformationList']['SourceName']
     return sources
@@ -152,7 +152,7 @@ def get_all_sources(domain='substance'):
 
 def download(outformat, path, identifier, namespace='cid', domain='compound', operation=None, searchtype=None,
              overwrite=False, **kwargs):
-    """ Format can be  XML, ASNT/B, JSON, SDF, CSV, PNG, TXT.  """
+    """Format can be  XML, ASNT/B, JSON, SDF, CSV, PNG, TXT."""
     response = get(identifier, namespace, domain, operation, outformat, searchtype, **kwargs)
     if not overwrite and os.path.isfile(path):
         raise IOError("%s already exists. Use 'overwrite=True' to overwrite it." % path)
@@ -161,7 +161,7 @@ def download(outformat, path, identifier, namespace='cid', domain='compound', op
 
 
 class CacheProperty(object):
-    """ Descriptor for caching Molecule properties. """
+    """Descriptor for caching Molecule properties."""
 
     def __init__(self, func):
         self._func = func
@@ -223,21 +223,21 @@ class Compound(object):
 
     @CacheProperty
     def synonyms(self):
-        """ Requires an extra request. Result is cached. """
+        """Requires an extra request. Result is cached."""
         if self.cid:
             results = json.loads(get(self.cid, operation='synonyms'))
             return results['InformationList']['Information'][0]['Synonym']
 
     @CacheProperty
     def sids(self):
-        """ Requires an extra request. Result is cached. """
+        """Requires an extra request. Result is cached."""
         if self.cid:
             results = json.loads(get(self.cid, operation='sids'))
             return results['InformationList']['Information'][0]['SID']
 
     @CacheProperty
     def aids(self):
-        """ Requires an extra request. Result is cached. """
+        """Requires an extra request. Result is cached."""
         if self.cid:
             results = json.loads(get(self.cid, operation='aids'))
             return results['InformationList']['Information'][0]['AID']
@@ -426,7 +426,7 @@ class Compound(object):
 
 
 def parse_prop(search, proplist):
-    """ Extract property value from record using the given urn search filter.  """
+    """Extract property value from record using the given urn search filter."""
     props = [i for i in proplist if all(item in i['urn'].items() for item in search.items())]
     if len(props) > 0:
         return props[0]['value'][props[0]['value'].keys()[0]]
@@ -467,20 +467,20 @@ class Substance(object):
 
     @CacheProperty
     def standardized_compound(self):
-        """ Record of the standardized compound. Requires an extra request. Result is cached. """
+        """Record of the standardized compound. Requires an extra request. Result is cached."""
         for c in self.record['compound']:
             if c['id']['type'] == 'standardized':
                 return Compound.from_cid(c['id']['id']['cid'])
 
     @CacheProperty
     def cids(self):
-        """ Requires an extra request. Result is cached. """
+        """Requires an extra request. Result is cached."""
         results = json.loads(get(self.sid, 'sid', 'substance', 'cids'))
         return results['InformationList']['Information'][0]['CID']
 
     @CacheProperty
     def aids(self):
-        """ Requires an extra request. Result is cached. """
+        """Requires an extra request. Result is cached."""
         results = json.loads(get(self.sid, 'sid', 'substance', 'aids'))
         return results['InformationList']['Information'][0]['AID']
 
@@ -502,7 +502,7 @@ class Assay(object):
 
 
 class PubChemHTTPError(Exception):
-    """ Generic error class to handle all HTTP error codes """
+    """Generic error class to handle all HTTP error codes."""
 
     def __init__(self, e):
         self.code = e.code
@@ -529,42 +529,42 @@ class PubChemHTTPError(Exception):
 
 
 class BadRequestError(PubChemHTTPError):
-    """ Request is improperly formed (syntax error in the URL, POST body, etc.) """
+    """Request is improperly formed (syntax error in the URL, POST body, etc.)."""
 
     def __init__(self, msg='Request is improperly formed'):
         self.msg = msg
 
 
 class NotFoundError(PubChemHTTPError):
-    """ The input record was not found (e.g. invalid CID) """
+    """The input record was not found (e.g. invalid CID)."""
 
     def __init__(self, msg='The input record was not found'):
         self.msg = msg
 
 
 class MethodNotAllowedError(PubChemHTTPError):
-    """ Request not allowed (such as invalid MIME type in the HTTP Accept header) """
+    """Request not allowed (such as invalid MIME type in the HTTP Accept header)."""
 
     def __init__(self, msg='Request not allowed'):
         self.msg = msg
 
 
 class TimeoutError(PubChemHTTPError):
-    """ The request timed out, from server overload or too broad a request """
+    """The request timed out, from server overload or too broad a request."""
 
     def __init__(self, msg='The request timed out'):
         self.msg = msg
 
 
 class UnimplementedError(PubChemHTTPError):
-    """ The requested operation has not (yet) been implemented by the server """
+    """The requested operation has not (yet) been implemented by the server."""
 
     def __init__(self, msg='The requested operation has not been implemented'):
         self.msg = msg
 
 
 class ServerError(PubChemHTTPError):
-    """ Some problem on the server side (such as a database server down, etc.) """
+    """Some problem on the server side (such as a database server down, etc.)."""
 
     def __init__(self, msg='Some problem on the server side'):
         self.msg = msg

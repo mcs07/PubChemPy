@@ -12,23 +12,23 @@ from pubchempy import *
 
 
 class TestPubChemPy(unittest.TestCase):
-    """ These tests don't check whether the output is correct. They just check that no exception is raised. """
+    """These tests don't check whether the output is correct. They just check that no exception is raised."""
 
     def setUp(self):
-        """ Define some example inputs """
+        """Define some example inputs."""
         self.phenanthrolinesmiles = 'C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1'
         self.molform = 'C10H21N'
         self.rucomplex = 'tris-(1,10-phenanthroline)ruthenium'
 
     def test_requests(self):
-        """ Test basic raw requests """
+        """Test basic raw requests."""
         print request('coumarin', 'name', record_type='3d')
         print request('CCN(C1=N/C(=C/2\SC(=NC2=N)N(CC)CC)/C(=N/Nc2ccc(cc2)S(=O)(=O)C(F)(F)F)/S1)CC', 'smiles')
         print request('DTP/NCI', 'sourceid', 'substance', '747285', 'SDF')
         print request('coumarin', 'name', output='PNG', image_size='50x50')
 
     def test_listkeys(self):
-        """ Test asynchronous listkey requests """
+        """Test asynchronous listkey requests."""
         print get('CC', 'smiles', operation='cids', searchtype='superstructure')
         print get(self.molform, 'formula', listkey_count=3)
 
