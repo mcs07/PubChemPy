@@ -97,6 +97,10 @@ class TestPubChemPy(unittest.TestCase):
     def test_substructure(self):
         print get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles', searchtype='substructure', listkey_count=3)
 
+    def test_equality(self):
+        self.assertEqual(Compound.from_cid(241), Compound.from_cid(241))
+        self.assertEqual(get_compounds('Benzene', 'name')[0], get_compounds('c1ccccc1', 'smiles')[0])
+
 
 if __name__ == '__main__':
     unittest.main()

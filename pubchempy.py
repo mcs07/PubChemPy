@@ -186,6 +186,9 @@ class Compound(object):
     def __repr__(self):
         return 'Compound(%s)' % self.cid if self.cid else 'Compound()'
 
+    def __eq__(self, other):
+        return self.record == other.record
+
     @property
     def cid(self):
         # Note: smiles or inchi inputs can return compounds without a cid
