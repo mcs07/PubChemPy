@@ -8,7 +8,7 @@ A simple Python wrapper around the [PubChem PUG REST API](http://pubchem.ncbi.nl
 
     pip install PubChemPy
 
-**Option 2**: [Download the latest release](https://pypi.python.org/packages/source/P/PubChemPy/PubChemPy-1.0.tar.gz) and install yourself:
+**Option 2**: [Download the latest release](https://github.com/mcs07/PubChemPy/releases/) and install yourself:
 
     tar xzvf PubChemPy-1.0.tar.gz
     cd PubChemPy-1.0
@@ -24,10 +24,10 @@ A simple Python wrapper around the [PubChem PUG REST API](http://pubchem.ncbi.nl
 
 PubChemPy provides a variety of functions and classes that allow you to retrieve information from PubChem.
 
-    from pubchempy import *
+    from pubchempy import Compound, get_compounds
     
-    c = Compound.from_cid(1423)
-    cs = get_compounds('Aspirin', 'name')
+    comp = Compound.from_cid(1423)
+    comps = get_compounds('Aspirin', 'name')
 
 ## Substances and compounds
 
