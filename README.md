@@ -10,8 +10,8 @@ A simple Python wrapper around the [PubChem PUG REST API](http://pubchem.ncbi.nl
 
 **Option 2**: [Download the latest release](https://github.com/mcs07/PubChemPy/releases/) and install yourself:
 
-    tar xzvf PubChemPy-1.0.tar.gz
-    cd PubChemPy-1.0
+    tar xzvf PubChemPy-1.0.1.tar.gz
+    cd PubChemPy-1.0.1
     sudo python setup.py install
 
 **Option 3**: [Download pubchempy.py](https://github.com/mcs07/PubChemPy/raw/master/pubchempy.py) and manually place it in your project directory or anywhere on your PYTHONPATH.
