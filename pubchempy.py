@@ -39,10 +39,12 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
 
     # Build API URL
     urlid, postdata = None, None
-    if namespace in ['listkey', 'formula'] or (searchtype and namespace == 'cid') or domain == 'sources':
-        urlid = urllib2.quote(identifier.encode('utf8').replace('/', '.'))
+    if namespace == 'sourceid':
+        identifier = identifier.replace('/', '.')
+    if namespace in ['listkey', 'formula', 'sourceid'] or (searchtype and namespace == 'cid') or domain == 'sources':
+        urlid = urllib2.quote(identifier.encode('utf8'))
     else:
-        postdata = '%s=%s' % (namespace, urllib2.quote(identifier.encode('utf8').replace('/', '.')))
+        postdata = '%s=%s' % (namespace, urllib2.quote(identifier.encode('utf8')))
     comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
     apiurl = '/'.join(comps)
     if kwargs:

@@ -23,6 +23,8 @@ class TestPubChemPy(unittest.TestCase):
     def test_requests(self):
         """ Test basic raw requests """
         print request('coumarin', 'name', record_type='3d')
+        print request('CCN(C1=N/C(=C/2\SC(=NC2=N)N(CC)CC)/C(=N/Nc2ccc(cc2)S(=O)(=O)C(F)(F)F)/S1)CC', 'smiles')
+        print request('DTP/NCI', 'sourceid', 'substance', '747285', 'SDF')
         print request('coumarin', 'name', output='PNG', image_size='50x50')
 
     def test_listkeys(self):
