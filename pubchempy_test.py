@@ -70,6 +70,7 @@ class TestPubChemPy(unittest.TestCase):
         print c.defined_bond_stereo_count
         print c.undefined_bond_stereo_count
         print c.covalent_unit_count
+        print c.coordinate_type
 
         c = Compound.from_cid(1, record_type='3d')
         print c.volume_3d
@@ -83,6 +84,7 @@ class TestPubChemPy(unittest.TestCase):
         print c.shape_selfoverlap_3d
         print c.feature_selfoverlap_3d
         print c.shape_fingerprint_3d
+        print c.coordinate_type
 
     def test_csaids(self):
         print get_cids('Aspirin', 'name', 'substance')
