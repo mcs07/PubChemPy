@@ -247,9 +247,9 @@ class Compound(object):
 
     @property
     def coordinate_type(self):
-        if 'twod' in self.record['coords']['type']:
+        if 'twod' in self.record['coords'][0]['type']:
             return '2d'
-        elif 'threed' in self.record['coords']['type']:
+        elif 'threed' in self.record['coords'][0]['type']:
             return '3d'
 
     @property
