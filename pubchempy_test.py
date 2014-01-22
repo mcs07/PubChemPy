@@ -6,9 +6,13 @@ Python interface for the PubChem PUG REST service.
 https://github.com/mcs07/PubChemPy
 """
 
+import logging
 import unittest
 
 from pubchempy import *
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class TestPubChemPy(unittest.TestCase):

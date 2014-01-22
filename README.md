@@ -77,7 +77,7 @@ The `get_properties` function allows the retrieval of specific properties withou
 
     p = get_properties('IsomericSMILES', 'CC', 'smiles', searchtype='superstructure')
 
-Multiple properties may be specified in a list, or in a comma-separated string. The available properties are: MolecularFormula,MolecularWeight, CanonicalSMILES, IsomericSMILES, InChI, InChIKey, IUPACName, XLogP, ExactMass, MonoisotopicMass, TPSA, Complexity, Charge, HBondDonorCount, HBondAcceptorCount, RotatableBondCount, HeavyAtomCount, IsotopeAtomCount, AtomStereoCount, DefinedAtomStereoCount, UndefinedAtomStereoCount, BondStereoCount, DefinedBondStereoCount, UndefinedBondStereoCount, CovalentUnitCount, Volume3D, XStericQuadrupole3D, YStericQuadrupole3D, ZStericQuadrupole3D, FeatureCount3D, FeatureAcceptorCount3D, FeatureDonorCount3D, FeatureAnionCount3D, FeatureCationCount3D, FeatureRingCount3D, FeatureHydrophobeCount3D, ConformerModelRMSD3D, EffectiveRotorCount3D, ConformerCount3D.
+Multiple properties may be specified in a list, or in a comma-separated string. The available properties are: MolecularFormula, MolecularWeight, CanonicalSMILES, IsomericSMILES, InChI, InChIKey, IUPACName, XLogP, ExactMass, MonoisotopicMass, TPSA, Complexity, Charge, HBondDonorCount, HBondAcceptorCount, RotatableBondCount, HeavyAtomCount, IsotopeAtomCount, AtomStereoCount, DefinedAtomStereoCount, UndefinedAtomStereoCount, BondStereoCount, DefinedBondStereoCount, UndefinedBondStereoCount, CovalentUnitCount, Volume3D, XStericQuadrupole3D, YStericQuadrupole3D, ZStericQuadrupole3D, FeatureCount3D, FeatureAcceptorCount3D, FeatureDonorCount3D, FeatureAnionCount3D, FeatureCationCount3D, FeatureRingCount3D, FeatureHydrophobeCount3D, ConformerModelRMSD3D, EffectiveRotorCount3D, ConformerCount3D.
 
 ## Synonyms
 
@@ -114,10 +114,6 @@ For PNG images, the `image_size` argument can be used to specfiy `large`, `small
 This class has the following properties: sid, synonyms, source_name, source_id, cids, aids, deposited_compound and standardized_compound.
 
 The deposited_compound is a Compound object that corresponds to the deposited Substance record. The standardized_compound is the corresponding record in the Compound database.
-
-## Assays
-
-TODO
 
 ## Custom requests
 
@@ -165,4 +161,11 @@ When using the `formula` namespace or a `searchtype`, you can also alternatively
 	get_compounds('CC', 'smiles', searchtype='substructure', listkey_count=5)
 	get('C10H21N', 'formula', listkey_count=3, listkey_start=6)
 
+## Logging
 
+PubChemPy can generate logging statements if required. Just set the desired logging level:
+
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+
+The logger is named 'pubchempy'. [There is more information on logging in the Python Documentation](http://docs.python.org/2/howto/logging.html).
