@@ -98,6 +98,19 @@ There are three functions for getting a list of identifiers for a given input:
 
 For example, passing a CID to get_sids will return a list of SIDs corresponding to the Substance records that were standardised and merged to produce the given Compound.
 
+## *pandas* integration
+
+It is possible for `get_compounds`, `get_substances` and `get_properties` to return a pandas DataFrame:
+
+    df1 = get_compounds('C20H41Br', 'formula', as_dataframe=True)
+    df2 = get_substances([1,2,3,4], as_dataframe=True)
+    df3 = get_properties(['isomeric_smiles', 'xlogp', 'rotatable_bond_count'], 'C20H41Br', 'formula', as_dataframe=True)
+
+An existing list of Compound objects can be converted into a dataframe, optionally specifying the desired columns:
+
+    cs = get_compounds('C20H41Br', 'formula')
+    df4 = compounds_to_frame(cs, properties=['isomeric_smiles', 'xlogp', 'rotatable_bond_count'])
+
 ## Download
 
 The download function is for saving a file to disk. The following formats are available: XML, ASNT/B, JSON, SDF, CSV, PNG, TXT. Beware that not all formats are available for all types of information. SDF and PNG are only available for full Compound and Substance records, and CSV is best suited to tables of properties and identifiers.

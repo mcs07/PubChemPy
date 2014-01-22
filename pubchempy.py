@@ -92,16 +92,22 @@ def get_json(identifier, namespace='cid', domain='compound', operation=None, sea
         return None
 
 
-def get_compounds(identifier, namespace='cid', searchtype=None, **kwargs):
+def get_compounds(identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
     """Retrieve the specified compound records from PubChem."""
     results = get_json(identifier, namespace, searchtype=searchtype, **kwargs)
-    return [Compound(r) for r in results['PC_Compounds']] if results else []
+    compounds = [Compound(r) for r in results['PC_Compounds']] if results else []
+    if as_dataframe:
+        return compounds_to_frame(compounds)
+    return compounds
 
 
-def get_substances(identifier, namespace='sid', **kwargs):
+def get_substances(identifier, namespace='sid', as_dataframe=False, **kwargs):
     """Retrieve the specified substance records from PubChem."""
     results = get_json(identifier, namespace, 'substance', **kwargs)
-    return [Substance(r) for r in results['PC_Substances']] if results else []
+    substances = [Substance(r) for r in results['PC_Substances']] if results else []
+    if as_dataframe:
+        return substances_to_frame(substances)
+    return substances
 
 
 def get_assays(identifier, namespace='aid', sids=None, **kwargs):
@@ -155,13 +161,17 @@ PROPERTY_MAP = {
 }
 
 
-def get_properties(properties, identifier, namespace='cid', searchtype=None, **kwargs):
+def get_properties(properties, identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
     if isinstance(properties, basestring):
         properties = properties.split(',')
     properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties])
     properties = 'property/%s' % properties
     results = get_json(identifier, namespace, 'compound', properties, searchtype=searchtype, **kwargs)
-    return results['PropertyTable']['Properties'] if results else []
+    results = results['PropertyTable']['Properties'] if results else []
+    if as_dataframe:
+        import pandas as pd
+        return pd.DataFrame.from_records(results, index='CID')
+    return results
 
 
 def get_synonyms(identifier, namespace='cid', domain='compound', searchtype=None, **kwargs):
@@ -243,14 +253,24 @@ class Compound(object):
     def __eq__(self, other):
         return self.record == other.record
 
-    def to_series(self, properties=None):
-        """Return a pandas Series containing Compound data. Optionally specify a list of the desired properties."""
-        import pandas as pd
+    def to_dict(self, properties=None):
+        """Return a dictionary containing Compound data. Optionally specify a list of the desired properties.
+
+        synonyms, aids and sids are not included unless explicitly specified using the properties parameter. This is
+        because they each require an extra request.
+        """
         if not properties:
-            properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) or
-                                                      p in {'aids', 'sids', 'synonyms'}]
-        properties = {p: getattr(self, p) for p in properties}
-        return pd.Series(properties)
+            properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property)]
+        return {p: getattr(self, p) for p in properties}
+
+    def to_series(self, properties=None):
+        """Return a pandas Series containing Compound data. Optionally specify a list of the desired properties.
+
+        synonyms, aids and sids are not included unless explicitly specified using the properties parameter. This is
+        because they each require an extra request.
+        """
+        import pandas as pd
+        return pd.Series(self.to_dict(properties))
 
     @property
     def cid(self):
@@ -507,6 +527,32 @@ class Substance(object):
         record = json.loads(request(sid, 'sid', 'substance'))['PC_Substances'][0]
         return cls(record)
 
+    def __repr__(self):
+        return 'Substance(%s)' % self.sid if self.sid else 'Substance()'
+
+    def __eq__(self, other):
+        return self.record == other.record
+
+    def to_dict(self, properties=None):
+        """Return a dictionary containing Substance data. Optionally specify a list of the desired properties.
+
+        cids and aids are not included unless explicitly specified using the properties parameter. This is
+        because they each require an extra request.
+        """
+        if not properties:
+            properties = [p for p in dir(Substance) if isinstance(getattr(Substance, p), property) and
+                                                       not p == 'deposited_compound']
+        return {p: getattr(self, p) for p in properties}
+
+    def to_series(self, properties=None):
+        """Return a pandas Series containing Substance data. Optionally specify a list of the desired properties.
+
+        cids and aids are not included unless explicitly specified using the properties parameter. This is
+        because they each require an extra request.
+        """
+        import pandas as pd
+        return pd.Series(self.to_dict(properties))
+
     @property
     def sid(self):
         return self.record['sid']['id']
@@ -525,8 +571,14 @@ class Substance(object):
         return self.record['source']['db']['source_id']['str']
 
     @property
+    def standardized_cid(self):
+        for c in self.record['compound']:
+            if c['id']['type'] == 'standardized':
+                return c['id']['id']['cid']
+
+    @property
     def deposited_compound(self):
-        """ Record of the deposited compound.  """
+        """Record of the deposited compound."""
         for c in self.record['compound']:
             if c['id']['type'] == 'deposited':
                 return Compound(c)
@@ -563,6 +615,24 @@ class Assay(object):
     @property
     def aid(self):
         return self.record['id']['id']['aid']
+
+
+def compounds_to_frame(compounds, properties=None):
+    """Construct a pandas DataFrame from a list of Compound objects."""
+    import pandas as pd
+    if isinstance(compounds, Compound):
+        compounds = [compounds]
+    properties = set(properties) | set(['cid']) if properties else None
+    return pd.DataFrame.from_records([c.to_dict(properties) for c in compounds], index='cid')
+
+
+def substances_to_frame(substances, properties=None):
+    """Construct a pandas DataFrame from a list of Substance objects."""
+    import pandas as pd
+    if isinstance(substances, Substance):
+        substances = [substances]
+    properties = set(properties) | set(['sid']) if properties else None
+    return pd.DataFrame.from_records([s.to_dict(properties) for s in substances], index='sid')
 
 
 class PubChemHTTPError(Exception):
