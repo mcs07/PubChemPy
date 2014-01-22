@@ -110,9 +110,55 @@ def get_assays(identifier, namespace='aid', sids=None, **kwargs):
     return [Assay(r) for r in results['PC_AssayContainer']] if results else []
 
 
+# Allows properties to optionally be specified as underscore_separated, consistent with Compound attributes
+PROPERTY_MAP = {
+    'molecular_formula': 'MolecularFormula',
+    'molecular_weight': 'MolecularWeight',
+    'canonical_smiles': 'CanonicalSMILES',
+    'isomeric_smiles': 'IsomericSMILES',
+    'inchi': 'InChI',
+    'inchikey': 'InChIKey',
+    'iupac_name': 'IUPACName',
+    'xlogp': 'XLogP',
+    'exact_mass': 'ExactMass',
+    'monoisotopic_mass': 'MonoisotopicMass',
+    'tpsa': 'TPSA',
+    'complexity': 'Complexity',
+    'charge': 'Charge',
+    'h_bond_donor_count': 'HBondDonorCount',
+    'h_bond_acceptor_count': 'HBondAcceptorCount',
+    'rotatable_bond_count': 'RotatableBondCount',
+    'heavy_atom_count': 'HeavyAtomCount',
+    'isotope_atom_count': 'IsotopeAtomCount',
+    'atom_stereo_count': 'AtomStereoCount',
+    'defined_atom_stereo_count': 'DefinedAtomStereoCount',
+    'undefined_atom_stereo_count': 'UndefinedAtomStereoCount',
+    'bond_stereo_count': 'BondStereoCount',
+    'defined_bond_stereo_count': 'DefinedBondStereoCount',
+    'undefined_bond_stereo_count': 'UndefinedBondStereoCount',
+    'covalent_unit_count': 'CovalentUnitCount',
+    'volume_3d': 'Volume3D',
+    'conformer_rmsd_3d': 'ConformerModelRMSD3D',
+    'conformer_model_rmsd_3d': 'ConformerModelRMSD3D',
+    'x_steric_quadrupole_3d': 'XStericQuadrupole3D',
+    'y_steric_quadrupole_3d': 'YStericQuadrupole3D',
+    'z_steric_quadrupole_3d': 'ZStericQuadrupole3D',
+    'feature_count_3d': 'FeatureCount3D',
+    'feature_acceptor_count_3d': 'FeatureAcceptorCount3D',
+    'feature_donor_count_3d': 'FeatureDonorCount3D',
+    'feature_anion_count_3d': 'FeatureAnionCount3D',
+    'feature_cation_count_3d': 'FeatureCationCount3D',
+    'feature_ring_count_3d': 'FeatureRingCount3D',
+    'feature_hydrophobe_count_3d': 'FeatureHydrophobeCount3D',
+    'effective_rotor_count_3d': 'EffectiveRotorCount3D',
+    'conformer_count_3d': 'ConformerCount3D',
+}
+
+
 def get_properties(properties, identifier, namespace='cid', searchtype=None, **kwargs):
-    if not isinstance(properties, basestring):
-        properties = ','.join(properties)
+    if isinstance(properties, basestring):
+        properties = properties.split(',')
+    properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties])
     properties = 'property/%s' % properties
     results = get_json(identifier, namespace, 'compound', properties, searchtype=searchtype, **kwargs)
     return results['PropertyTable']['Properties'] if results else []
