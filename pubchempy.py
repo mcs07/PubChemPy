@@ -11,6 +11,7 @@ import os
 import time
 import urllib
 import urllib2
+import pandas as pd
 
 
 __author__ = 'Matt Swain'
@@ -189,6 +190,12 @@ class Compound(object):
     def __eq__(self, other):
         return self.record == other.record
 
+    def to_Series(self):
+        property_names= [p for p in dir(Compound) if isinstance(getattr(Compound,p), property)
+                                                      or p in ['aids','sids','synonyms']]
+        properties = {p: getattr(self,p) for p in property_names}
+        return pd.Series(properties)
+
     @property
     def cid(self):
         # Note: smiles or inchi inputs can return compounds without a cid
@@ -228,22 +235,34 @@ class Compound(object):
     def synonyms(self):
         """Requires an extra request. Result is cached."""
         if self.cid:
-            results = json.loads(get(self.cid, operation='synonyms'))
-            return results['InformationList']['Information'][0]['Synonym']
-
+            try:
+                results = json.loads(get(self.cid, operation='synonyms'))
+                return results['InformationList']['Information'][0]['Synonym']
+            except NotFoundError: 
+                print 'No Synonyms found for the given CID(s)'
+                return None
+            
     @CacheProperty
     def sids(self):
         """Requires an extra request. Result is cached."""
         if self.cid:
-            results = json.loads(get(self.cid, operation='sids'))
-            return results['InformationList']['Information'][0]['SID']
+            try:
+                results = json.loads(get(self.cid, operation='sids'))
+                return results['InformationList']['Information'][0]['SID']
+            except NotFoundError: 
+                print 'No SIDs found for the given CID(s)'
+                return None
 
     @CacheProperty
     def aids(self):
         """Requires an extra request. Result is cached."""
         if self.cid:
-            results = json.loads(get(self.cid, operation='aids'))
-            return results['InformationList']['Information'][0]['AID']
+            try:
+                results = json.loads(get(self.cid, operation='aids'))
+                return results['InformationList']['Information'][0]['AID']
+            except NotFoundError: 
+                print 'No AIDs found for the given CID(s)'
+                return None
 
     @property
     def coordinate_type(self):
