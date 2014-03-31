@@ -66,7 +66,9 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     if namespace in ['listkey', 'formula', 'sourceid'] or (searchtype and namespace == 'cid') or domain == 'sources':
         urlid = quote(identifier.encode('utf8'))
     else:
-        postdata = ('%s=%s' % (namespace, quote(identifier.encode('utf8')))).encode('utf8')
+        #postdata = ('%s=%s' % (namespace, quote(identifier.encode('utf8')))).encode('utf8')
+        postdata = urlencode([(namespace, identifier)]).encode('utf8')
+
     comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
     apiurl = '/'.join(comps)
     if kwargs:
@@ -246,7 +248,7 @@ def get_aids(identifier, namespace='cid', domain='compound', searchtype=None, **
 
 def get_all_sources(domain='substance'):
     """Return a list of all current depositors of substances or assays."""
-    results = json.loads(get(domain, None, 'sources'))
+    results = json.loads(get(domain, None, 'sources').decode())
     return results['InformationList']['SourceName']
 
 
@@ -595,7 +597,7 @@ class Substance(object):
 
         :param sid: The PubChem Substance Identifier (SID).
         """
-        record = json.loads(request(sid, 'sid', 'substance'))['PC_Substances'][0]
+        record = json.loads(request(sid, 'sid', 'substance').decode())['PC_Substances'][0]
         return cls(record)
 
     def __init__(self, record):
@@ -706,7 +708,7 @@ class Assay(object):
 
     @classmethod
     def from_aid(cls, aid):
-        record = json.loads(request(aid, 'aid', 'assay'))['PC_AssayContainer'][0]
+        record = json.loads(request(aid, 'aid', 'assay').decode())['PC_AssayContainer'][0]
         return cls(record)
 
     @property
