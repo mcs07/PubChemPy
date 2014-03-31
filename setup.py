@@ -6,10 +6,13 @@ from distutils.core import setup
 import pubchempy
 
 
-if os.path.exists('README.txt'):
-    long_description = open('README.txt').read()
+if os.path.exists('README.rst'):
+    long_description = open('README.rst').read()
 else:
-    long_description = open('README.md').read()
+    long_description = '''PubChemPy is a wrapper around the PubChem PUG REST API that provides a way to interact
+        with PubChem in Python. It allows chemical searches (including by name, substructure and similarity), chemical
+        standardization, conversion between chemical file formats, depiction and retrieval of chemical properties.
+    '''
 
 setup(
     name='PubChemPy',
@@ -22,6 +25,7 @@ setup(
     description='A simple Python wrapper around the PubChem PUG REST API.',
     long_description=long_description,
     keywords='pubchem python rest api pug',
+    extras_require={'pandas': ['pandas']},
     classifiers=[
         'Intended Audience :: Science/Research',
         'Intended Audience :: Healthcare Industry',
