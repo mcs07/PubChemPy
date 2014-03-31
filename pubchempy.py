@@ -14,12 +14,10 @@ import sys
 import time
 
 try:
-    # Python 3
     from urllib.error import HTTPError
     from urllib.parse import quote, urlencode
     from urllib.request import urlopen
 except ImportError:
-    # Python 2
     from urllib import urlencode
     from urllib2 import quote, urlopen, HTTPError
 
@@ -30,14 +28,12 @@ __version__ = '1.0.1'
 __license__ = 'MIT'
 
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
-PY2 = sys.version_info[0] == 2
-PY3 = sys.version_info[0] == 3
 
 log = logging.getLogger('pubchempy')
 log.addHandler(logging.NullHandler())
 
 
-if PY3:
+if sys.version_info[0] == 3:
     text_types = str, bytes
 else:
     text_types = basestring,
@@ -49,16 +45,13 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
 
     Full specification at http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html
     """
-
     # If identifier is a list, join with commas into string
     if isinstance(identifier, int):
         identifier = str(identifier)
     if not isinstance(identifier, text_types):
         identifier = ','.join(str(x) for x in identifier)
-
     # Filter None values from kwargs
     kwargs = dict((k, v) for k, v in kwargs.items() if v is not None)
-
     # Build API URL
     urlid, postdata = None, None
     if namespace == 'sourceid':
@@ -66,14 +59,11 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     if namespace in ['listkey', 'formula', 'sourceid'] or (searchtype and namespace == 'cid') or domain == 'sources':
         urlid = quote(identifier.encode('utf8'))
     else:
-        #postdata = ('%s=%s' % (namespace, quote(identifier.encode('utf8')))).encode('utf8')
         postdata = urlencode([(namespace, identifier)]).encode('utf8')
-
     comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
     apiurl = '/'.join(comps)
     if kwargs:
         apiurl += '?%s' % urlencode(kwargs)
-
     # Make request
     try:
         log.debug('Request URL: %s', apiurl)
