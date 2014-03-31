@@ -11,7 +11,16 @@ import json
 import logging
 import os
 import time
-import urllib.request, urllib.parse
+
+try:
+    # Python 3
+    from urllib.error import HTTPError
+    from urllib.parse import quote, urlencode
+    from urllib.request import urlopen
+except ImportError:
+    # Python 2
+    from urllib2 import quote, urlopen, HTTPError
+    from urlparse import urlencode
 
 
 __author__ = 'Matt Swain'
@@ -46,21 +55,21 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     if namespace == 'sourceid':
         identifier = identifier.replace('/', '.')
     if namespace in ['listkey', 'formula', 'sourceid'] or (searchtype and namespace == 'cid') or domain == 'sources':
-        urlid = urllib.request.quote(identifier.encode('utf8'))
+        urlid = quote(identifier.encode('utf8'))
     else:
-        postdata =  ('%s=%s' % (namespace, urllib.request.quote(identifier.encode('utf8')))).encode('utf8')
+        postdata = ('%s=%s' % (namespace, quote(identifier.encode('utf8')))).encode('utf8')
     comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
     apiurl = '/'.join(comps)
     if kwargs:
-        apiurl += '?%s' % urllib.parse.urlencode(kwargs)
+        apiurl += '?%s' % urlencode(kwargs)
 
     # Make request
     try:
         log.debug('Request URL: %s', apiurl)
         log.debug('Request data: %s', postdata)
-        response = urllib.request.urlopen(apiurl, postdata).read()
+        response = urlopen(apiurl, postdata).read()
         return response
-    except urllib.request.HTTPError as e:
+    except HTTPError as e:
         raise PubChemHTTPError(e)
 
 
