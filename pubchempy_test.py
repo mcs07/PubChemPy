@@ -18,12 +18,6 @@ logging.basicConfig(level=logging.DEBUG)
 class TestPubChemPy(unittest.TestCase):
     """These tests don't check whether the output is correct. They just check that no exception is raised."""
 
-    def setUp(self):
-        """Define some example inputs."""
-        self.phenanthrolinesmiles = 'C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1'
-        self.molform = 'C10H21N'
-        self.rucomplex = 'tris-(1,10-phenanthroline)ruthenium'
-
     def test_requests(self):
         """Test basic raw requests."""
         print(request('coumarin', 'name', record_type='3d'))
@@ -34,13 +28,13 @@ class TestPubChemPy(unittest.TestCase):
     def test_listkeys(self):
         """Test asynchronous listkey requests."""
         print(get('CC', 'smiles', operation='cids', searchtype='superstructure'))
-        print(get(self.molform, 'formula', listkey_count=3))
+        print(get('C10H21N', 'formula', listkey_count=3))
 
     def test_properties(self):
-        print(get_properties('IsomericSMILES', self.rucomplex, 'name'))
+        print(get_properties('IsomericSMILES', 'tris-(1,10-phenanthroline)ruthenium', 'name'))
 
     def test_synonyms(self):
-        print(get_synonyms(self.phenanthrolinesmiles, 'smiles'))
+        print(get_synonyms('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles'))
 
     def test_compounds(self):
         c = Compound.from_cid(1)
@@ -103,9 +97,13 @@ class TestPubChemPy(unittest.TestCase):
     def test_substructure(self):
         print(get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles', searchtype='substructure', listkey_count=3))
 
-    def test_equality(self):
+    def test_compound_equality(self):
         self.assertEqual(Compound.from_cid(241), Compound.from_cid(241))
         self.assertEqual(get_compounds('Benzene', 'name')[0], get_compounds('c1ccccc1', 'smiles')[0])
+
+    def test_compound_hash(self):
+        self.assertEqual(hash(Compound.from_cid(241)), hash(Compound.from_cid(241)))
+        self.assertEqual(hash(get_compounds('Benzene', 'name')[0]), hash(get_compounds('c1ccccc1', 'smiles')[0]))
 
 
 if __name__ == '__main__':

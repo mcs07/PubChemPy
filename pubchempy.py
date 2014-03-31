@@ -291,7 +291,11 @@ class Compound(object):
         return 'Compound(%s)' % self.cid if self.cid else 'Compound()'
 
     def __eq__(self, other):
-        return self.record == other.record
+        return isinstance(other, type(self)) and self.record == other.record
+
+    def __hash__(self):
+        return hash((self.cid, self.molecular_formula, self.molecular_weight, self.isomeric_smiles, self.inchikey,
+                     tuple(tuple(a.values()) for a in self.atoms), tuple(tuple(b.values()) for b in self.bonds)))
 
     def to_dict(self, properties=None):
         """Return a dictionary containing Compound data. Optionally specify a list of the desired properties.
@@ -598,7 +602,10 @@ class Substance(object):
         return 'Substance(%s)' % self.sid if self.sid else 'Substance()'
 
     def __eq__(self, other):
-        return self.record == other.record
+        return isinstance(other, type(self)) and self.record == other.record
+
+    def __hash__(self):
+        return hash((self.sid, self.source_name, self.source_id, self.standardized_cid))
 
     def to_dict(self, properties=None):
         """Return a dictionary containing Substance data.
