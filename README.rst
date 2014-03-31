@@ -1,10 +1,9 @@
 PubChemPy
 =========
 
-PubChemPy provides a way to interact with PubChem in Python. It allows
-chemical searches (including by name, substructure and similarity),
-chemical standardization, conversion between chemical file formats,
-depiction and retrieval of chemical properties.
+PubChemPy provides a way to interact with PubChem in Python. It allows chemical searches by name, substructure and
+similarity, chemical standardization, conversion between chemical file formats, depiction and retrieval of chemical
+properties.
 
 ::
 
@@ -43,7 +42,7 @@ License
 
 PubChemPy is licensed under the `MIT license`_.
 
-.. _`installation options`: http://pubchempy.readthedocs.org
+.. _`installation options`: http://pubchempy.readthedocs.org/en/latest/guide/install.html
 .. _`source code`: https://github.com/mcs07/PubChemPy
 .. _`Issue Tracker`: https://github.com/mcs07/PubChemPy/issues
 .. _`MIT license`: https://github.com/mcs07/PubChemPy/blob/master/LICENSE
