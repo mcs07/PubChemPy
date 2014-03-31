@@ -3,17 +3,24 @@
 Installation
 ============
 
+PubChemPy supports Python versions 2.7, 3.2, 3.3 and 3.4. There are no other dependencies.
+
 There are a variety of ways to download and install PubChemPy.
 
 Option 1: Use pip (recommended)
 -------------------------------
 
-The easiest and recommended way to install is using pip [#f1]_::
+The easiest and recommended way to install is using pip::
 
     pip install pubchempy
 
 This will download the latest version of PubChemPy, and place it in your `site-packages` folder so it is automatically
 available to all your python scripts.
+
+If you don't already have pip installed, you can `install it using get-pip.py`_::
+
+       curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+       python get-pip.py
 
 Option 2: Download the latest release
 -------------------------------------
@@ -38,15 +45,6 @@ stable, but may include new features that have not yet been released. Simply clo
     cd PubChemPy
     python setup.py install
 
-.. rubric:: Footnotes
-
-.. [#f1] You can `install pip`_ using get-pip.py:
-   ::
-
-       curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-       python get-pip.py
-
-
-.. _`install pip`: http://www.pip-installer.org/en/latest/installing.html
+.. _`install it using get-pip.py`: http://www.pip-installer.org/en/latest/installing.html
 .. _`download the latest release`: https://github.com/mcs07/PubChemPy/releases/
 .. _`available on GitHub`: https://github.com/mcs07/PubChemPy
