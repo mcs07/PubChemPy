@@ -11,8 +11,7 @@ import json
 import logging
 import os
 import time
-import urllib
-import urllib2
+import urllib.request, urllib.parse
 
 
 __author__ = 'Matt Swain'
@@ -36,32 +35,32 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     # If identifier is a list, join with commas into string
     if isinstance(identifier, int):
         identifier = str(identifier)
-    if not isinstance(identifier, basestring):
+    if not isinstance(identifier, (str, bytes)):
         identifier = ','.join(str(x) for x in identifier)
 
     # Filter None values from kwargs
-    kwargs = dict((k, v) for k, v in kwargs.iteritems() if v is not None)
+    kwargs = dict((k, v) for k, v in kwargs.items() if v is not None)
 
     # Build API URL
     urlid, postdata = None, None
     if namespace == 'sourceid':
         identifier = identifier.replace('/', '.')
     if namespace in ['listkey', 'formula', 'sourceid'] or (searchtype and namespace == 'cid') or domain == 'sources':
-        urlid = urllib2.quote(identifier.encode('utf8'))
+        urlid = urllib.request.quote(identifier.encode('utf8'))
     else:
-        postdata = '%s=%s' % (namespace, urllib2.quote(identifier.encode('utf8')))
+        postdata =  ('%s=%s' % (namespace, urllib.request.quote(identifier.encode('utf8')))).encode('utf8')
     comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
     apiurl = '/'.join(comps)
     if kwargs:
-        apiurl += '?%s' % urllib.urlencode(kwargs)
+        apiurl += '?%s' % urllib.parse.urlencode(kwargs)
 
     # Make request
     try:
         log.debug('Request URL: %s', apiurl)
         log.debug('Request data: %s', postdata)
-        response = urllib2.urlopen(apiurl, postdata).read()
+        response = urllib.request.urlopen(apiurl, postdata).read()
         return response
-    except urllib2.HTTPError as e:
+    except urllib.request.HTTPError as e:
         raise PubChemHTTPError(e)
 
 
@@ -69,14 +68,14 @@ def get(identifier, namespace='cid', domain='compound', operation=None, output='
     """Request wrapper that automatically handles async requests."""
     if searchtype or namespace in ['formula']:
         response = request(identifier, namespace, domain, None, 'JSON', searchtype, **kwargs)
-        status = json.loads(response)
+        status = json.loads(response.decode())
         if 'Waiting' in status and 'ListKey' in status['Waiting']:
             identifier = status['Waiting']['ListKey']
             namespace = 'listkey'
             while 'Waiting' in status and 'ListKey' in status['Waiting']:
                 time.sleep(2)
                 response = request(identifier, namespace, domain, operation, 'JSON', **kwargs)
-                status = json.loads(response)
+                status = json.loads(response.decode())
             if not output == 'JSON':
                 response = request(identifier, namespace, domain, operation, output, searchtype, **kwargs)
     else:
@@ -87,7 +86,7 @@ def get(identifier, namespace='cid', domain='compound', operation=None, output='
 def get_json(identifier, namespace='cid', domain='compound', operation=None, searchtype=None, **kwargs):
     """Request wrapper that automatically parses JSON response and supresses NotFoundError."""
     try:
-        return json.loads(get(identifier, namespace, domain, operation, 'JSON', searchtype, **kwargs))
+        return json.loads(get(identifier, namespace, domain, operation, 'JSON', searchtype, **kwargs).decode())
     except NotFoundError as e:
         log.info(e)
         return None
@@ -180,7 +179,7 @@ PROPERTY_MAP = {
 
 
 def get_properties(properties, identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
-    if isinstance(properties, basestring):
+    if isinstance(properties, (str, bytes)):
         properties = properties.split(',')
     properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties])
     properties = 'property/%s' % properties
@@ -275,7 +274,7 @@ class Compound(object):
 
         :param cid: The PubChem Compound Identifier (CID).
         """
-        record = json.loads(request(cid, **kwargs))['PC_Compounds'][0]
+        record = json.loads(request(cid, **kwargs).decode())['PC_Compounds'][0]
         return cls(record)
 
     def __repr__(self):
@@ -330,7 +329,7 @@ class Compound(object):
         }
         if 'z' in self.record['coords'][0]['conformers'][0]:
             a['z'] = self.record['coords'][0]['conformers'][0]['z']
-        atomlist = map(dict, zip(*[[(k, v) for v in value] for k, value in a.items()]))
+        atomlist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in a.items()]))))
         if 'charge' in self.record['atoms']:
             for charge in self.record['atoms']['charge']:
                 atomlist[charge['aid']]['charge'] = charge['value']
@@ -338,7 +337,7 @@ class Compound(object):
 
     @property
     def bonds(self):
-        blist = map(dict, zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))
+        blist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))))
         if 'style' in self.record['coords'][0]['conformers'][0]:
             style = self.record['coords'][0]['conformers'][0]['style']
             for i, annotation in enumerate(style['annotation']):
@@ -557,7 +556,7 @@ def _parse_prop(search, proplist):
     """Extract property value from record using the given urn search filter."""
     props = [i for i in proplist if all(item in i['urn'].items() for item in search.items())]
     if len(props) > 0:
-        return props[0]['value'][props[0]['value'].keys()[0]]
+        return props[0]['value'][list(props[0]['value'].keys())[0]]
 
 
 class Substance(object):
@@ -794,4 +793,4 @@ class ServerError(PubChemHTTPError):
 
 
 if __name__ == '__main__':
-    print __version__
+    print(__version__)
