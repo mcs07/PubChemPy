@@ -37,6 +37,7 @@ Features
 - Download compound records as XML, ASNT/B, JSON, SDF and depiction as a PNG image.
 - Construct property tables using *pandas* DataFrames.
 - A complete Python wrapper around the `PubChem PUG REST web service`_.
+- Supports Python versions 2.7 – 3.4.
 
 User guide
 ----------
