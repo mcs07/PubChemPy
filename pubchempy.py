@@ -6,6 +6,10 @@ Python interface for the PubChem PUG REST service.
 https://github.com/mcs07/PubChemPy
 """
 
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+
 import functools
 import json
 import logging
