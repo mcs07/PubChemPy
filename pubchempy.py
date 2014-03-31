@@ -6,6 +6,7 @@ Python interface for the PubChem PUG REST service.
 https://github.com/mcs07/PubChemPy
 """
 
+import functools
 import json
 import logging
 import os
@@ -93,7 +94,14 @@ def get_json(identifier, namespace='cid', domain='compound', operation=None, sea
 
 
 def get_compounds(identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
-    """Retrieve the specified compound records from PubChem."""
+    """Retrieve the specified compound records from PubChem.
+
+    :param identifier: The compound identifier to use as a search query.
+    :param namespace: (optional) The identifier type, one of cid, name, smiles, sdf, inchi, inchikey or formula.
+    :param searchtype: (optional) The advanced search type, one of substructure, superstructure or similarity.
+    :param as_dataframe: (optional) Automatically extract the :class:`~pubchempy.Compound` properties into a pandas
+                         :class:`~pandas.DataFrame` and return that.
+    """
     results = get_json(identifier, namespace, searchtype=searchtype, **kwargs)
     compounds = [Compound(r) for r in results['PC_Compounds']] if results else []
     if as_dataframe:
@@ -102,7 +110,13 @@ def get_compounds(identifier, namespace='cid', searchtype=None, as_dataframe=Fal
 
 
 def get_substances(identifier, namespace='sid', as_dataframe=False, **kwargs):
-    """Retrieve the specified substance records from PubChem."""
+    """Retrieve the specified substance records from PubChem.
+
+    :param identifier: The substance identifier to use as a search query.
+    :param namespace: (optional) The identifier type, one of sid, name or sourceid/<source name>.
+    :param as_dataframe: (optional) Automatically extract the :class:`~pubchempy.Substance` properties into a pandas
+                         :class:`~pandas.DataFrame` and return that.
+    """
     results = get_json(identifier, namespace, 'substance', **kwargs)
     substances = [Substance(r) for r in results['PC_Substances']] if results else []
     if as_dataframe:
@@ -110,9 +124,13 @@ def get_substances(identifier, namespace='sid', as_dataframe=False, **kwargs):
     return substances
 
 
-def get_assays(identifier, namespace='aid', sids=None, **kwargs):
-    """Retrieve the specified assay records from PubChem."""
-    results = get_json(identifier, namespace, 'assay', sids, **kwargs)
+def get_assays(identifier, namespace='aid', **kwargs):
+    """Retrieve the specified assay records from PubChem.
+
+    :param identifier: The assay identifier to use as a search query.
+    :param namespace: (optional) The identifier type.
+    """
+    results = get_json(identifier, namespace, 'assay', **kwargs)
     return [Assay(r) for r in results['PC_AssayContainer']] if results else []
 
 
@@ -225,25 +243,38 @@ def download(outformat, path, identifier, namespace='cid', domain='compound', op
         f.write(response)
 
 
-class CacheProperty(object):
-    """Descriptor for caching Compound and Substance properties that require an additional request."""
-    def __init__(self, func):
-        self._func = func
-        self.__name__ = func.__name__
-        self.__doc__ = func.__doc__
+def memoized_property(fget):
+    """Decorator to create memoized properties.
 
-    def __get__(self, obj, obj_class=None):
-        if obj is None: return None
-        result = obj.__dict__[self.__name__] = self._func(obj)
-        return result
+    Used to cache :class:`~pubchempy.Compound` and :class:`~pubchempy.Substance` properties that require an additional
+    request.
+    """
+    attr_name = '_{0}'.format(fget.__name__)
+    @functools.wraps(fget)
+    def fget_memoized(self):
+        if not hasattr(self, attr_name):
+            setattr(self, attr_name, fget(self))
+        return getattr(self, attr_name)
+    return property(fget_memoized)
 
 
 class Compound(object):
+    """Corresponds to a single record from the PubChem Compound database.
+
+    The PubChem Compound database is constructed from the Substance database using a standardization and deduplication
+    process.
+
+    Each Compound is uniquely identified by a CID.
+    """
     def __init__(self, record):
         self.record = record
 
     @classmethod
     def from_cid(cls, cid, **kwargs):
+        """Retrieve the Compound record for the specified CID.
+
+        :param cid: The PubChem Compound Identifier (CID).
+        """
         record = json.loads(request(cid, **kwargs))['PC_Compounds'][0]
         return cls(record)
 
@@ -264,7 +295,8 @@ class Compound(object):
         return {p: getattr(self, p) for p in properties}
 
     def to_series(self, properties=None):
-        """Return a pandas Series containing Compound data. Optionally specify a list of the desired properties.
+        """Return a pandas :class:`~pandas.Series` containing Compound data. Optionally specify a list of the desired
+        properties.
 
         synonyms, aids and sids are not included unless explicitly specified using the properties parameter. This is
         because they each require an extra request.
@@ -274,7 +306,14 @@ class Compound(object):
 
     @property
     def cid(self):
-        # Note: smiles or inchi inputs can return compounds without a cid
+        """The PubChem Compound Identifier (CID).
+
+        .. note::
+
+            When searching using a SMILES or InChI query that is not present in the PubChem Compound database, an
+            automatically generated record may be returned that contains properties that have been calculated on the
+            fly. These records will not have a CID property.
+        """
         if 'id' in self.record and 'id' in self.record['id'] and 'cid' in self.record['id']['id']:
             return self.record['id']['id']['cid']
 
@@ -307,21 +346,24 @@ class Compound(object):
                 bond['style'] = annotation
         return blist
 
-    @CacheProperty
+    @memoized_property
     def synonyms(self):
-        """Requires an extra request. Result is cached."""
+        """A ranked list of all the names associated with this Compound.
+
+        Requires an extra request. Result is cached.
+        """
         if self.cid:
             results = get_json(self.cid, operation='synonyms')
             return results['InformationList']['Information'][0]['Synonym'] if results else []
             
-    @CacheProperty
+    @memoized_property
     def sids(self):
         """Requires an extra request. Result is cached."""
         if self.cid:
             results = get_json(self.cid, operation='sids')
             return results['InformationList']['Information'][0]['SID'] if results else []
 
-    @CacheProperty
+    @memoized_property
     def aids(self):
         """Requires an extra request. Result is cached."""
         if self.cid:
@@ -519,13 +561,29 @@ def _parse_prop(search, proplist):
 
 
 class Substance(object):
-    def __init__(self, record):
-        self.record = record
+    """Corresponds to a single record from the PubChem Substance database.
+
+    The PubChem Substance database contains all chemical records deposited in PubChem in their most raw form, before
+    any significant processing is applied. As a result, it contains duplicates, mixtures, and some records that don't
+    make chemical sense. This means that Substance records contain fewer calculated properties, however they do have
+    additional information about the original source that deposited the record.
+
+    The PubChem Compound database is constructed from the Substance database using a standardization and deduplication
+    process. Hence each Compound may be derived from a number of different Substances.
+    """
 
     @classmethod
     def from_sid(cls, sid):
+        """Retrieve the Substance record for the specified SID.
+
+        :param sid: The PubChem Substance Identifier (SID).
+        """
         record = json.loads(request(sid, 'sid', 'substance'))['PC_Substances'][0]
         return cls(record)
+
+    def __init__(self, record):
+        self.record = record
+        """A dictionary containing the full Substance record that all other properties are obtained from."""
 
     def __repr__(self):
         return 'Substance(%s)' % self.sid if self.sid else 'Substance()'
@@ -534,10 +592,12 @@ class Substance(object):
         return self.record == other.record
 
     def to_dict(self, properties=None):
-        """Return a dictionary containing Substance data. Optionally specify a list of the desired properties.
+        """Return a dictionary containing Substance data.
 
-        cids and aids are not included unless explicitly specified using the properties parameter. This is
-        because they each require an extra request.
+        If the properties parameter is not specified, everything except cids and aids is included. This is because the
+        aids and cids properties each require an extra request to retrieve.
+
+        :param properties: (optional) A list of the desired properties.
         """
         if not properties:
             properties = [p for p in dir(Substance) if isinstance(getattr(Substance, p), property) and
@@ -545,60 +605,80 @@ class Substance(object):
         return {p: getattr(self, p) for p in properties}
 
     def to_series(self, properties=None):
-        """Return a pandas Series containing Substance data. Optionally specify a list of the desired properties.
+        """Return a pandas :class:`~pandas.Series` containing Substance data.
 
-        cids and aids are not included unless explicitly specified using the properties parameter. This is
-        because they each require an extra request.
+        If the properties parameter is not specified, everything except cids and aids is included. This is because the
+        aids and cids properties each require an extra request to retrieve.
+
+        :param properties: (optional) A list of the desired properties.
         """
         import pandas as pd
         return pd.Series(self.to_dict(properties))
 
     @property
     def sid(self):
+        """The PubChem Substance Idenfitier (SID)."""
         return self.record['sid']['id']
 
     @property
     def synonyms(self):
+        """A ranked list of all the names associated with this Substance."""
         if 'synonyms' in self.record:
             return self.record['synonyms']
 
     @property
     def source_name(self):
+        """The name of the PubChem depositor that was the source of this Substance."""
         return self.record['source']['db']['name']
 
     @property
     def source_id(self):
+        """The ID of the PubChem depositor that was the source of this Substance."""
         return self.record['source']['db']['source_id']['str']
 
     @property
     def standardized_cid(self):
+        """The CID of the Compound that was produced when this Substance was standardized.
+
+        May not exist if this Substance was not standardizable.
+        """
         for c in self.record['compound']:
             if c['id']['type'] == 'standardized':
                 return c['id']['id']['cid']
 
-    @property
-    def deposited_compound(self):
-        """Record of the deposited compound."""
-        for c in self.record['compound']:
-            if c['id']['type'] == 'deposited':
-                return Compound(c)
-
-    @CacheProperty
+    @memoized_property
     def standardized_compound(self):
-        """Record of the standardized compound. Requires an extra request. Result is cached."""
+        """Return the :class:`~pubchempy.Compound` that was produced when this Substance was standardized.
+
+        Requires an extra request. Result is cached.
+        """
         for c in self.record['compound']:
             if c['id']['type'] == 'standardized':
                 return Compound.from_cid(c['id']['id']['cid'])
 
-    @CacheProperty
+    @property
+    def deposited_compound(self):
+        """Return a :class:`~pubchempy.Compound` produced from the unstandardized Substance record as deposited.
+
+        The resulting :class:`~pubchempy.Compound` will not have a cid and will be missing most properties.
+        """
+        for c in self.record['compound']:
+            if c['id']['type'] == 'deposited':
+                return Compound(c)
+
+    @memoized_property
     def cids(self):
-        """Requires an extra request. Result is cached."""
+        """A list of all CIDs for Compounds that were produced when this Substance was standardized.
+
+        Requires an extra request. Result is cached."""
         results = get_json(self.sid, 'sid', 'substance', 'cids')
         return results['InformationList']['Information'][0]['CID'] if results else []
 
-    @CacheProperty
+    @memoized_property
     def aids(self):
-        """Requires an extra request. Result is cached."""
+        """A list of all AIDs for Assays associated with this Substance.
+
+        Requires an extra request. Result is cached."""
         results = get_json(self.sid, 'sid', 'substance', 'aids')
         return results['InformationList']['Information'][0]['AID'] if results else []
 
@@ -618,7 +698,10 @@ class Assay(object):
 
 
 def compounds_to_frame(compounds, properties=None):
-    """Construct a pandas DataFrame from a list of Compound objects."""
+    """Construct a pandas :class:`~pandas.DataFrame` from a list of :class:`~pubchempy.Compound` objects.
+
+    Optionally specify a list of the desired :class:`~pubchempy.Compound` properties.
+    """
     import pandas as pd
     if isinstance(compounds, Compound):
         compounds = [compounds]
@@ -627,12 +710,22 @@ def compounds_to_frame(compounds, properties=None):
 
 
 def substances_to_frame(substances, properties=None):
-    """Construct a pandas DataFrame from a list of Substance objects."""
+    """Construct a pandas :class:`~pandas.DataFrame` from a list of :class:`~pubchempy.Substance` objects.
+
+    Optionally specify a list of the desired :class:`~pubchempy.Substance` properties.
+    """
     import pandas as pd
     if isinstance(substances, Substance):
         substances = [substances]
     properties = set(properties) | set(['sid']) if properties else None
     return pd.DataFrame.from_records([s.to_dict(properties) for s in substances], index='sid')
+
+
+# def add_columns_to_frame(dataframe, id_col, id_namespace, add_cols):
+#     """"""
+#     # Existing dataframe with some identifier column
+#     # But consider what to do if the identifier column is an index?
+#     # What about having the Compound/Substance object as a column?
 
 
 class PubChemHTTPError(Exception):
@@ -680,7 +773,10 @@ class MethodNotAllowedError(PubChemHTTPError):
 
 
 class TimeoutError(PubChemHTTPError):
-    """The request timed out, from server overload or too broad a request."""
+    """The request timed out, from server overload or too broad a request.
+
+    See :ref:`Avoiding TimeoutError <avoiding_timeouterror>` for more information.
+    """
     def __init__(self, msg='The request timed out'):
         self.msg = msg
 
