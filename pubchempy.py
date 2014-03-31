@@ -10,6 +10,7 @@ import functools
 import json
 import logging
 import os
+import sys
 import time
 
 try:
@@ -19,8 +20,8 @@ try:
     from urllib.request import urlopen
 except ImportError:
     # Python 2
+    from urllib import urlencode
     from urllib2 import quote, urlopen, HTTPError
-    from urlparse import urlencode
 
 
 __author__ = 'Matt Swain'
@@ -29,9 +30,17 @@ __version__ = '1.0.1'
 __license__ = 'MIT'
 
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
 
 log = logging.getLogger('pubchempy')
 log.addHandler(logging.NullHandler())
+
+
+if PY3:
+    text_types = str, bytes
+else:
+    text_types = basestring,
 
 
 def request(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
@@ -44,7 +53,7 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     # If identifier is a list, join with commas into string
     if isinstance(identifier, int):
         identifier = str(identifier)
-    if not isinstance(identifier, (str, bytes)):
+    if not isinstance(identifier, text_types):
         identifier = ','.join(str(x) for x in identifier)
 
     # Filter None values from kwargs
@@ -188,7 +197,7 @@ PROPERTY_MAP = {
 
 
 def get_properties(properties, identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
-    if isinstance(properties, (str, bytes)):
+    if isinstance(properties, text_types):
         properties = properties.split(',')
     properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties])
     properties = 'property/%s' % properties
