@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from distutils.core import setup
+from setuptools import setup
 
 import pubchempy
 
@@ -26,6 +26,7 @@ setup(
     long_description=long_description,
     keywords='pubchem python rest api chemistry cheminformatics',
     extras_require={'pandas': ['pandas']},
+    test_suite='pubchempy_test',
     classifiers=[
         'Intended Audience :: Science/Research',
         'Intended Audience :: Healthcare Industry',
