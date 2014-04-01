@@ -35,7 +35,7 @@ Contribute
 ----------
 
 -  Feature ideas and bug reports are welcome on the `Issue Tracker`_.
--  Fork the `source code`_ on GitHub.
+-  Fork the `source code`_ on GitHub, make changes and file a pull request.
 
 License
 -------

@@ -57,6 +57,7 @@ A step-by-step guide to getting started with PubChemPy.
    guide/pandas
    guide/download
    guide/advanced
+   guide/contribute
 
 API documentation
 -----------------
