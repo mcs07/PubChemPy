@@ -72,7 +72,7 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     try:
         log.debug('Request URL: %s', apiurl)
         log.debug('Request data: %s', postdata)
-        response = urlopen(apiurl, postdata).read()
+        response = urlopen(apiurl, postdata)
         return response
     except HTTPError as e:
         raise PubChemHTTPError(e)
@@ -81,19 +81,19 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
 def get(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
     """Request wrapper that automatically handles async requests."""
     if searchtype or namespace in ['formula']:
-        response = request(identifier, namespace, domain, None, 'JSON', searchtype, **kwargs)
+        response = request(identifier, namespace, domain, None, 'JSON', searchtype, **kwargs).read()
         status = json.loads(response.decode())
         if 'Waiting' in status and 'ListKey' in status['Waiting']:
             identifier = status['Waiting']['ListKey']
             namespace = 'listkey'
             while 'Waiting' in status and 'ListKey' in status['Waiting']:
                 time.sleep(2)
-                response = request(identifier, namespace, domain, operation, 'JSON', **kwargs)
+                response = request(identifier, namespace, domain, operation, 'JSON', **kwargs).read()
                 status = json.loads(response.decode())
             if not output == 'JSON':
-                response = request(identifier, namespace, domain, operation, output, searchtype, **kwargs)
+                response = request(identifier, namespace, domain, operation, output, searchtype, **kwargs).read()
     else:
-        response = request(identifier, namespace, domain, operation, output, searchtype, **kwargs)
+        response = request(identifier, namespace, domain, operation, output, searchtype, **kwargs).read()
     return response
 
 
@@ -288,7 +288,7 @@ class Compound(object):
 
         :param cid: The PubChem Compound Identifier (CID).
         """
-        record = json.loads(request(cid, **kwargs).decode())['PC_Compounds'][0]
+        record = json.loads(request(cid, **kwargs).read().decode())['PC_Compounds'][0]
         return cls(record)
 
     def __repr__(self):
@@ -595,7 +595,7 @@ class Substance(object):
 
         :param sid: The PubChem Substance Identifier (SID).
         """
-        record = json.loads(request(sid, 'sid', 'substance').decode())['PC_Substances'][0]
+        record = json.loads(request(sid, 'sid', 'substance').read().decode())['PC_Substances'][0]
         return cls(record)
 
     def __init__(self, record):
