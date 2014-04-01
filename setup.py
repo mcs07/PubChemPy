@@ -24,7 +24,7 @@ setup(
     py_modules=['pubchempy'],
     description='A simple Python wrapper around the PubChem PUG REST API.',
     long_description=long_description,
-    keywords='pubchem python rest api pug',
+    keywords='pubchem python rest api chemistry cheminformatics',
     extras_require={'pandas': ['pandas']},
     classifiers=[
         'Intended Audience :: Science/Research',
