@@ -143,7 +143,7 @@ def get_assays(identifier, namespace='aid', **kwargs):
     :param identifier: The assay identifier to use as a search query.
     :param namespace: (optional) The identifier type.
     """
-    results = get_json(identifier, namespace, 'assay', **kwargs)
+    results = get_json(identifier, namespace, 'assay', 'description', **kwargs)
     return [Assay(r) for r in results['PC_AssayContainer']] if results else []
 
 
@@ -706,15 +706,59 @@ class Substance(object):
 class Assay(object):
     def __init__(self, record):
         self.record = record
+        """A dictionary containing the full Assay record that all other properties are obtained from."""
+
+    def __repr__(self):
+        return 'Assay(%s)' % self.aid if self.aid else 'Assay()'
+
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and self.record == other.record
+
+    def __hash__(self):
+        return hash((self.aid, self.name, self.description, self.project_category, self.comments, self.results,
+                     self.target, self.revision, self.aid_version))
 
     @classmethod
     def from_aid(cls, aid):
-        record = json.loads(request(aid, 'aid', 'assay').decode())['PC_AssayContainer'][0]
+        record = json.loads(request(aid, 'aid', 'assay', 'description').read().decode())['PC_AssayContainer'][0]
         return cls(record)
 
     @property
     def aid(self):
-        return self.record['id']['id']['aid']
+        return self.record['assay']['descr']['aid']['id']
+
+    @property
+    def name(self):
+        return self.record['assay']['descr']['name']
+
+    @property
+    def description(self):
+        return self.record['assay']['descr']['description']
+
+    @property
+    def project_category(self):
+        return self.record['assay']['descr']['project_category']
+
+    @property
+    def comments(self):
+        return [comment for comment in self.record['assay']['descr']['comment'] if comment]
+
+    @property
+    def results(self):
+        return self.record['assay']['descr']['results']
+
+    @property
+    def target(self):
+        if 'target' in self.record['assay']['descr']:
+            return self.record['assay']['descr']['target']
+
+    @property
+    def revision(self):
+        return self.record['assay']['descr']['revision']
+
+    @property
+    def aid_version(self):
+        return self.record['assay']['descr']['aid']['version']
 
 
 def compounds_to_frame(compounds, properties=None):
