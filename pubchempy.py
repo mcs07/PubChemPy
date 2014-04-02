@@ -704,6 +704,16 @@ class Substance(object):
 
 
 class Assay(object):
+
+    @classmethod
+    def from_aid(cls, aid):
+        """Retrieve the Assay record for the specified AID.
+
+        :param aid: The PubChem Assay Identifier (AID).
+        """
+        record = json.loads(request(aid, 'aid', 'assay', 'description').read().decode())['PC_AssayContainer'][0]
+        return cls(record)
+
     def __init__(self, record):
         self.record = record
         """A dictionary containing the full Assay record that all other properties are obtained from."""
@@ -718,46 +728,66 @@ class Assay(object):
         return hash((self.aid, self.name, self.description, self.project_category, self.comments, self.results,
                      self.target, self.revision, self.aid_version))
 
-    @classmethod
-    def from_aid(cls, aid):
-        record = json.loads(request(aid, 'aid', 'assay', 'description').read().decode())['PC_AssayContainer'][0]
-        return cls(record)
+    def to_dict(self, properties=None):
+        """Return a dictionary containing Assay data.
+
+        If the properties parameter is not specified, everything is included.
+
+        :param properties: (optional) A list of the desired properties.
+        """
+        if not properties:
+            properties = [p for p in dir(Assay) if isinstance(getattr(Assay, p), property)]
+        return {p: getattr(self, p) for p in properties}
 
     @property
     def aid(self):
+        """The PubChem Substance Idenfitier (SID)."""
         return self.record['assay']['descr']['aid']['id']
 
     @property
     def name(self):
+        """The short assay name, used for display purposes."""
         return self.record['assay']['descr']['name']
 
     @property
     def description(self):
+        """Description"""
         return self.record['assay']['descr']['description']
 
     @property
     def project_category(self):
-        return self.record['assay']['descr']['project_category']
+        """A category to distinguish projects funded through MLSCN, MLPCN or from literature.
+
+        Possible values include mlscn, mlpcn, mlscn-ap, mlpcn-ap, literature-extracted, literature-author,
+        literature-publisher, rnaigi.
+        """
+        if 'project_category' in self.record['assay']['descr']:
+            return self.record['assay']['descr']['project_category']
 
     @property
     def comments(self):
+        """Comments and additional information."""
         return [comment for comment in self.record['assay']['descr']['comment'] if comment]
 
     @property
     def results(self):
+        """A list of dictionaries containing details of the results from this Assay."""
         return self.record['assay']['descr']['results']
 
     @property
     def target(self):
+        """A list of dictionaries containing details of the Assay targets."""
         if 'target' in self.record['assay']['descr']:
             return self.record['assay']['descr']['target']
 
     @property
     def revision(self):
+        """Revision identifier for textual description."""
         return self.record['assay']['descr']['revision']
 
     @property
     def aid_version(self):
+        """Incremented when the original depositor updates the record."""
         return self.record['assay']['descr']['aid']['version']
 
 
