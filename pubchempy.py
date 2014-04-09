@@ -829,7 +829,7 @@ class PubChemHTTPError(Exception):
         self.code = e.code
         self.msg = e.reason
         try:
-            self.msg += ': %s' % json.load(e)['Fault']['Details'][0]
+            self.msg += ': %s' % json.loads(e.read().decode())['Fault']['Details'][0]
         except (ValueError, IndexError, KeyError):
             pass
         if self.code == 400:
