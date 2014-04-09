@@ -725,8 +725,8 @@ class Assay(object):
         return isinstance(other, type(self)) and self.record == other.record
 
     def __hash__(self):
-        return hash((self.aid, self.name, self.description, self.project_category, self.comments, self.results,
-                     self.target, self.revision, self.aid_version))
+        return hash((self.aid, self.name, ''.join(self.description), self.project_category, ''.join(self.comments),
+                     self.revision, self.aid_version))
 
     def to_dict(self, properties=None):
         """Return a dictionary containing Assay data.
