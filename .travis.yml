@@ -3,4 +3,9 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
-script: python pubchempy_test.py
+install:
+  - pip install coveralls
+script:
+  coverage run pubchempy_test.py
+after_success:
+  coveralls
