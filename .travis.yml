@@ -4,8 +4,8 @@ python:
   - "3.2"
   - "3.3"
 install:
-  - pip install coveralls
+  - pip install coveralls pandas
 script:
-  coverage run pubchempy_test.py
+  coverage run --source=pubchempy manage.py test
 after_success:
   coveralls

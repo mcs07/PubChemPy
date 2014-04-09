@@ -14,6 +14,8 @@ import logging
 import re
 import unittest
 
+import pandas as pd
+
 from pubchempy import *
 
 
@@ -47,17 +49,64 @@ class TestRequest(unittest.TestCase):
 class TestProperties(unittest.TestCase):
 
     def test_properties(self):
-        print(get_properties('IsomericSMILES', 'tris-(1,10-phenanthroline)ruthenium', 'name'))
+        """"""
+        results = get_properties(['IsomericSMILES', 'InChIKey'], 'tris-(1,10-phenanthroline)ruthenium', 'name')
+        self.assertGreater(len(results), 0)
+        for result in results:
+            self.assertIn('CID', result)
+            self.assertIn('IsomericSMILES', result)
+            self.assertIn('InChIKey', result)
+
+    def test_underscore_properties(self):
+        """Properties can also be specified as underscore-separated words, rather than CamelCase."""
+        results = get_properties(['isomeric_smiles', 'molecular_weight'], 'tris-(1,10-phenanthroline)ruthenium', 'name')
+        self.assertGreater(len(results), 0)
+        for result in results:
+            self.assertIn('CID', result)
+            self.assertIn('IsomericSMILES', result)
+            self.assertIn('MolecularWeight', result)
+
+    def test_comma_string_properties(self):
+        """Properties can also be specified as a comma-separated string, rather than a list."""
+        results = get_properties('isomeric_smiles,InChIKey,molecular_weight', 'tris-(1,10-phenanthroline)ruthenium', 'name')
+        self.assertGreater(len(results), 0)
+        for result in results:
+            self.assertIn('CID', result)
+            self.assertIn('IsomericSMILES', result)
+            self.assertIn('MolecularWeight', result)
+            self.assertIn('InChIKey', result)
 
     def test_synonyms(self):
-        print(get_synonyms('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles'))
+        results = get_synonyms('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles')
+        self.assertGreater(len(results), 0)
+        for result in results:
+            self.assertIn('CID', result)
+            self.assertIn('Synonym', result)
+            self.assertTrue(isinstance(result['Synonym'], list))
+            self.assertGreater(len(result['Synonym']), 0)
 
-    def test_csaids(self):
-        print(get_cids('Aspirin', 'name', 'substance'))
-        print(get_cids('Aspirin', 'name', 'compound'))
-        print(get_sids('Aspirin', 'name', 'substance'))
-        print(get_aids('Aspirin', 'name', 'substance'))
-        print(get_aids('Aspirin', 'name', 'compound'))
+
+class TestIdentifiers(unittest.TestCase):
+
+    def test_identifiers_from_name(self):
+        """Use a name input to retrieve lists of identifiers."""
+        # Get CID for each compound linked to substances with name Aspirin
+        self.assertGreaterEqual(len(get_cids('Aspirin', 'name', 'substance')), 10)
+        # Get CID for each compound with name Aspirin
+        self.assertEqual(len(get_cids('Aspirin', 'name', 'compound')), 1)
+        # Get SID for substances linked to compound with name Aspirin
+        self.assertGreaterEqual(len(get_sids('Aspirin', 'name', 'substance')), 10)
+        # Get AID for each assay linked to substances with name Aspirin
+        self.assertGreaterEqual(len(get_aids('Aspirin', 'name', 'substance')), 10)
+        # Get AID for each assay linked to compound with name Aspirin
+        self.assertEqual(len(get_aids('Aspirin', 'name', 'compound')), 1)
+
+    def test_no_identifiers(self):
+        """Test retrieving no identifier results."""
+        self.assertEqual(get_cids('asfgaerghaeirughae', 'name', 'substance'), [])
+        self.assertEqual(get_cids('asfgaerghaeirughae', 'name', 'compound'), [])
+        self.assertEqual(get_sids(999999999, 'cid', 'compound'), [])
+        self.assertEqual(get_aids(150194, 'cid', 'compound'), [])
 
 
 class TestCompound(unittest.TestCase):
@@ -69,11 +118,13 @@ class TestCompound(unittest.TestCase):
     def test_basic(self):
         """Test Compound is retrieved and has a record and correct CID."""
         self.assertEqual(self.c1.cid, 241)
+        self.assertEqual(repr(self.c1), 'Compound(241)')
         self.assertTrue(self.c1.record)
 
     def test_atoms(self):
         self.assertEqual(len(self.c1.atoms), 12)
         self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h'})
+        self.assertEqual(set(self.c1.elements), {'c', 'h'})
 
     def test_bonds(self):
         self.assertEqual(len(self.c1.bonds), 12)
@@ -81,6 +132,12 @@ class TestCompound(unittest.TestCase):
 
     def test_charge(self):
         self.assertEqual(self.c1.charge, 0)
+
+    def test_coordinates(self):
+        for a in self.c1.atoms:
+            self.assertTrue(isinstance(a['x'], (float, int)))
+            self.assertTrue(isinstance(a['y'], (float, int)))
+            self.assertNotIn('z', a)
 
     def test_identifiers(self):
         self.assertTrue(SMILES_RE.match(self.c1.canonical_smiles))
@@ -94,6 +151,7 @@ class TestCompound(unittest.TestCase):
         self.assertTrue(isinstance(self.c1.iupac_name, text_types))
         self.assertTrue(isinstance(self.c1.xlogp, float))
         self.assertTrue(isinstance(self.c1.exact_mass, float))
+        self.assertTrue(isinstance(self.c1.monoisotopic_mass, float))
         self.assertTrue(isinstance(self.c1.tpsa, (int, float)))
         self.assertTrue(isinstance(self.c1.complexity, float))
         self.assertTrue(isinstance(self.c1.h_bond_donor_count, int))
@@ -121,6 +179,18 @@ class TestCompound(unittest.TestCase):
         self.assertEqual(hash(Compound.from_cid(241)), hash(Compound.from_cid(241)))
         self.assertEqual(hash(get_compounds('Benzene', 'name')[0]), hash(get_compounds('c1ccccc1', 'smiles')[0]))
 
+    def test_synonyms(self):
+        self.assertGreater(len(self.c1.synonyms), 5)
+        self.assertGreater(len(self.c1.synonyms), 5)
+
+    def test_related_records(self):
+        self.assertGreater(len(self.c1.sids), 20)
+        self.assertGreater(len(self.c1.aids), 20)
+
+    def test_compound_dict(self):
+        self.assertTrue(isinstance(self.c1.to_dict(), dict))
+        self.assertTrue(self.c1.to_dict())
+
 
 class TestCompound3d(unittest.TestCase):
 
@@ -145,6 +215,62 @@ class TestCompound3d(unittest.TestCase):
     def test_coordinate_type(self):
         self.assertEqual(self.c1.coordinate_type, '3d')
 
+    def test_atoms(self):
+        self.assertEqual(len(self.c1.atoms), 75)
+        self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h', 'o', 'n'})
+        self.assertEqual(set(self.c1.elements), {'c', 'h', 'o', 'n'})
+
+    def test_coordinates(self):
+        for a in self.c1.atoms:
+            self.assertTrue(isinstance(a['x'], (float, int)))
+            self.assertTrue(isinstance(a['y'], (float, int)))
+            self.assertTrue(isinstance(a['z'], (float, int)))
+
+
+class TestSubstance(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.s1 = Substance.from_sid(24864499)
+
+    def test_basic(self):
+        """Test Substance is retrieved and has a record and correct SID."""
+        self.assertEqual(self.s1.sid, 24864499)
+        self.assertEqual(repr(self.s1), 'Substance(24864499)')
+        self.assertTrue(self.s1.record)
+
+    def test_substance_equality(self):
+        self.assertEqual(Substance.from_sid(24864499), Substance.from_sid(24864499))
+        self.assertEqual(get_substances('Coumarin 343', 'name')[0], get_substances(24864499)[0])
+
+    def test_substance_hash(self):
+        self.assertEqual(hash(Substance.from_sid(241)), hash(Substance.from_sid(241)))
+        self.assertEqual(hash(get_substances('Coumarin 343', 'name')[0]), hash(get_substances(24864499)[0]))
+
+    def test_synonyms(self):
+        self.assertGreater(len(self.s1.synonyms), 1)
+
+    def test_source(self):
+        self.assertEqual(self.s1.source_name, 'Sigma-Aldrich')
+        self.assertEqual(self.s1.source_id, '393029_ALDRICH')
+
+    def test_deposited_compound(self):
+        """Check that a Compound object can be constructed from the embedded deposited compound record."""
+        self.assertTrue(self.s1.deposited_compound.record)
+
+    def test_standardized_compound(self):
+        """Check the CID is correct and that the Compound can be retrieved."""
+        self.assertEqual(self.s1.standardized_cid, 108770)
+        self.assertEqual(self.s1.standardized_compound.cid, 108770)
+
+    def test_related_records(self):
+        self.assertEqual(len(self.s1.cids), 1)
+        self.assertEqual(len(self.s1.aids), 0)
+
+    def test_substance_dict(self):
+        self.assertTrue(isinstance(self.s1.to_dict(), dict))
+        self.assertTrue(self.s1.to_dict())
+
 
 class TestAssay(unittest.TestCase):
 
@@ -152,8 +278,10 @@ class TestAssay(unittest.TestCase):
     def setUpClass(cls):
         cls.a1 = Assay.from_aid(490)
 
-    def test_aid(self):
+    def test_basic(self):
         self.assertEqual(self.a1.aid, 490)
+        self.assertEqual(repr(self.a1), 'Assay(490)')
+        self.assertTrue(self.a1.record)
 
     def test_meta(self):
         self.assertTrue(isinstance(self.a1.name, text_types))
@@ -161,10 +289,26 @@ class TestAssay(unittest.TestCase):
         self.assertTrue(isinstance(self.a1.description, list))
         self.assertTrue(isinstance(self.a1.comments, list))
 
+    def test_assay_equality(self):
+        first = Assay.from_aid(490)
+        second = Assay.from_aid(1000)
+        self.assertEqual(first, first)
+        self.assertEqual(second, second)
+        self.assertNotEqual(first, second)
+
+    def test_assay_hash(self):
+        first = Assay.from_aid(490)
+        second = Assay.from_aid(1000)
+        self.assertEqual(hash(first), hash(first))
+        self.assertEqual(hash(second), hash(second))
+        self.assertNotEqual(hash(first), hash(second))
+
+    def test_assay_dict(self):
+        self.assertTrue(isinstance(self.a1.to_dict(), dict))
+        self.assertTrue(self.a1.to_dict())
+
 
 class TestSearch(unittest.TestCase):
-
-    maxDiff = None
 
     def test_search_assays(self):
         assays = get_assays([1, 1000, 490])
@@ -178,6 +322,86 @@ class TestSearch(unittest.TestCase):
             self.assertTrue(all(el in [a['element'] for a in result.atoms] for el in {'c', 'n', 'h'}))
             self.assertTrue(result.heavy_atom_count >= 14)
 
+
+class TestErrors(unittest.TestCase):
+
+    def test_invalid_identifier(self):
+        """BadRequestError should be raised if identifier is not a positive integer."""
+        with self.assertRaises(BadRequestError):
+            Compound.from_cid('aergaerhg')
+        with self.assertRaises(BadRequestError):
+            get_compounds('srthrthsr')
+        with self.assertRaises(BadRequestError):
+            get_substances('grgrqjksa')
+
+    def test_notfound_identifier(self):
+        """NotFoundError should be raised if identifier is a positive integer but record doesn't exist."""
+        with self.assertRaises(NotFoundError):
+            Compound.from_cid(999999999)
+        with self.assertRaises(NotFoundError):
+            Substance.from_sid(999999999)
+
+    def test_notfound_search(self):
+        """No error should be raised if a search returns no results."""
+        get_compounds(999999999)
+        get_substances(999999999)
+
+
+class TestSources(unittest.TestCase):
+
+    def test_substance_sources(self):
+        """Retrieve a list of all Substance sources."""
+        substance_sources = get_all_sources()
+        self.assertGreater(len(substance_sources), 20)
+        self.assertTrue(isinstance(substance_sources, list))
+        self.assertIn('SureChem', substance_sources)
+        self.assertIn('DiscoveryGate', substance_sources)
+        self.assertIn('ZINC', substance_sources)
+
+    def test_assay_sources(self):
+        """Retrieve a list of all Assay sources."""
+        assay_sources = get_all_sources('assay')
+        self.assertGreater(len(assay_sources), 20)
+        self.assertTrue(isinstance(assay_sources, list))
+        self.assertIn('ChEMBL', assay_sources)
+        self.assertIn('DTP/NCI', assay_sources)
+
+
+class TestPandas(unittest.TestCase):
+
+    def test_compounds_dataframe(self):
+        """"""
+        df = get_compounds('C20H41Br', 'formula', as_dataframe=True)
+        self.assertEqual(df.ndim, 2)
+        self.assertEqual(df.index.names, ['cid'])
+        self.assertGreater(len(df.index), 5)
+        columns = df.columns.values.tolist()
+        self.assertIn('atom_stereo_count', columns)
+        self.assertIn('atoms', columns)
+        self.assertIn('canonical_smiles', columns)
+        self.assertIn('exact_mass', columns)
+
+    def test_substances_dataframe(self):
+        df = get_substances([1, 2, 3, 4], as_dataframe=True)
+        self.assertEqual(df.ndim, 2)
+        self.assertEqual(df.index.names, ['sid'])
+        self.assertEqual(len(df.index), 4)
+        self.assertEqual(df.columns.values.tolist(), ['source_id', 'source_name', 'standardized_cid', 'synonyms'])
+
+    def test_properties_dataframe(self):
+        df = get_properties(['isomeric_smiles', 'xlogp', 'inchikey'], '1,2,3,4', 'cid', as_dataframe=True)
+        self.assertEqual(df.ndim, 2)
+        self.assertEqual(df.index.names, ['CID'])
+        self.assertEqual(len(df.index), 4)
+        self.assertEqual(df.columns.values.tolist(), ['InChIKey', 'IsomericSMILES', 'XLogP'])
+
+    def test_compound_series(self):
+        s = Compound.from_cid(241).to_series()
+        self.assertTrue(isinstance(s, pd.Series))
+
+    def test_substance_series(self):
+        s = Substance.from_sid(1234).to_series()
+        self.assertTrue(isinstance(s, pd.Series))
 
 
 INCHIKEY_RE = re.compile(r'^[A-Z]{14}-[A-Z]{10}-[A-Z\d]$')
