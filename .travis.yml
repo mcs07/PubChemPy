@@ -3,12 +3,8 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
-virtualenv:
-  - system_site_packages: true
-before_install:
-  sudo apt-get -qq install python-pandas
 install:
-  - pip install coveralls
+  - pip install coveralls pandas
 script:
   - coverage run --source=pubchempy setup.py test
 after_success:
