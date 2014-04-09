@@ -308,7 +308,8 @@ class Compound(object):
         because they each require an extra request.
         """
         if not properties:
-            properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property)]
+            skip = {'aids', 'sids', 'synonyms'}
+            properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) and not p in skip]
         return {p: getattr(self, p) for p in properties}
 
     def to_series(self, properties=None):
@@ -620,8 +621,8 @@ class Substance(object):
         :param properties: (optional) A list of the desired properties.
         """
         if not properties:
-            properties = [p for p in dir(Substance) if isinstance(getattr(Substance, p), property) and
-                                                       not p == 'deposited_compound']
+            skip = {'deposited_compound', 'standardized_compound', 'cids', 'aids'}
+            properties = [p for p in dir(Substance) if isinstance(getattr(Substance, p), property) and not p in skip]
         return {p: getattr(self, p) for p in properties}
 
     def to_series(self, properties=None):
