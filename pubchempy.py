@@ -252,7 +252,7 @@ def download(outformat, path, identifier, namespace='cid', domain='compound', op
     response = get(identifier, namespace, domain, operation, outformat, searchtype, **kwargs)
     if not overwrite and os.path.isfile(path):
         raise IOError("%s already exists. Use 'overwrite=True' to overwrite it." % path)
-    with open(path, 'w') as f:
+    with open(path, 'wb') as f:
         f.write(response)
 
 
