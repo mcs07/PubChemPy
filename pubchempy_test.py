@@ -118,6 +118,7 @@ class TestCompound(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.c1 = Compound.from_cid(241)
+        cls.c2 = Compound.from_cid(175)
 
     def test_basic(self):
         """Test Compound is retrieved and has a record and correct CID."""
@@ -194,6 +195,10 @@ class TestCompound(unittest.TestCase):
     def test_compound_dict(self):
         self.assertTrue(isinstance(self.c1.to_dict(), dict))
         self.assertTrue(self.c1.to_dict())
+
+    def test_charged_compound(self):
+        self.assertEqual(len(self.c2.atoms), 7)
+        self.assertEqual(self.c2.atoms[1]['charge'], -1)
 
 
 class TestCompound3d(unittest.TestCase):
@@ -433,6 +438,14 @@ class TestPandas(unittest.TestCase):
     def test_substance_series(self):
         s = Substance.from_sid(1234).to_series()
         self.assertTrue(isinstance(s, pd.Series))
+
+    def test_compound_to_frame(self):
+        s = compounds_to_frame(Compound.from_cid(241))
+        self.assertTrue(isinstance(s, pd.DataFrame))
+
+    def test_substance_to_frame(self):
+        s = substances_to_frame(Substance.from_sid(1234))
+        self.assertTrue(isinstance(s, pd.DataFrame))
 
 
 INCHIKEY_RE = re.compile(r'^[A-Z]{14}-[A-Z]{10}-[A-Z\d]$')
