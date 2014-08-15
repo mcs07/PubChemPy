@@ -10,8 +10,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division
 
+import csv
 import logging
+import os
 import re
+import shutil
+import tempfile
 import unittest
 
 import pandas as pd
@@ -321,6 +325,33 @@ class TestSearch(unittest.TestCase):
         for result in results:
             self.assertTrue(all(el in [a['element'] for a in result.atoms] for el in {'c', 'n', 'h'}))
             self.assertTrue(result.heavy_atom_count >= 14)
+
+
+class TestDownload(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.dir = tempfile.mkdtemp()
+
+    def test_image_download(self):
+        download('PNG', os.path.join(self.dir, 'aspirin.png'), 'Aspirin', 'name')
+        with self.assertRaises(IOError):
+            download('PNG', os.path.join(self.dir, 'aspirin.png'), 'Aspirin', 'name')
+        download('PNG', os.path.join(self.dir, 'aspirin.png'), 'Aspirin', 'name', overwrite=True)
+
+    def test_csv_download(self):
+        download('CSV', os.path.join(self.dir, 's.csv'), [1, 2, 3], operation='property/CanonicalSMILES,IsomericSMILES')
+        with open(os.path.join(self.dir, 's.csv')) as f:
+            rows = list(csv.reader(f))
+            print(rows)
+            self.assertEqual(rows[0], ['CID', 'CanonicalSMILES', 'IsomericSMILES'])
+            self.assertEqual(rows[1][0], '1')
+            self.assertEqual(rows[2][0], '2')
+            self.assertEqual(rows[3][0], '3')
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.dir)
 
 
 class TestErrors(unittest.TestCase):
