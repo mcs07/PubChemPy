@@ -3,23 +3,21 @@
 import os
 from setuptools import setup
 
-import pubchempy
-
 
 if os.path.exists('README.rst'):
     long_description = open('README.rst').read()
 else:
     long_description = '''PubChemPy is a wrapper around the PubChem PUG REST API that provides a way to interact
-        with PubChem in Python. It allows chemical searches (including by name, substructure and similarity), chemical
-        standardization, conversion between chemical file formats, depiction and retrieval of chemical properties.
-    '''
+with PubChem in Python. It allows chemical searches (including by name, substructure and similarity), chemical
+standardization, conversion between chemical file formats, depiction and retrieval of chemical properties.
+'''
 
 setup(
     name='PubChemPy',
-    version=pubchempy.__version__,
-    author=pubchempy.__author__,
-    author_email=pubchempy.__email__,
-    license=pubchempy.__license__,
+    version='1.0.2',
+    author='Matt Swain',
+    author_email='m.swain@me.com',
+    license='MIT',
     url='https://github.com/mcs07/PubChemPy',
     py_modules=['pubchempy'],
     description='A simple Python wrapper around the PubChem PUG REST API.',
