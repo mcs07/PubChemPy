@@ -16,6 +16,8 @@ import logging
 import os
 import sys
 import time
+import cgitb
+cgitb.enable(format='text')
 
 try:
     from urllib.error import HTTPError
@@ -349,20 +351,27 @@ class Compound(object):
         if 'z' in self.record['coords'][0]['conformers'][0]:
             a['z'] = self.record['coords'][0]['conformers'][0]['z']
         atomlist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in a.items()]))))
+        # print(atomlist)
         if 'charge' in self.record['atoms']:
             for charge in self.record['atoms']['charge']:
-                atomlist[charge['aid']]['charge'] = charge['value']
+                try:
+                    atomlist[charge['aid']]['charge'] = charge['value']
+                except IndexError:
+                    continue
         return atomlist
 
     @property
     def bonds(self):
-        blist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))))
-        if 'style' in self.record['coords'][0]['conformers'][0]:
-            style = self.record['coords'][0]['conformers'][0]['style']
-            for i, annotation in enumerate(style['annotation']):
-                bond = [b for b in blist if all(aid in b.values() for aid in [style['aid1'][i], style['aid2'][i]])][0]
-                bond['style'] = annotation
-        return blist
+        try:
+            blist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))))
+            if 'style' in self.record['coords'][0]['conformers'][0]:
+                style = self.record['coords'][0]['conformers'][0]['style']
+                for i, annotation in enumerate(style['annotation']):
+                    bond = [b for b in blist if all(aid in b.values() for aid in [style['aid1'][i], style['aid2'][i]])][0]
+                    bond['style'] = annotation
+            return blist
+        except KeyError:
+            return ["No bonds."]
 
     @memoized_property
     def synonyms(self):
@@ -373,7 +382,7 @@ class Compound(object):
         if self.cid:
             results = get_json(self.cid, operation='synonyms')
             return results['InformationList']['Information'][0]['Synonym'] if results else []
-            
+
     @memoized_property
     def sids(self):
         """Requires an extra request. Result is cached."""
