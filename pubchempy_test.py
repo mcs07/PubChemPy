@@ -128,27 +128,50 @@ class TestCompound(unittest.TestCase):
 
     def test_atoms(self):
         self.assertEqual(len(self.c1.atoms), 12)
-        self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h'})
+        self.assertEqual(set(a.element for a in self.c1.atoms), {'c', 'h'})
         self.assertEqual(set(self.c1.elements), {'c', 'h'})
+
+    def test_atoms_deprecated(self):
+        with warnings.catch_warnings(record=True) as w:
+            self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h'})
+            self.assertEqual(len(w), 1)
+            self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
+            self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
 
     def test_single_atom(self):
         """Test Compound when there is a single atom and no bonds."""
         c = Compound.from_cid(259)
-        self.assertEqual(c.atoms, [{'charge': -1, 'element': 'br', 'x': 2, 'y': 0}])
+        self.assertEqual(c.atoms, [Atom(aid=1, element='br', x=2, y=0, charge=-1)])
         self.assertEqual(c.bonds, [])
 
     def test_bonds(self):
         self.assertEqual(len(self.c1.bonds), 12)
-        self.assertEqual(set(b['order'] for b in self.c1.bonds), {'single', 'double'})
+        self.assertEqual(set(b.order for b in self.c1.bonds), {'single', 'double'})
+
+    def test_bonds_deprecated(self):
+        with warnings.catch_warnings(record=True) as w:
+            self.assertEqual(set(b['order'] for b in self.c1.bonds), {'single', 'double'})
+            self.assertEqual(len(w), 1)
+            self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
+            self.assertEqual(str(w[0].message), 'Dictionary style access to Bond attributes is deprecated')
 
     def test_charge(self):
         self.assertEqual(self.c1.charge, 0)
 
     def test_coordinates(self):
         for a in self.c1.atoms:
-            self.assertTrue(isinstance(a['x'], (float, int)))
-            self.assertTrue(isinstance(a['y'], (float, int)))
-            self.assertNotIn('z', a)
+            self.assertIsInstance(a.x, (float, int))
+            self.assertIsInstance(a.y, (float, int))
+            self.assertEqual(a.z, None)
+
+    def test_coordinates_deprecated(self):
+        with warnings.catch_warnings(record=True) as w:
+            self.assertTrue(isinstance(self.c1.atoms[0]['x'], (float, int)))
+            self.assertTrue(isinstance(self.c1.atoms[0]['y'], (float, int)))
+            self.assertNotIn('z', self.c1.atoms[0])
+            self.assertEqual(len(w), 3)
+            self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
+            self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
 
     def test_identifiers(self):
         self.assertTrue(SMILES_RE.match(self.c1.canonical_smiles))
@@ -186,10 +209,6 @@ class TestCompound(unittest.TestCase):
         self.assertEqual(Compound.from_cid(241), Compound.from_cid(241))
         self.assertEqual(get_compounds('Benzene', 'name')[0], get_compounds('c1ccccc1', 'smiles')[0])
 
-    def test_compound_hash(self):
-        self.assertEqual(hash(Compound.from_cid(241)), hash(Compound.from_cid(241)))
-        self.assertEqual(hash(get_compounds('Benzene', 'name')[0]), hash(get_compounds('c1ccccc1', 'smiles')[0]))
-
     def test_synonyms(self):
         self.assertGreater(len(self.c1.synonyms), 5)
         self.assertGreater(len(self.c1.synonyms), 5)
@@ -204,7 +223,14 @@ class TestCompound(unittest.TestCase):
 
     def test_charged_compound(self):
         self.assertEqual(len(self.c2.atoms), 7)
-        self.assertEqual(self.c2.atoms[0]['charge'], -1)
+        self.assertEqual(self.c2.atoms[0].charge, -1)
+
+    def test_charged_compound_deprecated(self):
+        with warnings.catch_warnings(record=True) as w:
+            self.assertEqual(self.c2.atoms[0]['charge'], -1)
+            self.assertEqual(len(w), 1)
+            self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
+            self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
 
 
 class TestCompound3d(unittest.TestCase):
@@ -232,14 +258,30 @@ class TestCompound3d(unittest.TestCase):
 
     def test_atoms(self):
         self.assertEqual(len(self.c1.atoms), 75)
-        self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h', 'o', 'n'})
+        self.assertEqual(set(a.element for a in self.c1.atoms), {'c', 'h', 'o', 'n'})
         self.assertEqual(set(self.c1.elements), {'c', 'h', 'o', 'n'})
+
+    def test_atoms_deprecated(self):
+        with warnings.catch_warnings(record=True) as w:
+            self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h', 'o', 'n'})
+            self.assertEqual(len(w), 1)
+            self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
+            self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
 
     def test_coordinates(self):
         for a in self.c1.atoms:
-            self.assertTrue(isinstance(a['x'], (float, int)))
-            self.assertTrue(isinstance(a['y'], (float, int)))
-            self.assertTrue(isinstance(a['z'], (float, int)))
+            self.assertIsInstance(a.x, (float, int))
+            self.assertIsInstance(a.y, (float, int))
+            self.assertIsInstance(a.z, (float, int))
+
+    def test_coordinates_deprecated(self):
+        with warnings.catch_warnings(record=True) as w:
+            self.assertTrue(isinstance(self.c1.atoms[0]['x'], (float, int)))
+            self.assertTrue(isinstance(self.c1.atoms[0]['y'], (float, int)))
+            self.assertTrue(isinstance(self.c1.atoms[0]['z'], (float, int)))
+            self.assertEqual(len(w), 3)
+            self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
+            self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
 
 
 class TestSubstance(unittest.TestCase):
@@ -257,10 +299,6 @@ class TestSubstance(unittest.TestCase):
     def test_substance_equality(self):
         self.assertEqual(Substance.from_sid(24864499), Substance.from_sid(24864499))
         self.assertEqual(get_substances('Coumarin 343', 'name')[0], get_substances(24864499)[0])
-
-    def test_substance_hash(self):
-        self.assertEqual(hash(Substance.from_sid(241)), hash(Substance.from_sid(241)))
-        self.assertEqual(hash(get_substances('Coumarin 343', 'name')[0]), hash(get_substances(24864499)[0]))
 
     def test_synonyms(self):
         self.assertGreater(len(self.s1.synonyms), 1)

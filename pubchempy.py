@@ -16,6 +16,7 @@ import logging
 import os
 import sys
 import time
+import warnings
 
 try:
     from urllib.error import HTTPError
@@ -24,6 +25,11 @@ try:
 except ImportError:
     from urllib import urlencode
     from urllib2 import quote, urlopen, HTTPError
+
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
 
 
 __author__ = 'Matt Swain'
@@ -271,6 +277,127 @@ def memoized_property(fget):
     return property(fget_memoized)
 
 
+def deprecated(message=None):
+    """Decorator to mark functions as deprecated. A warning will be emitted when the function is used."""
+    def deco(func):
+        @functools.wraps(func)
+        def wrapped(*args, **kwargs):
+            warnings.warn(
+                message or 'Call to deprecated function {}'.format(func.__name__),
+                category=PubChemPyDeprecationWarning,
+                stacklevel=2
+            )
+            return func(*args, **kwargs)
+        return wrapped
+    return deco
+
+
+class Atom(object):
+    """Class to represent an atom in a :class:`~pubchempy.Compound`."""
+
+    def __init__(self, aid, element, x=None, y=None, z=None, charge=0):
+        """Initialize with an atom ID, element symbol, coordinates and optional change.
+
+        :param int aid: Atom ID
+        :param string element: Element symbol.
+        :param float x: X coordinate.
+        :param float y: Y coordinate.
+        :param float z: (optional) Z coordinate.
+        :param int charge: Formal charge on atom.
+        """
+        self.aid = aid
+        self.element = element
+        self.x = x
+        self.y = y
+        self.z = z
+        self.charge = charge
+
+    def __repr__(self):
+        return 'Atom(%s, %s)' % (self.aid, self.element)
+
+    def __eq__(self, other):
+        return (isinstance(other, type(self)) and self.aid == other.aid and self.element == other.element and
+                self.x == other.x and self.y == other.y and self.z == other.z and self.charge == other.charge)
+
+    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    def __getitem__(self, prop):
+        """Allow dict-style access to attributes to ease transition from when atoms were dicts."""
+        if prop in {'element', 'x', 'y', 'z', 'charge'}:
+            return getattr(self, prop)
+        raise KeyError(prop)
+
+    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    def __setitem__(self, prop, val):
+        """Allow dict-style setting of attributes to ease transition from when atoms were dicts."""
+        setattr(self, prop, val)
+
+    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    def __contains__(self, prop):
+        """Allow dict-style checking of attributes to ease transition from when atoms were dicts."""
+        if prop in {'element', 'x', 'y', 'z', 'charge'}:
+            return getattr(self, prop) is not None
+        return False
+
+    def set_coordinates(self, x, y, z=None):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    @property
+    def coordinate_type(self):
+        """"""
+        return '2d' if self.z is None else '3d'
+
+
+class Bond(object):
+    """Class to represent a bond between two atoms in a :class:`~pubchempy.Compound`."""
+
+    def __init__(self, aid1, aid2, order='single', style=None):
+        """Initialize with begin and end atom IDs, bond order and bond style.
+
+        :param int aid1: Begin atom ID.
+        :param int aid2: End atom ID.
+        :param string order: Bond order.
+        """
+        self.aid1 = aid1
+        self.aid2 = aid2
+        self.order = order
+        self.style = style
+
+    def __repr__(self):
+        return 'Bond(%s, %s, %s)' % (self.aid1, self.aid2, self.order)
+
+    def __eq__(self, other):
+        return (isinstance(other, type(self)) and self.aid1 == other.aid1 and self.aid2 == other.aid2 and
+                self.order == other.order and self.style == other.style)
+
+    @deprecated('Dictionary style access to Bond attributes is deprecated')
+    def __getitem__(self, prop):
+        """Allow dict-style access to attributes to ease transition from when bonds were dicts."""
+        if prop in {'order', 'style'}:
+            return getattr(self, prop)
+        raise KeyError(prop)
+
+    @deprecated('Dictionary style access to Bond attributes is deprecated')
+    def __setitem__(self, prop, val):
+        """Allow dict-style setting of attributes to ease transition from when bonds were dicts."""
+        setattr(self, prop, val)
+
+    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    def __contains__(self, prop):
+        """Allow dict-style checking of attributes to ease transition from when bonds were dicts."""
+        if prop in {'order', 'style'}:
+            return getattr(self, prop) is not None
+        return False
+
+    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    def __delitem__(self, prop):
+        """Delete the property prop from the wrapped object."""
+        if not hasattr(self.__wrapped, prop):
+            raise KeyError(prop)
+        delattr(self.__wrapped, prop)
+
+
 class Compound(object):
     """Corresponds to a single record from the PubChem Compound database.
 
@@ -280,13 +407,84 @@ class Compound(object):
     Each Compound is uniquely identified by a CID.
     """
     def __init__(self, record):
+        """Initialize with a record dict from the PubChem PUG REST service.
+
+        For most users, the ``from_cid()`` class method is probably a better way of creating Compounds.
+
+        :param dict record: A compound record returned by the PubChem PUG REST service.
+        """
+        self._record = None
+        self._atoms = {}
+        self._bonds = {}
         self.record = record
+
+    @property
+    def record(self):
+        """The raw compound record returned by the PubChem PUG REST service."""
+        return self._record
+
+    @record.setter
+    def record(self, record):
+        self._record = record
+        log.debug('Created %s' % self)
+        self._setup_atoms()
+        self._setup_bonds()
+
+    def _setup_atoms(self):
+        """Derive Atom objects from the record."""
+        # Delete existing atoms
+        self._atoms = {}
+        # Create atoms
+        aids = self.record['atoms']['aid']
+        elements = self.record['atoms']['element']
+        if not len(aids) == len(elements):
+            raise ResponseParseError('Error parsing atom elements')
+        for aid, element in zip(aids, elements):
+            self._atoms[aid] = Atom(aid=aid, element=element)
+        # Add coordinates
+        coord_ids = self.record['coords'][0]['aid']
+        xs = self.record['coords'][0]['conformers'][0]['x']
+        ys = self.record['coords'][0]['conformers'][0]['y']
+        zs = self.record['coords'][0]['conformers'][0].get('z', [])
+        if not len(coord_ids) == len(xs) == len(ys) == len(self._atoms) or (zs and not len(zs) == len(coord_ids)):
+            raise ResponseParseError('Error parsing atom coordinates')
+        for aid, x, y, z in zip_longest(coord_ids, xs, ys, zs):
+            self._atoms[aid].set_coordinates(x, y, z)
+        # Add charges
+        if 'charge' in self.record['atoms']:
+            for charge in self.record['atoms']['charge']:
+                self._atoms[charge['aid']].charge = charge['value']
+
+    def _setup_bonds(self):
+        """Derive Bond objects from the record."""
+        self._bonds = {}
+        if 'bonds' not in self.record:
+            return
+        # Create bonds
+        aid1s = self.record['bonds']['aid1']
+        aid2s = self.record['bonds']['aid2']
+        orders = self.record['bonds']['order']
+        if not len(aid1s) == len(aid2s) == len(orders):
+            raise ResponseParseError('Error parsing bonds')
+        for aid1, aid2, order in zip(aid1s, aid2s, orders):
+            self._bonds[frozenset((aid1, aid2))] = Bond(aid1=aid1, aid2=aid2, order=order)
+        # Add styles
+        if 'style' in self.record['coords'][0]['conformers'][0]:
+            aid1s = self.record['coords'][0]['conformers'][0]['style']['aid1']
+            aid2s = self.record['coords'][0]['conformers'][0]['style']['aid2']
+            styles = self.record['coords'][0]['conformers'][0]['style']['annotation']
+            for aid1, aid2, style in zip(aid1s, aid2s, styles):
+                self._bonds[frozenset((aid1, aid2))].style = style
 
     @classmethod
     def from_cid(cls, cid, **kwargs):
         """Retrieve the Compound record for the specified CID.
 
-        :param cid: The PubChem Compound Identifier (CID).
+        Usage::
+
+            c = Compound.from_cid(6819)
+
+        :param int|string cid: The PubChem Compound Identifier (CID).
         """
         record = json.loads(request(cid, **kwargs).read().decode())['PC_Compounds'][0]
         return cls(record)
@@ -297,10 +495,6 @@ class Compound(object):
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
 
-    def __hash__(self):
-        return hash((self.cid, self.molecular_formula, self.molecular_weight, self.isomeric_smiles, self.inchikey,
-                     tuple(tuple(a.values()) for a in self.atoms), tuple(tuple(b.values()) for b in self.bonds)))
-
     def to_dict(self, properties=None):
         """Return a dictionary containing Compound data. Optionally specify a list of the desired properties.
 
@@ -309,7 +503,7 @@ class Compound(object):
         """
         if not properties:
             skip = {'aids', 'sids', 'synonyms'}
-            properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) and not p in skip]
+            properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) and p not in skip]
         return {p: getattr(self, p) for p in properties}
 
     def to_series(self, properties=None):
@@ -337,34 +531,19 @@ class Compound(object):
 
     @property
     def elements(self):
+        """List of element symbols for atoms in this Compound."""
+        # Change to [a.element for a in self.atoms] ?
         return self.record['atoms']['element']
 
     @property
     def atoms(self):
-        a = {
-            'x': self.record['coords'][0]['conformers'][0]['x'],
-            'y': self.record['coords'][0]['conformers'][0]['y'],
-            'element': self.record['atoms']['element']
-        }
-        if 'z' in self.record['coords'][0]['conformers'][0]:
-            a['z'] = self.record['coords'][0]['conformers'][0]['z']
-        atomlist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in a.items()]))))
-        if 'charge' in self.record['atoms']:
-            for charge in self.record['atoms']['charge']:
-                atomlist[charge['aid'] - 1]['charge'] = charge['value']
-        return atomlist
+        """List of :class:`Atoms <pubchempy.Atom>` in this Compound."""
+        return sorted(self._atoms.values(), key=lambda x: x.aid)
 
     @property
     def bonds(self):
-        if 'bonds' not in self.record:
-            return []
-        blist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))))
-        if 'style' in self.record['coords'][0]['conformers'][0]:
-            style = self.record['coords'][0]['conformers'][0]['style']
-            for i, annotation in enumerate(style['annotation']):
-                bond = [b for b in blist if all(aid in b.values() for aid in [style['aid1'][i], style['aid2'][i]])][0]
-                bond['style'] = annotation
-        return blist
+        """List of :class:`Bonds <pubchempy.Bond>` between :class:`Atoms <pubchempy.Atom>` in this Compound."""
+        return sorted(self._bonds.values(), key=lambda x: (x.aid1, x.aid2))
 
     @memoized_property
     def synonyms(self):
@@ -575,6 +754,7 @@ class Compound(object):
 
 def _parse_prop(search, proplist):
     """Extract property value from record using the given urn search filter."""
+    # TODO: Raise ResponseParseError if this fails?
     props = [i for i in proplist if all(item in i['urn'].items() for item in search.items())]
     if len(props) > 0:
         return props[0]['value'][list(props[0]['value'].keys())[0]]
@@ -611,9 +791,6 @@ class Substance(object):
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
 
-    def __hash__(self):
-        return hash((self.sid, self.source_name, self.source_id, self.standardized_cid))
-
     def to_dict(self, properties=None):
         """Return a dictionary containing Substance data.
 
@@ -624,7 +801,7 @@ class Substance(object):
         """
         if not properties:
             skip = {'deposited_compound', 'standardized_compound', 'cids', 'aids'}
-            properties = [p for p in dir(Substance) if isinstance(getattr(Substance, p), property) and not p in skip]
+            properties = [p for p in dir(Substance) if isinstance(getattr(Substance, p), property) and p not in skip]
         return {p: getattr(self, p) for p in properties}
 
     def to_series(self, properties=None):
@@ -683,7 +860,7 @@ class Substance(object):
     def deposited_compound(self):
         """Return a :class:`~pubchempy.Compound` produced from the unstandardized Substance record as deposited.
 
-        The resulting :class:`~pubchempy.Compound` will not have a cid and will be missing most properties.
+        The resulting :class:`~pubchempy.Compound` will not have a ``cid`` and will be missing most properties.
         """
         for c in self.record['compound']:
             if c['id']['type'] == 'deposited':
@@ -726,10 +903,6 @@ class Assay(object):
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
-
-    def __hash__(self):
-        return hash((self.aid, self.name, ''.join(self.description), self.project_category, ''.join(self.comments),
-                     self.revision, self.aid_version))
 
     def to_dict(self, properties=None):
         """Return a dictionary containing Assay data.
@@ -825,7 +998,22 @@ def substances_to_frame(substances, properties=None):
 #     # What about having the Compound/Substance object as a column?
 
 
-class PubChemHTTPError(Exception):
+class PubChemPyDeprecationWarning(Warning):
+    """Warning category for deprecated features."""
+    pass
+
+
+class PubChemPyError(Exception):
+    """Base class for all PubChemPy exceptions."""
+    pass
+
+
+class ResponseParseError(PubChemPyError):
+    """PubChem response is uninterpretable."""
+    pass
+
+
+class PubChemHTTPError(PubChemPyError):
     """Generic error class to handle all HTTP error codes."""
     def __init__(self, e):
         self.code = e.code

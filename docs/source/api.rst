@@ -16,13 +16,25 @@ Search functions
 .. autofunction:: get_assays
 .. autofunction:: get_properties
 
-Compound, Substance and Assay
------------------------------
+Compound, Atom and Bond
+-----------------------
 
 .. autoclass:: pubchempy.Compound
    :members:
+.. autoclass:: pubchempy.Atom
+   :members:
+.. autoclass:: pubchempy.Bond
+   :members:
+
+Substance
+---------
+
 .. autoclass:: pubchempy.Substance
    :members:
+
+Assay
+-----
+
 .. autoclass:: pubchempy.Assay
    :members:
 
@@ -43,6 +55,8 @@ constructed easily.
 Exceptions
 ----------
 
+.. autoexception:: pubchempy.PubChemPyError()
+.. autoexception:: pubchempy.ResponseParseError()
 .. autoexception:: pubchempy.PubChemHTTPError()
 .. autoexception:: pubchempy.BadRequestError()
 .. autoexception:: pubchempy.NotFoundError()
@@ -54,7 +68,9 @@ Exceptions
 Changes
 -------
 
--  As of v1.0.2, search functions now return an empty list instead of raising a
-   ``NotFoundError`` exception when no results are found. ``NotFoundError`` is still
-   raised when attempting to create a ``Compound`` using ``Compound.from_cid`` with
-   an invalid CID.
+-  As of v1.0.3, the ``atoms`` and ``bonds`` properties on :class:`Compounds <pubchempy.Compound>` now return lists of
+   :class:`~pubchempy.Atom` and :class:`~pubchempy.Bond` objects, rather than dicts.
+
+-  As of v1.0.2, search functions now return an empty list instead of raising a :class:`~pubchempy.NotFoundError`
+   exception when no results are found. :class:`~pubchempy.NotFoundError` is still raised when attempting to create a
+   :class:`~pubchempy.Compound` using the ``from_cid`` class method with an invalid CID.
