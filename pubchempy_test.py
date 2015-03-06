@@ -349,13 +349,6 @@ class TestAssay(unittest.TestCase):
         self.assertEqual(second, second)
         self.assertNotEqual(first, second)
 
-    def test_assay_hash(self):
-        first = Assay.from_aid(490)
-        second = Assay.from_aid(1000)
-        self.assertEqual(hash(first), hash(first))
-        self.assertEqual(hash(second), hash(second))
-        self.assertNotEqual(hash(first), hash(second))
-
     def test_assay_dict(self):
         self.assertTrue(isinstance(self.a1.to_dict(), dict))
         self.assertTrue(self.a1.to_dict())
