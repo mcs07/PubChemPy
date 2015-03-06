@@ -351,11 +351,13 @@ class Compound(object):
         atomlist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in a.items()]))))
         if 'charge' in self.record['atoms']:
             for charge in self.record['atoms']['charge']:
-                atomlist[charge['aid']]['charge'] = charge['value']
+                atomlist[charge['aid'] - 1]['charge'] = charge['value']
         return atomlist
 
     @property
     def bonds(self):
+        if 'bonds' not in self.record:
+            return []
         blist = list(map(dict, list(zip(*[[(k, v) for v in value] for k, value in self.record['bonds'].items()]))))
         if 'style' in self.record['coords'][0]['conformers'][0]:
             style = self.record['coords'][0]['conformers'][0]['style']

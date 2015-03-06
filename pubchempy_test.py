@@ -131,6 +131,12 @@ class TestCompound(unittest.TestCase):
         self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h'})
         self.assertEqual(set(self.c1.elements), {'c', 'h'})
 
+    def test_single_atom(self):
+        """Test Compound when there is a single atom and no bonds."""
+        c = Compound.from_cid(259)
+        self.assertEqual(c.atoms, [{'charge': -1, 'element': 'br', 'x': 2, 'y': 0}])
+        self.assertEqual(c.bonds, [])
+
     def test_bonds(self):
         self.assertEqual(len(self.c1.bonds), 12)
         self.assertEqual(set(b['order'] for b in self.c1.bonds), {'single', 'double'})
@@ -198,7 +204,7 @@ class TestCompound(unittest.TestCase):
 
     def test_charged_compound(self):
         self.assertEqual(len(self.c2.atoms), 7)
-        self.assertEqual(self.c2.atoms[1]['charge'], -1)
+        self.assertEqual(self.c2.atoms[0]['charge'], -1)
 
 
 class TestCompound3d(unittest.TestCase):
@@ -348,7 +354,6 @@ class TestDownload(unittest.TestCase):
         download('CSV', os.path.join(self.dir, 's.csv'), [1, 2, 3], operation='property/CanonicalSMILES,IsomericSMILES')
         with open(os.path.join(self.dir, 's.csv')) as f:
             rows = list(csv.reader(f))
-            print(rows)
             self.assertEqual(rows[0], ['CID', 'CanonicalSMILES', 'IsomericSMILES'])
             self.assertEqual(rows[1][0], '1')
             self.assertEqual(rows[2][0], '2')
@@ -390,7 +395,7 @@ class TestSources(unittest.TestCase):
         substance_sources = get_all_sources()
         self.assertGreater(len(substance_sources), 20)
         self.assertTrue(isinstance(substance_sources, list))
-        self.assertIn('SureChem', substance_sources)
+        self.assertIn('SureChEMBL', substance_sources)
         self.assertIn('DiscoveryGate', substance_sources)
         self.assertIn('ZINC', substance_sources)
 
