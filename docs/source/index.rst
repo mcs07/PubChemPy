@@ -47,10 +47,10 @@ A step-by-step guide to getting started with PubChemPy.
 .. toctree::
    :maxdepth: 2
 
-   guide/intro
+   guide/introduction
    guide/install
    guide/gettingstarted
-   guide/search
+   guide/searching
    guide/compound
    guide/substance
    guide/properties

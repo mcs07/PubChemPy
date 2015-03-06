@@ -1,7 +1,7 @@
-.. _search:
+.. _searching:
 
-Search
-======
+Searching
+=========
 
 2D and 3D coordinates
 ---------------------
