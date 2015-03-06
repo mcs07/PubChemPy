@@ -32,7 +32,7 @@ Alternatively, `download the latest release`_ manually and install yourself::
     python setup.py install
 
 The setup.py command will install PubChemPy in your `site-packages` folder so it is automatically available to all your
-python scripts. Intead, you may prefer to just copy the pubchempy.py file into the desired project directory to only
+python scripts. Instead, you may prefer to just copy the pubchempy.py file into the desired project directory to only
 make it available to that project.
 
 Option 3: Clone the repository
