@@ -34,7 +34,7 @@ except ImportError:
 
 __author__ = 'Matt Swain'
 __email__ = 'm.swain@me.com'
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 __license__ = 'MIT'
 
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
