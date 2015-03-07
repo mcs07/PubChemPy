@@ -16,13 +16,21 @@ Search functions
 .. autofunction:: get_assays
 .. autofunction:: get_properties
 
-Compound, Atom and Bond
------------------------
+Compound
+--------
 
 .. autoclass:: pubchempy.Compound
    :members:
+
+Atom
+----
+
 .. autoclass:: pubchempy.Atom
    :members:
+
+Bond
+----
+
 .. autoclass:: pubchempy.Bond
    :members:
 

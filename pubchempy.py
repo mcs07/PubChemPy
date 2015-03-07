@@ -199,6 +199,13 @@ PROPERTY_MAP = {
 
 
 def get_properties(properties, identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
+    """Retrieve the specified properties from PubChem.
+
+    :param identifier: The compound, substance or assay identifier to use as a search query.
+    :param namespace: (optional) The identifier type.
+    :param searchtype: (optional) The advanced search type, one of substructure, superstructure or similarity.
+    :param as_dataframe: (optional) Automatically extract the properties into a pandas :class:`~pandas.DataFrame`.
+    """
     if isinstance(properties, text_types):
         properties = properties.split(',')
     properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties])
@@ -303,14 +310,20 @@ class Atom(object):
         :param float x: X coordinate.
         :param float y: Y coordinate.
         :param float z: (optional) Z coordinate.
-        :param int charge: Formal charge on atom.
+        :param int charge: (optional) Formal charge on atom.
         """
         self.aid = aid
+        """The atom ID within the owning Compound."""
         self.element = element
+        """The element symbol for this atom."""
         self.x = x
+        """The x coordinate for this atom."""
         self.y = y
+        """The y coordinate for this atom."""
         self.z = z
+        """The z coordinate for this atom. Will be ``None`` in 2D Compound records."""
         self.charge = charge
+        """The formal charge on this atom."""
 
     def __repr__(self):
         return 'Atom(%s, %s)' % (self.aid, self.element)
@@ -338,14 +351,25 @@ class Atom(object):
             return getattr(self, prop) is not None
         return False
 
+    def to_dict(self):
+        """Return a dictionary containing Atom data."""
+        data = {'aid': self.aid, 'element': self.element}
+        for coord in {'x', 'y', 'z'}:
+            if getattr(self, coord) is not None:
+                data[coord] = getattr(self, coord)
+        if self.charge is not 0:
+            data['charge'] = self.charge
+        return data
+
     def set_coordinates(self, x, y, z=None):
+        """Set all coordinate dimensions at once."""
         self.x = x
         self.y = y
         self.z = z
 
     @property
     def coordinate_type(self):
-        """"""
+        """Whether this atom has 2D or 3D coordinates."""
         return '2d' if self.z is None else '3d'
 
 
@@ -360,9 +384,13 @@ class Bond(object):
         :param string order: Bond order.
         """
         self.aid1 = aid1
+        """ID of the begin atom of this bond."""
         self.aid2 = aid2
+        """ID of the end atom of this bond."""
         self.order = order
+        """Bond order."""
         self.style = style
+        """Bond style annotation."""
 
     def __repr__(self):
         return 'Bond(%s, %s, %s)' % (self.aid1, self.aid2, self.order)
@@ -397,14 +425,19 @@ class Bond(object):
             raise KeyError(prop)
         delattr(self.__wrapped, prop)
 
+    def to_dict(self):
+        """Return a dictionary containing Bond data."""
+        data = {'aid1': self.aid1, 'aid2': self.aid2, 'order': self.order}
+        if self.style is not None:
+            data['style'] = self.style
+        return data
+
 
 class Compound(object):
     """Corresponds to a single record from the PubChem Compound database.
 
     The PubChem Compound database is constructed from the Substance database using a standardization and deduplication
-    process.
-
-    Each Compound is uniquely identified by a CID.
+    process. Each Compound is uniquely identified by a CID.
     """
     def __init__(self, record):
         """Initialize with a record dict from the PubChem PUG REST service.
@@ -442,14 +475,15 @@ class Compound(object):
         for aid, element in zip(aids, elements):
             self._atoms[aid] = Atom(aid=aid, element=element)
         # Add coordinates
-        coord_ids = self.record['coords'][0]['aid']
-        xs = self.record['coords'][0]['conformers'][0]['x']
-        ys = self.record['coords'][0]['conformers'][0]['y']
-        zs = self.record['coords'][0]['conformers'][0].get('z', [])
-        if not len(coord_ids) == len(xs) == len(ys) == len(self._atoms) or (zs and not len(zs) == len(coord_ids)):
-            raise ResponseParseError('Error parsing atom coordinates')
-        for aid, x, y, z in zip_longest(coord_ids, xs, ys, zs):
-            self._atoms[aid].set_coordinates(x, y, z)
+        if 'coords' in self.record:
+            coord_ids = self.record['coords'][0]['aid']
+            xs = self.record['coords'][0]['conformers'][0]['x']
+            ys = self.record['coords'][0]['conformers'][0]['y']
+            zs = self.record['coords'][0]['conformers'][0].get('z', [])
+            if not len(coord_ids) == len(xs) == len(ys) == len(self._atoms) or (zs and not len(zs) == len(coord_ids)):
+                raise ResponseParseError('Error parsing atom coordinates')
+            for aid, x, y, z in zip_longest(coord_ids, xs, ys, zs):
+                self._atoms[aid].set_coordinates(x, y, z)
         # Add charges
         if 'charge' in self.record['atoms']:
             for charge in self.record['atoms']['charge']:
@@ -469,7 +503,7 @@ class Compound(object):
         for aid1, aid2, order in zip(aid1s, aid2s, orders):
             self._bonds[frozenset((aid1, aid2))] = Bond(aid1=aid1, aid2=aid2, order=order)
         # Add styles
-        if 'style' in self.record['coords'][0]['conformers'][0]:
+        if 'coords' in self.record and 'style' in self.record['coords'][0]['conformers'][0]:
             aid1s = self.record['coords'][0]['conformers'][0]['style']['aid1']
             aid2s = self.record['coords'][0]['conformers'][0]['style']['aid2']
             styles = self.record['coords'][0]['conformers'][0]['style']['annotation']
@@ -484,7 +518,7 @@ class Compound(object):
 
             c = Compound.from_cid(6819)
 
-        :param int|string cid: The PubChem Compound Identifier (CID).
+        :param int cid: The PubChem Compound Identifier (CID).
         """
         record = json.loads(request(cid, **kwargs).read().decode())['PC_Compounds'][0]
         return cls(record)
@@ -504,7 +538,7 @@ class Compound(object):
         if not properties:
             skip = {'aids', 'sids', 'synonyms'}
             properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) and p not in skip]
-        return {p: getattr(self, p) for p in properties}
+        return {p: [i.to_dict() for i in getattr(self, p)] if p in {'atoms', 'bonds'} else getattr(self, p) for p in properties}
 
     def to_series(self, properties=None):
         """Return a pandas :class:`~pandas.Series` containing Compound data. Optionally specify a list of the desired
@@ -578,116 +612,146 @@ class Compound(object):
 
     @property
     def charge(self):
-        if 'charge' in self.record:
-            return self.record['charge']
+        """Formal charge on this Compound."""
+        return self.record['charge'] if 'charge' in self.record else 0
 
     @property
     def molecular_formula(self):
+        """Molecular formula."""
         return _parse_prop({'label': 'Molecular Formula'}, self.record['props'])
 
     @property
     def molecular_weight(self):
+        """Molecular Weight."""
         return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
 
     @property
     def canonical_smiles(self):
+        """Canonical SMILES, with no stereochemistry information."""
         return _parse_prop({'label': 'SMILES', 'name': 'Canonical'}, self.record['props'])
 
     @property
     def isomeric_smiles(self):
+        """Isomeric SMILES."""
         return _parse_prop({'label': 'SMILES', 'name': 'Isomeric'}, self.record['props'])
 
     @property
     def inchi(self):
+        """InChI string."""
         return _parse_prop({'label': 'InChI', 'name': 'Standard'}, self.record['props'])
 
     @property
     def inchikey(self):
+        """InChIKey."""
         return _parse_prop({'label': 'InChIKey', 'name': 'Standard'}, self.record['props'])
 
     @property
     def iupac_name(self):
+        """Preferred IUPAC name."""
         # Note: Allowed, CAS-like Style, Preferred, Systematic, Traditional are available in full record
         return _parse_prop({'label': 'IUPAC Name', 'name': 'Preferred'}, self.record['props'])
 
     @property
     def xlogp(self):
+        """XLogP."""
         return _parse_prop({'label': 'Log P'}, self.record['props'])
 
     @property
     def exact_mass(self):
+        """Exact mass."""
         return _parse_prop({'label': 'Mass', 'name': 'Exact'}, self.record['props'])
 
     @property
     def monoisotopic_mass(self):
+        """Monoisotopic mass."""
         return _parse_prop({'label': 'Weight', 'name': 'MonoIsotopic'}, self.record['props'])
 
     @property
     def tpsa(self):
+        """Topological Polar Surface Area."""
         return _parse_prop({'implementation': 'E_TPSA'}, self.record['props'])
 
     @property
     def complexity(self):
+        """Complexity."""
         return _parse_prop({'implementation': 'E_COMPLEXITY'}, self.record['props'])
 
     @property
     def h_bond_donor_count(self):
+        """Hydrogen bond donor count."""
         return _parse_prop({'implementation': 'E_NHDONORS'}, self.record['props'])
 
     @property
     def h_bond_acceptor_count(self):
+        """Hydrogen bond acceptor count."""
         return _parse_prop({'implementation': 'E_NHACCEPTORS'}, self.record['props'])
 
     @property
     def rotatable_bond_count(self):
+        """Rotatable bond count."""
         return _parse_prop({'implementation': 'E_NROTBONDS'}, self.record['props'])
 
     @property
     def fingerprint(self):
+        """PubChem CACTVS fingerprint.
+
+        Each bit in the fingerprint represents the presence or absence of one of 881 chemical substructures.
+
+        More information at ftp://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
+        """
         return _parse_prop({'implementation': 'E_SCREEN'}, self.record['props'])
 
     @property
     def heavy_atom_count(self):
+        """Heavy atom count."""
         if 'count' in self.record and 'heavy_atom' in self.record['count']:
             return self.record['count']['heavy_atom']
 
     @property
     def isotope_atom_count(self):
+        """Isotope atom count."""
         if 'count' in self.record and 'isotope_atom' in self.record['count']:
             return self.record['count']['isotope_atom']
 
     @property
     def atom_stereo_count(self):
+        """Atom stereocenter count."""
         if 'count' in self.record and 'atom_chiral' in self.record['count']:
             return self.record['count']['atom_chiral']
 
     @property
     def defined_atom_stereo_count(self):
+        """Defined atom stereocenter count."""
         if 'count' in self.record and 'atom_chiral_def' in self.record['count']:
             return self.record['count']['atom_chiral_def']
 
     @property
     def undefined_atom_stereo_count(self):
+        """Undefined atom stereocenter count."""
         if 'count' in self.record and 'atom_chiral_undef' in self.record['count']:
             return self.record['count']['atom_chiral_undef']
 
     @property
     def bond_stereo_count(self):
+        """Bond stereocenter count."""
         if 'count' in self.record and 'bond_chiral' in self.record['count']:
             return self.record['count']['bond_chiral']
 
     @property
     def defined_bond_stereo_count(self):
+        """Defined bond stereocenter count."""
         if 'count' in self.record and 'bond_chiral_def' in self.record['count']:
             return self.record['count']['bond_chiral_def']
 
     @property
     def undefined_bond_stereo_count(self):
+        """Undefined bond stereocenter count."""
         if 'count' in self.record and 'bond_chiral_undef' in self.record['count']:
             return self.record['count']['bond_chiral_undef']
 
     @property
     def covalent_unit_count(self):
+        """Covalently-bonded unit count."""
         if 'count' in self.record and 'covalent_unit' in self.record['count']:
             return self.record['count']['covalent_unit']
 
@@ -754,7 +818,6 @@ class Compound(object):
 
 def _parse_prop(search, proplist):
     """Extract property value from record using the given urn search filter."""
-    # TODO: Raise ResponseParseError if this fails?
     props = [i for i in proplist if all(item in i['urn'].items() for item in search.items())]
     if len(props) > 0:
         return props[0]['value'][list(props[0]['value'].keys())[0]]
@@ -776,7 +839,7 @@ class Substance(object):
     def from_sid(cls, sid):
         """Retrieve the Substance record for the specified SID.
 
-        :param sid: The PubChem Substance Identifier (SID).
+        :param int sid: The PubChem Substance Identifier (SID).
         """
         record = json.loads(request(sid, 'sid', 'substance').read().decode())['PC_Substances'][0]
         return cls(record)
@@ -833,7 +896,7 @@ class Substance(object):
 
     @property
     def source_id(self):
-        """The ID of the PubChem depositor that was the source of this Substance."""
+        """Unique ID for this Substance within those from the same PubChem depositor source."""
         return self.record['source']['db']['source_id']['str']
 
     @property
@@ -889,7 +952,7 @@ class Assay(object):
     def from_aid(cls, aid):
         """Retrieve the Assay record for the specified AID.
 
-        :param aid: The PubChem Assay Identifier (AID).
+        :param int aid: The PubChem Assay Identifier (AID).
         """
         record = json.loads(request(aid, 'aid', 'assay', 'description').read().decode())['PC_AssayContainer'][0]
         return cls(record)

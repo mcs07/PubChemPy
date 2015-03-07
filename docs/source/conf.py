@@ -240,4 +240,8 @@ intersphinx_mapping = {
     'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
 }
 
+# Sort autodoc members by the order they appear in the source code
 autodoc_member_order = 'bysource'
+
+# Concatenate the class and __init__ docstrings together
+autoclass_content = 'both'

@@ -220,6 +220,9 @@ class TestCompound(unittest.TestCase):
     def test_compound_dict(self):
         self.assertTrue(isinstance(self.c1.to_dict(), dict))
         self.assertTrue(self.c1.to_dict())
+        self.assertIn('atoms', self.c1.to_dict())
+        self.assertIn('bonds', self.c1.to_dict())
+        self.assertIn('element', self.c1.to_dict()['atoms'][0])
 
     def test_charged_compound(self):
         self.assertEqual(len(self.c2.atoms), 7)
@@ -310,6 +313,11 @@ class TestSubstance(unittest.TestCase):
     def test_deposited_compound(self):
         """Check that a Compound object can be constructed from the embedded deposited compound record."""
         self.assertTrue(self.s1.deposited_compound.record)
+
+    def test_deposited_compound2(self):
+        """Check that a Compound object can be constructed from the embedded deposited compound record."""
+        s2 = Substance.from_sid(223766453)
+        self.assertTrue(s2.deposited_compound.record)
 
     def test_standardized_compound(self):
         """Check the CID is correct and that the Compound can be retrieved."""
