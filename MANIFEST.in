@@ -1,3 +1,5 @@
 include README.rst
 include LICENSE
 include pubchempy_test.py
+recursive-include requirements *.txt
+prune docs/build
