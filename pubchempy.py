@@ -49,6 +49,191 @@ else:
     text_types = basestring,
 
 
+class CompoundIdType(object):
+    """"""
+    #: Original Deposited Compound
+    DEPOSITED = 0
+    #: Standardized Form of the Deposited Compound
+    STANDARDIZED = 1
+    #: Component of the Standardized Form
+    COMPONENT = 2
+    #: Neutralized Form of the Standardized Form
+    NEUTRALIZED = 3
+    #: Deposited Mixture Component
+    MIXTURE = 4
+    #: Alternate Tautomer Form of the Standardized Form
+    TAUTOMER = 5
+    #: Ionized pKa Form of the Standardized Form
+    IONIZED = 6
+    #: Unspecified or Unknown Compound Type
+    UNKNOWN = 255
+
+
+class BondType(object):
+    SINGLE = 1
+    DOUBLE = 2
+    TRIPLE = 3
+    QUADRUPLE = 4
+    DATIVE = 5
+    COMPLEX = 6
+    IONIC = 7
+    UNKNOWN = 255
+
+
+class CoordinateType(object):
+    TWO_D = 1
+    THREE_D = 2
+    SUBMITTED = 3
+    EXPERIMENTAL = 4
+    COMPUTED = 5
+    STANDARDIZED = 6
+    AUGMENTED = 7
+    ALIGNED = 8
+    COMPACT = 9
+    UNITS_ANGSTROMS = 10
+    UNITS_NANOMETERS = 11
+    UNITS_PIXEL = 12
+    UNITS_POINTS = 13
+    UNITS_STDBONDS = 14
+    UNITS_UNKNOWN = 255
+
+
+class ProjectCategory(object):
+    MLSCN = 1
+    MPLCN = 2
+    MLSCN_AP = 3
+    MPLCN_AP = 4
+    JOURNAL_ARTICLE = 5
+    ASSAY_VENDOR = 6
+    LITERATURE_EXTRACTED = 7
+    LITERATURE_AUTHOR = 8
+    LITERATURE_PUBLISHER = 9
+    RNAIGI = 10
+    OTHER = 255
+
+
+ELEMENTS = {
+    1: 'H',
+    2: 'He',
+    3: 'Li',
+    4: 'Be',
+    5: 'B',
+    6: 'C',
+    7: 'N',
+    8: 'O',
+    9: 'F',
+    10: 'Ne',
+    11: 'Na',
+    12: 'Mg',
+    13: 'Al',
+    14: 'Si',
+    15: 'P',
+    16: 'S',
+    17: 'Cl',
+    18: 'Ar',
+    19: 'K',
+    20: 'Ca',
+    21: 'Sc',
+    22: 'Ti',
+    23: 'V',
+    24: 'Cr',
+    25: 'Mn',
+    26: 'Fe',
+    27: 'Co',
+    28: 'Ni',
+    29: 'Cu',
+    30: 'Zn',
+    31: 'Ga',
+    32: 'Ge',
+    33: 'As',
+    34: 'Se',
+    35: 'Br',
+    36: 'Kr',
+    37: 'Rb',
+    38: 'Sr',
+    39: 'Y',
+    40: 'Zr',
+    41: 'Nb',
+    42: 'Mo',
+    43: 'Tc',
+    44: 'Ru',
+    45: 'Rh',
+    46: 'Pd',
+    47: 'Ag',
+    48: 'Cd',
+    49: 'In',
+    50: 'Sn',
+    51: 'Sb',
+    52: 'Te',
+    53: 'I',
+    54: 'Xe',
+    55: 'Cs',
+    56: 'Ba',
+    57: 'La',
+    58: 'Ce',
+    59: 'Pr',
+    60: 'Nd',
+    61: 'Pm',
+    62: 'Sm',
+    63: 'Eu',
+    64: 'Gd',
+    65: 'Tb',
+    66: 'Dy',
+    67: 'Ho',
+    68: 'Er',
+    69: 'Tm',
+    70: 'Yb',
+    71: 'Lu',
+    72: 'Hf',
+    73: 'Ta',
+    74: 'W',
+    75: 'Re',
+    76: 'Os',
+    77: 'Ir',
+    78: 'Pt',
+    79: 'Au',
+    80: 'Hg',
+    81: 'Tl',
+    82: 'Pb',
+    83: 'Bi',
+    84: 'Po',
+    85: 'At',
+    86: 'Rn',
+    87: 'Fr',
+    88: 'Ra',
+    89: 'Ac',
+    90: 'Th',
+    91: 'Pa',
+    92: 'U',
+    93: 'Np',
+    94: 'Pu',
+    95: 'Am',
+    96: 'Cm',
+    97: 'Bk',
+    98: 'Cf',
+    99: 'Es',
+    100: 'Fm',
+    101: 'Md',
+    102: 'No',
+    103: 'Lr',
+    104: 'Rf',
+    105: 'Db',
+    106: 'Sg',
+    107: 'Bh',
+    108: 'Hs',
+    109: 'Mt',
+    110: 'Ds',
+    111: 'Rg',
+    112: 'Cp',
+    113: 'ut',
+    114: 'uq',
+    115: 'up',
+    116: 'uh',
+    117: 'us',
+    118: 'uo',
+}
+
+
 def request(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
     """
     Construct API request from parameters and return the response.
@@ -302,11 +487,11 @@ def deprecated(message=None):
 class Atom(object):
     """Class to represent an atom in a :class:`~pubchempy.Compound`."""
 
-    def __init__(self, aid, element, x=None, y=None, z=None, charge=0):
-        """Initialize with an atom ID, element symbol, coordinates and optional change.
+    def __init__(self, aid, number, x=None, y=None, z=None, charge=0):
+        """Initialize with an atom ID, atomic number, coordinates and optional change.
 
         :param int aid: Atom ID
-        :param string element: Element symbol.
+        :param int number: Atomic number
         :param float x: X coordinate.
         :param float y: Y coordinate.
         :param float z: (optional) Z coordinate.
@@ -314,8 +499,8 @@ class Atom(object):
         """
         self.aid = aid
         """The atom ID within the owning Compound."""
-        self.element = element
-        """The element symbol for this atom."""
+        self.number = number
+        """The atomic number for this atom."""
         self.x = x
         """The x coordinate for this atom."""
         self.y = y
@@ -351,9 +536,14 @@ class Atom(object):
             return getattr(self, prop) is not None
         return False
 
+    @property
+    def element(self):
+        """The element symbol for this atom."""
+        return ELEMENTS.get(self.number, None)
+
     def to_dict(self):
         """Return a dictionary containing Atom data."""
-        data = {'aid': self.aid, 'element': self.element}
+        data = {'aid': self.aid, 'number': self.number, 'element': self.element}
         for coord in {'x', 'y', 'z'}:
             if getattr(self, coord) is not None:
                 data[coord] = getattr(self, coord)
@@ -376,12 +566,12 @@ class Atom(object):
 class Bond(object):
     """Class to represent a bond between two atoms in a :class:`~pubchempy.Compound`."""
 
-    def __init__(self, aid1, aid2, order='single', style=None):
+    def __init__(self, aid1, aid2, order=BondType.SINGLE, style=None):
         """Initialize with begin and end atom IDs, bond order and bond style.
 
         :param int aid1: Begin atom ID.
         :param int aid2: End atom ID.
-        :param string order: Bond order.
+        :param int order: Bond order.
         """
         self.aid1 = aid1
         """ID of the begin atom of this bond."""
@@ -473,7 +663,7 @@ class Compound(object):
         if not len(aids) == len(elements):
             raise ResponseParseError('Error parsing atom elements')
         for aid, element in zip(aids, elements):
-            self._atoms[aid] = Atom(aid=aid, element=element)
+            self._atoms[aid] = Atom(aid=aid, number=element)
         # Add coordinates
         if 'coords' in self.record:
             coord_ids = self.record['coords'][0]['aid']
@@ -566,8 +756,7 @@ class Compound(object):
     @property
     def elements(self):
         """List of element symbols for atoms in this Compound."""
-        # Change to [a.element for a in self.atoms] ?
-        return self.record['atoms']['element']
+        return [a.element for a in self.atoms]
 
     @property
     def atoms(self):
@@ -605,9 +794,9 @@ class Compound(object):
 
     @property
     def coordinate_type(self):
-        if 'twod' in self.record['coords'][0]['type']:
+        if CoordinateType.TWO_D in self.record['coords'][0]['type']:
             return '2d'
-        elif 'threed' in self.record['coords'][0]['type']:
+        elif CoordinateType.THREE_D in self.record['coords'][0]['type']:
             return '3d'
 
     @property
@@ -906,7 +1095,7 @@ class Substance(object):
         May not exist if this Substance was not standardizable.
         """
         for c in self.record['compound']:
-            if c['id']['type'] == 'standardized':
+            if c['id']['type'] == CompoundIdType.STANDARDIZED:
                 return c['id']['id']['cid']
 
     @memoized_property
@@ -916,7 +1105,7 @@ class Substance(object):
         Requires an extra request. Result is cached.
         """
         for c in self.record['compound']:
-            if c['id']['type'] == 'standardized':
+            if c['id']['type'] == CompoundIdType.STANDARDIZED:
                 return Compound.from_cid(c['id']['id']['cid'])
 
     @property
@@ -926,7 +1115,7 @@ class Substance(object):
         The resulting :class:`~pubchempy.Compound` will not have a ``cid`` and will be missing most properties.
         """
         for c in self.record['compound']:
-            if c['id']['type'] == 'deposited':
+            if c['id']['type'] == CompoundIdType.DEPOSITED:
                 return Compound(c)
 
     @memoized_property

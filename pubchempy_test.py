@@ -128,12 +128,12 @@ class TestCompound(unittest.TestCase):
 
     def test_atoms(self):
         self.assertEqual(len(self.c1.atoms), 12)
-        self.assertEqual(set(a.element for a in self.c1.atoms), {'c', 'h'})
-        self.assertEqual(set(self.c1.elements), {'c', 'h'})
+        self.assertEqual(set(a.element for a in self.c1.atoms), {'C', 'H'})
+        self.assertEqual(set(self.c1.elements), {'C', 'H'})
 
     def test_atoms_deprecated(self):
         with warnings.catch_warnings(record=True) as w:
-            self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h'})
+            self.assertEqual(set(a['element'] for a in self.c1.atoms), {'C', 'H'})
             self.assertEqual(len(w), 1)
             self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
             self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
@@ -141,16 +141,16 @@ class TestCompound(unittest.TestCase):
     def test_single_atom(self):
         """Test Compound when there is a single atom and no bonds."""
         c = Compound.from_cid(259)
-        self.assertEqual(c.atoms, [Atom(aid=1, element='br', x=2, y=0, charge=-1)])
+        self.assertEqual(c.atoms, [Atom(aid=1, number=35, x=2, y=0, charge=-1)])
         self.assertEqual(c.bonds, [])
 
     def test_bonds(self):
         self.assertEqual(len(self.c1.bonds), 12)
-        self.assertEqual(set(b.order for b in self.c1.bonds), {'single', 'double'})
+        self.assertEqual(set(b.order for b in self.c1.bonds), {BondType.SINGLE, BondType.DOUBLE})
 
     def test_bonds_deprecated(self):
         with warnings.catch_warnings(record=True) as w:
-            self.assertEqual(set(b['order'] for b in self.c1.bonds), {'single', 'double'})
+            self.assertEqual(set(b['order'] for b in self.c1.bonds), {BondType.SINGLE, BondType.DOUBLE})
             self.assertEqual(len(w), 1)
             self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
             self.assertEqual(str(w[0].message), 'Dictionary style access to Bond attributes is deprecated')
@@ -261,12 +261,12 @@ class TestCompound3d(unittest.TestCase):
 
     def test_atoms(self):
         self.assertEqual(len(self.c1.atoms), 75)
-        self.assertEqual(set(a.element for a in self.c1.atoms), {'c', 'h', 'o', 'n'})
-        self.assertEqual(set(self.c1.elements), {'c', 'h', 'o', 'n'})
+        self.assertEqual(set(a.element for a in self.c1.atoms), {'C', 'H', 'O', 'N'})
+        self.assertEqual(set(self.c1.elements), {'C', 'H', 'O', 'N'})
 
     def test_atoms_deprecated(self):
         with warnings.catch_warnings(record=True) as w:
-            self.assertEqual(set(a['element'] for a in self.c1.atoms), {'c', 'h', 'o', 'n'})
+            self.assertEqual(set(a['element'] for a in self.c1.atoms), {'C', 'H', 'O', 'N'})
             self.assertEqual(len(w), 1)
             self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
             self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
@@ -346,7 +346,7 @@ class TestAssay(unittest.TestCase):
 
     def test_meta(self):
         self.assertTrue(isinstance(self.a1.name, text_types))
-        self.assertEqual(self.a1.project_category, 'literature-extracted')
+        self.assertEqual(self.a1.project_category, ProjectCategory.LITERATURE_EXTRACTED)
         self.assertTrue(isinstance(self.a1.description, list))
         self.assertTrue(isinstance(self.a1.comments, list))
 
@@ -373,7 +373,7 @@ class TestSearch(unittest.TestCase):
         results = get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles', searchtype='substructure', listkey_count=3)
         self.assertEqual(len(results), 3)
         for result in results:
-            self.assertTrue(all(el in [a['element'] for a in result.atoms] for el in {'c', 'n', 'h'}))
+            self.assertTrue(all(el in [a['element'] for a in result.atoms] for el in {'C', 'N', 'H'}))
             self.assertTrue(result.heavy_atom_count >= 14)
 
 
