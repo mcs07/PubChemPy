@@ -3,7 +3,7 @@
 Installation
 ============
 
-PubChemPy supports Python versions 2.7, 3.2, 3.3 and 3.4. There are no other dependencies.
+PubChemPy supports Python versions 2.7, 3.3, 3.4 and 3.5. There are no other dependencies.
 
 There are a variety of ways to download and install PubChemPy.
 
