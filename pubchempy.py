@@ -240,6 +240,8 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
 
     Full specification at http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html
     """
+    if not identifier:
+        raise ValueError('identifier/cid cannot be None')
     # If identifier is a list, join with commas into string
     if isinstance(identifier, int):
         identifier = str(identifier)
@@ -461,6 +463,7 @@ def memoized_property(fget):
     request.
     """
     attr_name = '_{0}'.format(fget.__name__)
+
     @functools.wraps(fget)
     def fget_memoized(self):
         if not hasattr(self, attr_name):
@@ -777,7 +780,7 @@ class Compound(object):
         if self.cid:
             results = get_json(self.cid, operation='synonyms')
             return results['InformationList']['Information'][0]['Synonym'] if results else []
-            
+
     @memoized_property
     def sids(self):
         """Requires an extra request. Result is cached."""
