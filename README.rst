@@ -42,7 +42,7 @@ Alternatively, try one of the other `installation options`_.
 Documentation
 -------------
 
-Full documentation is available at http://pubchempy.readthedocs.org.
+Full documentation is available at http://pubchempy.readthedocs.io.
 
 Contribute
 ----------
@@ -55,7 +55,7 @@ License
 
 PubChemPy is licensed under the `MIT license`_.
 
-.. _`installation options`: http://pubchempy.readthedocs.org/en/latest/guide/install.html
+.. _`installation options`: http://pubchempy.readthedocs.io/en/latest/guide/install.html
 .. _`source code`: https://github.com/mcs07/PubChemPy
 .. _`Issue Tracker`: https://github.com/mcs07/PubChemPy/issues
 .. _`MIT license`: https://github.com/mcs07/PubChemPy/blob/master/LICENSE
