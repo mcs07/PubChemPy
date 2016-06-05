@@ -39,6 +39,14 @@ Features
 - A complete Python wrapper around the `PubChem PUG REST web service`_.
 - Supports Python versions 2.7 – 3.4.
 
+
+Useful links
+------------
+
+- Source code is available on `GitHub`_.
+- Ask a question or report a bug on the `Issue Tracker`_.
+- PUG REST API `tutorial`_ and `documentation`_.
+
 User guide
 ----------
 
@@ -70,3 +78,7 @@ Comprehensive API documentation with information on every function, class and me
    api
 
 .. _`PubChem PUG REST web service`: https://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST_Tutorial.html
+.. _`GitHub`: https://github.com/mcs07/PubChemPy
+.. _`Issue Tracker`: https://github.com/mcs07/PubChemPy/issues
+.. _`tutorial`: https://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST_Tutorial.html
+.. _`documentation`: https://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html
