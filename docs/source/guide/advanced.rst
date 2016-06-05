@@ -36,6 +36,33 @@ PubChemPy can generate logging statements if required. Just set the desired logg
 
 The logger is named 'pubchempy'. There is more information on logging in the `Python logging documentation`_.
 
+Using behind a proxy
+--------------------
+
+When using PubChemPy behind a proxy, you may receive a ``URLError``::
+
+    URLError: <urlopen error [Errno 65] No route to host>
+
+A simple fix is to specify the proxy information via urllib. For Python 3::
+
+    import urllib
+    proxy_support = urllib.request.ProxyHandler({
+        'http': 'http://<proxy.address>:<port>',
+        'https': 'https://<proxy.address>:<port>'
+    })
+    opener = urllib.request.build_opener(proxy_support)
+    urllib.request.install_opener(opener)
+
+For Python 2::
+
+    import urllib2
+    proxy_support = urllib2.ProxyHandler({
+        'http': 'http://<proxy.address>:<port>',
+        'https': 'https://<proxy.address>:<port>'
+    })
+    opener = urllib2.build_opener(proxy_support)
+    urllib2.install_opener(opener)
+
 Custom requests
 ---------------
 
