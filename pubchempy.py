@@ -298,6 +298,13 @@ def get_json(identifier, namespace='cid', domain='compound', operation=None, sea
         log.info(e)
         return None
 
+def get_sdf(identifier, namespace='cid', domain='compound',operation=None, searchtype=None, **kwargs):
+    """Request wrapper that automatically parses SDF response and supresses NotFoundError."""
+    try:
+        return get(identifier, namespace, domain, operation, 'SDF', searchtype, **kwargs).decode()
+    except NotFoundError as e:
+        log.info(e)
+        return None
 
 def get_compounds(identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
     """Retrieve the specified compound records from PubChem.
