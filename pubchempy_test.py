@@ -49,6 +49,19 @@ class TestRequest(unittest.TestCase):
         r2 = get_json('C10H21N', 'formula', listkey_count=3)
         self.assertTrue('PC_Compounds' in r2 and len(r2['PC_Compounds']) == 3)
 
+    def test_xref_request(self):
+        response = request('US6187568B1', 'PatentID', 'substance',
+                            operation='sids', searchtype='xref')
+        self.assertEqual(response.code, 200)
+        response2 = get_json('US6187568B1', 'PatentID', 'substance',
+                            operation='sids', searchtype='xref')
+        self.assertTrue('IdentifierList' in response2)
+        self.assertTrue('SID' in response2['IdentifierList'])
+
+        sids = get_sids('US6187568B1', 'PatentID', 'substance',
+                        searchtype='xref')
+        self.assertTrue(all(isinstance(sid, int) for sid in sids))
+
 
 class TestProperties(unittest.TestCase):
 
