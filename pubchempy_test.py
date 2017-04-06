@@ -314,10 +314,10 @@ class TestSubstance(unittest.TestCase):
 
     def test_substance_equality(self):
         self.assertEqual(Substance.from_sid(24864499), Substance.from_sid(24864499))
-        self.assertEqual(get_substances('Coumarin 343', 'name')[0], get_substances(24864499)[0])
+        self.assertEqual(get_substances('Coumarin 343, Dye Content 97 %', 'name')[0], get_substances(24864499)[0])
 
     def test_synonyms(self):
-        self.assertGreater(len(self.s1.synonyms), 1)
+        self.assertEqual(len(self.s1.synonyms), 1)
 
     def test_source(self):
         self.assertEqual(self.s1.source_name, 'Sigma-Aldrich')
