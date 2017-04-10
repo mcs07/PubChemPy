@@ -17,6 +17,7 @@ import os
 import sys
 import time
 import warnings
+import binascii
 
 try:
     from urllib.error import HTTPError
@@ -900,7 +901,15 @@ class Compound(object):
 
         More information at ftp://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
         """
-        return _parse_prop({'implementation': 'E_SCREEN'}, self.record['props'])
+        hex_fingerprint = _parse_prop({'implementation': 'E_SCREEN'},
+                                      self.record['props'])
+        hex_bytes = binascii.unhexlify(hex_fingerprint)
+
+        # Skip first 4 bytes that contain length of fingerprint.
+        binary = ''.join(format(hex_byte, '08b') for hex_byte in hex_bytes[4:])
+
+        # Last 7 bits are padding.
+        return binary[:-7]
 
     @property
     def heavy_atom_count(self):
