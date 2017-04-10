@@ -253,7 +253,9 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     urlid, postdata = None, None
     if namespace == 'sourceid':
         identifier = identifier.replace('/', '.')
-    if namespace in ['listkey', 'formula', 'sourceid'] or (searchtype and namespace == 'cid') or domain == 'sources':
+    if namespace in ['listkey', 'formula', 'sourceid'] \
+            or searchtype == 'xref' \
+            or (searchtype and namespace == 'cid') or domain == 'sources':
         urlid = quote(identifier.encode('utf8'))
     else:
         postdata = urlencode([(namespace, identifier)]).encode('utf8')
@@ -273,7 +275,7 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
 
 def get(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
     """Request wrapper that automatically handles async requests."""
-    if searchtype or namespace in ['formula']:
+    if (searchtype and searchtype != 'xref') or namespace in ['formula']:
         response = request(identifier, namespace, domain, None, 'JSON', searchtype, **kwargs).read()
         status = json.loads(response.decode())
         if 'Waiting' in status and 'ListKey' in status['Waiting']:
