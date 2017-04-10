@@ -248,6 +248,11 @@ class TestCompound(unittest.TestCase):
             self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
             self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
 
+    def test_fingerprint(self):
+        for compound in (self.c1, self.c2):
+            self.assertEqual(len(compound.fingerprint), 881)
+            self.assertTrue(all(c in '01' for c in compound.fingerprint))
+
 
 class TestCompound3d(unittest.TestCase):
 
