@@ -235,6 +235,12 @@ class TestCompound(unittest.TestCase):
             self.assertEqual(w[0].category, PubChemPyDeprecationWarning)
             self.assertEqual(str(w[0].message), 'Dictionary style access to Atom attributes is deprecated')
 
+    def test_fingerprint(self):
+        # CACTVS fingerprint is 881 bits
+        self.assertEqual(len(self.c1.cactvs_fingerprint), 881)
+        # Raw fingerprint has 4 byte prefix, 7 bit suffix, and is hex encoded (/4) = 230
+        self.assertEqual(len(self.c1.fingerprint), (881 + (4 * 8) + 7) / 4)
+
 
 class TestCompound3d(unittest.TestCase):
 
