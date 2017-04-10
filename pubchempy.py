@@ -906,13 +906,8 @@ class Compound(object):
 
         More information at ftp://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
         """
-        hex_bytes = binascii.unhexlify(self.fingerprint)
-
-        # Skip first 4 bytes that contain length of fingerprint.
-        binary = ''.join(format(hex_byte, '08b') for hex_byte in hex_bytes[4:])
-
-        # Last 7 bits are padding.
-        return binary[:-7]
+        # Skip first 4 bytes (contain length of fingerprint) and last 7 bits (padding) then re-pad to 881 bits
+        return '{0:020b}'.format(int(self.fingerprint[8:], 16))[:-7].zfill(881)
 
     @property
     def heavy_atom_count(self):
