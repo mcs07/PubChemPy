@@ -3,7 +3,7 @@
 Installation
 ============
 
-PubChemPy supports Python versions 2.7, 3.3, 3.4 and 3.5. There are no other dependencies.
+PubChemPy supports Python versions 2.7, 3.5, and 3.6. There are no other dependencies.
 
 There are a variety of ways to download and install PubChemPy.
 
@@ -22,7 +22,14 @@ If you don't already have pip installed, you can `install it using get-pip.py`_:
        curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
        python get-pip.py
 
-Option 2: Download the latest release
+Option 2: Use conda
+-------------------
+
+If you use `Anaconda Python`_, install with conda::
+
+    conda install -c mcs07 pubchempy
+
+Option 3: Download the latest release
 -------------------------------------
 
 Alternatively, `download the latest release`_ manually and install yourself::
@@ -35,7 +42,7 @@ The setup.py command will install PubChemPy in your `site-packages` folder so it
 python scripts. Instead, you may prefer to just copy the pubchempy.py file into the desired project directory to only
 make it available to that project.
 
-Option 3: Clone the repository
+Option 4: Clone the repository
 ------------------------------
 
 The latest development version of PubChemPy is always `available on GitHub`_. This version is not guaranteed to be
@@ -46,5 +53,6 @@ stable, but may include new features that have not yet been released. Simply clo
     python setup.py install
 
 .. _`install it using get-pip.py`: http://www.pip-installer.org/en/latest/installing.html
+.. _`Anaconda Python`: https://www.continuum.io/anaconda-overview
 .. _`download the latest release`: https://github.com/mcs07/PubChemPy/releases/
 .. _`available on GitHub`: https://github.com/mcs07/PubChemPy
