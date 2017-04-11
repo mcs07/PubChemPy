@@ -34,8 +34,8 @@ Option 3: Download the latest release
 
 Alternatively, `download the latest release`_ manually and install yourself::
 
-    tar -xzvf PubChemPy-1.0.3.tar.gz
-    cd PubChemPy-1.0.3
+    tar -xzvf PubChemPy-1.0.4.tar.gz
+    cd PubChemPy-1.0.4
     python setup.py install
 
 The setup.py command will install PubChemPy in your `site-packages` folder so it is automatically available to all your

@@ -14,7 +14,7 @@ standardization, conversion between chemical file formats, depiction and retriev
 
 setup(
     name='PubChemPy',
-    version='1.0.3',
+    version='1.0.4',
     author='Matt Swain',
     author_email='m.swain@me.com',
     license='MIT',
