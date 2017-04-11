@@ -8,8 +8,8 @@ matrix:
   - OPTIONAL_DEPS=true
   - OPTIONAL_DEPS=false
 install:
-  - pip install coveralls pytest
-  - if [ "$OPTIONAL_DEPS" = true ]; then pip install pandas; fi
+  - pip install -U coveralls pytest
+  - if [ "$OPTIONAL_DEPS" = true ]; then pip install -U pandas; fi
 script:
   - coverage run --source=pubchempy -m pytest
 after_success:
