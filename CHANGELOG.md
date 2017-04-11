@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/mcs07/PubChemPy/releases/tag/HEAD)
-
-[Full Changelog](https://github.com/mcs07/PubChemPy/compare/v1.0.3...HEAD)
+## [v1.0.4](https://github.com/mcs07/PubChemPy/releases/tag/v1.0.4) (2017-04-11)
+[Full Changelog](https://github.com/mcs07/PubChemPy/compare/v1.0.3...v1.0.4)
 
 **Implemented enhancements:**
 
