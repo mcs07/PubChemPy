@@ -4,9 +4,10 @@ python:
   - "2.7"
   - "3.5"
   - "3.6"
-matrix:
-  - OPTIONAL_DEPS=true
-  - OPTIONAL_DEPS=false
+env:
+  matrix:
+    - OPTIONAL_DEPS=true
+    - OPTIONAL_DEPS=false
 install:
   - pip install -U coveralls pytest
   - if [ "$OPTIONAL_DEPS" = true ]; then pip install -U pandas; fi
