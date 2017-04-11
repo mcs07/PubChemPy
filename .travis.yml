@@ -4,9 +4,13 @@ python:
   - "2.7"
   - "3.5"
   - "3.6"
+matrix:
+  - OPTIONAL_DEPS=true
+  - OPTIONAL_DEPS=false
 install:
-  - pip install coveralls pandas
+  - pip install coveralls pytest
+  - if [ "$OPTIONAL_DEPS" = true ]; then pip install pandas; fi
 script:
-  - coverage run --source=pubchempy setup.py test
+  - coverage run --source=pubchempy -m pytest
 after_success:
   - coveralls
