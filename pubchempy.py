@@ -18,6 +18,7 @@ import sys
 import time
 import warnings
 import binascii
+import xml.etree.ElementTree as ET
 
 try:
     from urllib.error import HTTPError
@@ -39,6 +40,7 @@ __version__ = '1.0.4'
 __license__ = 'MIT'
 
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
+EUTILS_BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
 
 log = logging.getLogger('pubchempy')
 log.addHandler(logging.NullHandler())
@@ -260,8 +262,12 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
         urlid = quote(identifier.encode('utf8'))
     else:
         postdata = urlencode([(namespace, identifier)]).encode('utf8')
-    comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
-    apiurl = '/'.join(comps)
+    if not domain == 'eutils':
+        comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
+        apiurl = '/'.join(comps)
+    else:
+        apiurl = EUTILS_BASE
+        postdata += '&' + urlencode([('db', 'pccompound')]).encode('utf8')
     if kwargs:
         apiurl += '?%s' % urlencode(kwargs)
     # Make request
@@ -308,6 +314,29 @@ def get_sdf(identifier, namespace='cid', domain='compound',operation=None, searc
     except NotFoundError as e:
         log.info(e)
         return None
+
+def find_compounds(identifier, as_dataframe=False, as_compounds=False, **kwargs):
+    """Run a entrez query on PubMed for a given compound name using eutils
+
+    :param identifier: The compound name to use as a search query.
+    :param as_dataframe: (optional) Automatically extract the :class:`~pubchempy.Compound` properties into a pandas :class:`~pandas.DataFrame` and return that.
+    :param as_compounds: (optional) If provided, function will return a list of :class:`~pubchempy.Compound` entries matching the identifier string.
+
+    :return: by default, returns a list of CIDs matching the identifier string; if `as_compounds` is provided, the returned list will be a collection of :class:`~pubchempy.Compound`
+    
+    """
+    result = get(identifier, domain='eutils', namespace='term', output='XML')
+    e = ET.fromstring(result) # parse XML
+    ids = [i.text for i in list(e.find('IdList'))] # grab matching IDs
+
+    if len(ids) and (as_compounds or as_dataframe):
+        compounds = [get_compounds(l)[0] for l in ids]
+        if as_dataframe:
+            return compounds_to_frame(compounds)
+        return compounds
+    return ids
+
+
 
 def get_compounds(identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
     """Retrieve the specified compound records from PubChem.
