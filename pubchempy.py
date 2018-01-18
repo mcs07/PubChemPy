@@ -267,7 +267,7 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
         apiurl = '/'.join(comps)
     else:
         apiurl = EUTILS_BASE
-        postdata += '&' + urlencode([('db', 'pccompound')]).encode('utf8')
+        postdata = urlencode([('db', 'pccompound'),(namespace, identifier)]).encode('utf8')
     if kwargs:
         apiurl += '?%s' % urlencode(kwargs)
     # Make request
