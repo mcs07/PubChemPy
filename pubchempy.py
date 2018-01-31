@@ -325,7 +325,7 @@ def find_compounds(identifier, as_dataframe=False, as_compounds=False, **kwargs)
     :return: by default, returns a list of CIDs matching the identifier string; if `as_compounds` is provided, the returned list will be a collection of :class:`~pubchempy.Compound`
     
     """
-    result = get(identifier, domain='eutils', namespace='term', output='XML')
+    result = get('"{}"'.format(identifier), domain='eutils', namespace='term', output='XML')
     e = ET.fromstring(result) # parse XML
     ids = [i.text for i in list(e.find('IdList'))] # grab matching IDs
 
