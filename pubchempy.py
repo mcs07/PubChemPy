@@ -18,6 +18,7 @@ import sys
 import time
 import warnings
 import binascii
+import re
 
 try:
     from urllib.error import HTTPError
@@ -352,6 +353,7 @@ def get_assays(identifier, namespace='aid', **kwargs):
 
 # Allows properties to optionally be specified as underscore_separated, consistent with Compound attributes
 PROPERTY_MAP = {
+    'cas_no': 'CASNumber',
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
     'canonical_smiles': 'CanonicalSMILES',
@@ -405,14 +407,28 @@ def get_properties(properties, identifier, namespace='cid', searchtype=None, as_
     """
     if isinstance(properties, text_types):
         properties = properties.split(',')
-    properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties])
+    if 'cas_no' in properties:
+        cas_no = get_cas(identifier, namespace, domain='compound', searchtype=searchtype, **kwargs)
+    properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties if p != 'cas_no'])
     properties = 'property/%s' % properties
     results = get_json(identifier, namespace, 'compound', properties, searchtype=searchtype, **kwargs)
     results = results['PropertyTable']['Properties'] if results else []
+    if cas_no and len(results) > 0:
+        results[0]['CASNumber'] = cas_no
     if as_dataframe:
         import pandas as pd
         return pd.DataFrame.from_records(results, index='CID')
     return results
+
+
+def get_cas(identifier, namespace='cid', domain='compound', searchtype=None, **kwargs):
+    """ Look up CAS number """
+    synonyms_lookup = get_synonyms(identifier, namespace=namespace, domain=domain, searchtype=searchtype, **kwargs)
+    synonyms = synonyms_lookup[0]['Synonym'] if synonyms_lookup else []
+    if len(synonyms) > 0:
+        cas_nr = re.search(r'\d{2,7}-\d{2}-\d', ','.join(synonyms)).group()
+        return cas_nr
+    return None
 
 
 def get_synonyms(identifier, namespace='cid', domain='compound', searchtype=None, **kwargs):
@@ -781,6 +797,12 @@ class Compound(object):
         """List of :class:`Bonds <pubchempy.Bond>` between :class:`Atoms <pubchempy.Atom>` in this Compound."""
         return sorted(self._bonds.values(), key=lambda x: (x.aid1, x.aid2))
 
+    @property
+    def cas(self):
+        if self.cid and len(self.synonyms) > 0:
+            cas_nr = re.search(r'\d{2,7}-\d{2}-\d', ','.join(self.synonyms)).group()
+            return cas_nr or ''
+        
     @memoized_property
     def synonyms(self):
         """A ranked list of all the names associated with this Compound.
