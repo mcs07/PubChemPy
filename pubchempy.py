@@ -407,14 +407,15 @@ def get_properties(properties, identifier, namespace='cid', searchtype=None, as_
     """
     if isinstance(properties, text_types):
         properties = properties.split(',')
+    cas_result = ''
     if 'cas_no' in properties:
-        cas_no = get_cas(identifier, namespace, domain='compound', searchtype=searchtype, **kwargs)
+        cas_result = get_cas(identifier, namespace, domain='compound', searchtype=searchtype, **kwargs)
     properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties if p != 'cas_no'])
     properties = 'property/%s' % properties
     results = get_json(identifier, namespace, 'compound', properties, searchtype=searchtype, **kwargs)
     results = results['PropertyTable']['Properties'] if results else []
-    if cas_no and len(results) > 0:
-        results[0]['CASNumber'] = cas_no
+    if cas_result and len(results) > 0:
+        results[0]['CASNumber'] = cas_result
     if as_dataframe:
         import pandas as pd
         return pd.DataFrame.from_records(results, index='CID')
