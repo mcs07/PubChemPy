@@ -13,15 +13,15 @@ retrieval of chemical properties.
 Here's a quick example showing how to search for a compound by name::
 
     for compound in get_compounds('glucose', 'name'):
-        print compound.cid
-        print compound.isomeric_smiles
+        print(compound.cid)
+        print(compound.isomeric_smiles)
 
 Here's how you get calculated properties for a specific compound::
 
     vioxx = Compound.from_cid(5090)
-    print vioxx.molecular_formula
-    print vioxx.molecular_weight
-    print vioxx.xlogp
+    print(vioxx.molecular_formula)
+    print(vioxx.molecular_weight)
+    print(vioxx.xlogp)
 
 All the heavy lifting is done by PubChem's servers, using their database and chemical toolkits.
 
@@ -37,7 +37,7 @@ Features
 - Download compound records as XML, ASNT/B, JSON, SDF and depiction as a PNG image.
 - Construct property tables using *pandas* DataFrames.
 - A complete Python wrapper around the `PubChem PUG REST web service`_.
-- Supports Python versions 2.7 – 3.4.
+- Supports Python versions 2.7 – 3.9.
 
 
 Useful links
