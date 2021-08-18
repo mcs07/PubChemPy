@@ -1113,10 +1113,16 @@ class Substance(object):
 
         May not exist if this Substance was not standardizable.
         """
+        """
+        Some substances of pubchem data doesnot provide compound key
         for c in self.record['compound']:
             if c['id']['type'] == CompoundIdType.STANDARDIZED:
                 return c['id']['id']['cid']
-
+        """
+        if 'compound' in self.record:
+            for c in self.record['compound']:
+                if c['id']['type'] == CompoundIdType.STANDARDIZED:
+                    return c['id']['id']['cid']
     @memoized_property
     def standardized_compound(self):
         """Return the :class:`~pubchempy.Compound` that was produced when this Substance was standardized.
