@@ -15,10 +15,12 @@ import functools
 import json
 import logging
 import os
+import ssl
 import sys
 import time
 import warnings
 import binascii
+import certifi
 
 try:
     from urllib.error import HTTPError
@@ -269,7 +271,8 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     try:
         log.debug('Request URL: %s', apiurl)
         log.debug('Request data: %s', postdata)
-        response = urlopen(apiurl, postdata)
+        context = ssl.create_default_context(cafile=certifi.where())
+        response = urlopen(apiurl, postdata, context=context)
         return response
     except HTTPError as e:
         raise PubChemHTTPError(e)
