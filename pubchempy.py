@@ -354,6 +354,7 @@ def get_assays(identifier, namespace='aid', **kwargs):
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
+    'smiles': 'SMILES',
     'canonical_smiles': 'CanonicalSMILES',
     'isomeric_smiles': 'IsomericSMILES',
     'inchi': 'InChI',
@@ -828,13 +829,18 @@ class Compound(object):
         return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
 
     @property
+    def smiles(self):
+        """SMILES, with both stereochemical and isotopic information."""
+        return _parse_prop({'label': 'SMILES'}, self.record['props'])
+
+    @property
     def canonical_smiles(self):
-        """Canonical SMILES, with no stereochemistry information."""
+        """Canonical SMILES, with no stereochemistry information (deprecated)."""
         return _parse_prop({'label': 'SMILES', 'name': 'Canonical'}, self.record['props'])
 
     @property
     def isomeric_smiles(self):
-        """Isomeric SMILES."""
+        """Isomeric SMILES (deprecated)."""
         return _parse_prop({'label': 'SMILES', 'name': 'Isomeric'}, self.record['props'])
 
     @property
