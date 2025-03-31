@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 PubChemPy
@@ -35,7 +36,7 @@ except ImportError:
 
 __author__ = 'Matt Swain'
 __email__ = 'm.swain@me.com'
-__version__ = '1.0.4'
+__version__ = '1.0.4a'
 __license__ = 'MIT'
 
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
@@ -560,7 +561,7 @@ class Atom(object):
         for coord in {'x', 'y', 'z'}:
             if getattr(self, coord) is not None:
                 data[coord] = getattr(self, coord)
-        if self.charge is not 0:
+        if self.charge != 0:  # is not 0:  # old form, temporary fix [2025-03-31 Mon]
             data['charge'] = self.charge
         return data
 
