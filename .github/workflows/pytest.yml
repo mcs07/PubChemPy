@@ -1,0 +1,48 @@
+name: CI_pytest_pubchempy
+
+# name    : pytest.yml
+# purpose : regularly run pytest on pubchempy
+# date    : [2025-03-31 Mon]
+# edit    : [2025-04-03 Thu]
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  # schedule:
+    # - cron: "0 0 1 * *"  # once each 1st of a month, at 00:00 UTC (cf. https://crontab.guru/)
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        # for a factorial test, an explicit selection of GitHUb runner images
+        # https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+        # state of commit 23478d3 as visited on 2024-11-11 Mon
+        os: [ubuntu-24.04]
+        python-version: ["3.13"]
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 10  # Timeout for each job individually
+
+    steps:
+      - uses: actions/checkout@v4
+        # by [2024-10-23 Wed], this version possibly will be considered "old", cf.
+        # https://github.blog/changelog/2023-09-22-github-actions-transitioning-from-node-16-to-node-20/
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies with PyPI
+        run: pip install -r requirements/dev.txt
+
+      - name: run the check by pytest
+        run: |
+          echo "check by pytest"
+          python -m pytest
