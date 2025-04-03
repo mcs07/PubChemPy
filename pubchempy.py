@@ -826,7 +826,12 @@ class Compound(object):
     @property
     def molecular_weight(self):
         """Molecular Weight."""
-        return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
+        readout = _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
+        try:
+            return float(readout)
+        except (ValueError, TypeError) as e:
+            print(f"conversion of `molecular_weight` to float failed, {e}")
+            return None
 
     @property
     def canonical_smiles(self):
@@ -857,22 +862,43 @@ class Compound(object):
     @property
     def xlogp(self):
         """XLogP."""
-        return _parse_prop({'label': 'Log P'}, self.record['props'])
+        readout = _parse_prop({'label': 'Log P'}, self.record['props'])
+        try:
+            return float(readout)
+        except (ValueError, TypeError) as e:
+            print(f"conversion of `XLogP` to float failed, {e}")
+            return None
+
 
     @property
     def exact_mass(self):
         """Exact mass."""
-        return _parse_prop({'label': 'Mass', 'name': 'Exact'}, self.record['props'])
+        readout = _parse_prop({'label': 'Mass', 'name': 'Exact'}, self.record['props'])
+        try:
+            return float(readout)
+        except (ValueError, TypeError) as e:
+            print(f"conversion of `exact_mass` to float failed, {e}")
+            return None
 
     @property
     def monoisotopic_mass(self):
         """Monoisotopic mass."""
-        return _parse_prop({'label': 'Weight', 'name': 'MonoIsotopic'}, self.record['props'])
+        readout = _parse_prop({'label': 'Weight', 'name': 'MonoIsotopic'}, self.record['props'])
+        try:
+            return float(readout)
+        except (ValueError, TypeError) as e:
+            print(f"conversion of `monoisotopic_mass` to float failed, {e}")
+            return None
 
     @property
     def tpsa(self):
         """Topological Polar Surface Area."""
-        return _parse_prop({'implementation': 'E_TPSA'}, self.record['props'])
+        readout = _parse_prop({'implementation': 'E_TPSA'}, self.record['props'])
+        try:
+            return float(readout)
+        except (ValueError, TypeError) as e:
+            print("type conversion of `tpsa` to float failed, {e}")
+            return None
 
     @property
     def complexity(self):
@@ -968,7 +994,11 @@ class Compound(object):
     def volume_3d(self):
         conf = self.record['coords'][0]['conformers'][0]
         if 'data' in conf:
-            return _parse_prop({'label': 'Shape', 'name': 'Volume'}, conf['data'])
+            readout = _parse_prop({'label': 'Shape', 'name': 'Volume'}, conf['data'])
+            try:
+                return float(readout)
+            except (TypeError, ValueError) as e:
+                print(f"type conversion of `volume_3d` to float failed, {e}.")
 
     @property
     def multipoles_3d(self):
@@ -980,7 +1010,11 @@ class Compound(object):
     def conformer_rmsd_3d(self):
         coords = self.record['coords'][0]
         if 'data' in coords:
-            return _parse_prop({'label': 'Conformer', 'name': 'RMSD'}, coords['data'])
+            readout = _parse_prop({'label': 'Conformer', 'name': 'RMSD'}, coords['data'])
+            try:
+                return float(readout)
+            except(ValueError, TypeError) as e:
+                print(f"type conversion of `conformer_rmsd_3d` to float failed, {e}.")
 
     @property
     def effective_rotor_count_3d(self):
@@ -997,8 +1031,7 @@ class Compound(object):
     @property
     def mmff94_energy_3d(self):
         conf = self.record['coords'][0]['conformers'][0]
-        if 'data' in conf:
-            return _parse_prop({'label': 'Energy', 'name': 'MMFF94 NoEstat'}, conf['data'])
+        return _parse_prop({'label': 'Energy', 'name': 'MMFF94 NoEstat'}, conf['data'])
 
     @property
     def conformer_id_3d(self):
