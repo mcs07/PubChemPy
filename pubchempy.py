@@ -1028,10 +1028,15 @@ class Compound(object):
     def mmff94_partial_charges_3d(self):
         return _parse_prop({'label': 'Charge', 'name': 'MMFF94 Partial'}, self.record['props'])
 
-    @property
-    def mmff94_energy_3d(self):
-        conf = self.record['coords'][0]['conformers'][0]
-        return _parse_prop({'label': 'Energy', 'name': 'MMFF94 NoEstat'}, conf['data'])
+# tentative off, start:
+# [2025-04-03 Thu] this is commented out because cid 241 (benzene) has no dedicated
+# explicit record of this property on pubchem's web site
+# https://pubchem.ncbi.nlm.nih.gov/compound/241 (last modification by [2025-03-29 Fri])
+#    @property
+#    def mmff94_energy_3d(self):
+#        conf = self.record['coords'][0]['conformers'][0]
+#        return _parse_prop({'label': 'Energy', 'name': 'MMFF94 NoEstat'}, conf['data'])
+# tentative off, end.
 
     @property
     def conformer_id_3d(self):
