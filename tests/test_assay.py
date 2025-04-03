@@ -19,13 +19,13 @@ from pubchempy import *
 
 @pytest.fixture(scope='module')
 def a1():
-    """Assay AID 1490."""
-    return Assay.from_aid(1490)
+    """Assay AID 3490."""
+    return Assay.from_aid(3490)
 
 
 def test_basic(a1):
-    assert a1.aid == 1490
-    assert repr(a1) == 'Assay(1490)'
+    assert a1.aid == 3490
+    assert repr(a1) == 'Assay(3490)'
     assert a1.record
 
 
@@ -37,7 +37,7 @@ def test_meta(a1):
 
 
 def test_assay_equality():
-    first = Assay.from_aid(1490)
+    first = Assay.from_aid(3490)
     second = Assay.from_aid(1000)
     assert first == first
     assert second == second
