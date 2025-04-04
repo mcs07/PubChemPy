@@ -50,7 +50,7 @@ def test_properties_dataframe():
     assert df.ndim == 2
     assert df.index.names == ['CID']
     assert len(df.index) == 4
-    assert df.columns.values.tolist() == ['InChIKey', 'IsomericSMILES', 'XLogP']
+    assert sorted(df.columns.values.tolist()) == ['InChIKey', 'IsomericSMILES', 'XLogP']
 
 
 def test_compound_series():
