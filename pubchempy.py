@@ -36,7 +36,7 @@ except ImportError:
 
 __author__ = 'Matt Swain'
 __email__ = 'm.swain@me.com'
-__version__ = '1.0.4a'
+__version__ = '1.0.5a'
 __license__ = 'MIT'
 
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
@@ -561,7 +561,7 @@ class Atom(object):
         for coord in {'x', 'y', 'z'}:
             if getattr(self, coord) is not None:
                 data[coord] = getattr(self, coord)
-        if self.charge != 0:  # is not 0:  # old form, temporary fix [2025-03-31 Mon]
+        if self.charge != 0:
             data['charge'] = self.charge
         return data
 
