@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PubChemPy"
+version = "1.0.5a"
+description = "A simple Python wrapper around the PubChem PUG REST API."
+readme = "README.rst"
+requires-python = ">=3.6"
+license = { text = "MIT" }
+authors = [
+    { name = "Matt Swain", email = "m.swain@me.com" }
+]
+keywords = ["pubchem", "python", "rest", "api", "chemistry", "cheminformatics"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Database :: Front-Ends",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+]
+dependencies = [
+    "pandas",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
+[tool.setuptools]
+py-modules = ["pubchempy"]
+
+[tool.setuptools.package-data]
+pubchempy = ["py.typed"]
