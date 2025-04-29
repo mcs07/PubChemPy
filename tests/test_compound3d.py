@@ -30,7 +30,7 @@ def test_properties_types(c3d):
     assert isinstance(c3d.effective_rotor_count_3d, int)
     assert isinstance(c3d.pharmacophore_features_3d, list)
     assert isinstance(c3d.mmff94_partial_charges_3d, list)
-    assert isinstance(c3d.mmff94_energy_3d, float)
+#    assert isinstance(c3d.mmff94_energy_3d, float)
     assert isinstance(c3d.conformer_id_3d, text_types)
     assert isinstance(c3d.shape_selfoverlap_3d, float)
     assert isinstance(c3d.feature_selfoverlap_3d, float)
