@@ -25,9 +25,10 @@ classifiers = [
     "Topic :: Internet",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Operating System :: POSIX :: Linux",
+    "Operating System :: OS Independent",
 ]
 dependencies = [
+    "certifi",
     "pandas",
 ]
 
