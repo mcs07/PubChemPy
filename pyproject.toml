@@ -32,13 +32,8 @@ dependencies = [
     "pandas",
 ]
 
-[project.urls]
-Homepage = "https://github.com/mcs07/PubChemPy"
-Repository = "https://github.com/mcs07/PubChemPy"
-Issues = "https://github.com/mcs07/PubChemPy/issues"
-
 [project.optional-dependencies]
-test = [
+dev = [
     "build",
     "bumversion>=0.5.3",
     "coverage>4.0",
@@ -47,6 +42,11 @@ test = [
     "Sphinx>=1.3.1",
     "sphinx-rtd-theme>=0.1.9",
 ]
+
+[project.urls]
+Homepage = "https://github.com/mcs07/PubChemPy"
+Repository = "https://github.com/mcs07/PubChemPy"
+Issues = "https://github.com/mcs07/PubChemPy/issues"
 
 [tool.setuptools]
 py-modules = ["pubchempy"]
