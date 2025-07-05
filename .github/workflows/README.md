@@ -61,6 +61,22 @@ coverage run --source=pubchempy -m pytest tests/ -v
 coverage report -m
 ```
 
+## Updating README Badges
+
+Consider updating the README.rst file to use GitHub Actions badges instead of Travis CI:
+
+Replace the Travis CI badge:
+```rst
+.. image:: http://img.shields.io/travis/mcs07/PubChemPy/master.svg?style=flat
+    :target: https://travis-ci.org/mcs07/PubChemPy
+```
+
+With a GitHub Actions badge:
+```rst
+.. image:: https://github.com/mcs07/PubChemPy/workflows/Tests/badge.svg
+    :target: https://github.com/mcs07/PubChemPy/actions
+```
+
 ## Migrating from Travis CI
 
 This replaces the legacy `.travis.yml` configuration with modern GitHub Actions that provide:
