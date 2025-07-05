@@ -26,6 +26,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest
+        pip install -e .
         # Explicitly do NOT install pandas to test minimal functionality
         
     - name: Test core functionality without optional dependencies

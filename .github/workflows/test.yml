@@ -27,6 +27,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest coverage
+        pip install -e .
         if [ "${{ matrix.optional-deps }}" = "true" ]; then
           pip install pandas
         fi
@@ -68,6 +69,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest pandas
+        pip install -e .
         
     - name: Run tests
       run: |
@@ -92,6 +94,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest pandas
+        pip install -e .
         
     - name: Run tests
       run: |
