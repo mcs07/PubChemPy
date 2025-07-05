@@ -1,0 +1,46 @@
+name: Minimal Dependencies Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-minimal:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install minimal dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        # Explicitly do NOT install pandas to test minimal functionality
+        
+    - name: Test core functionality without optional dependencies
+      run: |
+        # Run only tests that don't require pandas
+        pytest tests/ -v -k "not pandas and not dataframe"
+        
+    - name: Test basic import and functionality
+      run: |
+        python -c "
+        import pubchempy as pcp
+        # Test basic functionality
+        c = pcp.Compound.from_cid(2244)
+        print(f'Compound CID: {c.cid}')
+        print(f'Molecular formula: {c.molecular_formula}')
+        print(f'Molecular weight: {c.molecular_weight}')
+        print('Basic functionality test passed!')
+        " 
