@@ -33,25 +33,26 @@ except ImportError:
     from itertools import izip_longest as zip_longest
 
 
-__author__ = 'Matt Swain'
-__email__ = 'm.swain@me.com'
-__version__ = '1.0.4'
-__license__ = 'MIT'
+__author__ = "Matt Swain"
+__email__ = "m.swain@me.com"
+__version__ = "1.0.4"
+__license__ = "MIT"
 
-API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
+API_BASE = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
 
-log = logging.getLogger('pubchempy')
+log = logging.getLogger("pubchempy")
 log.addHandler(logging.NullHandler())
 
 
 if sys.version_info[0] == 3:
     text_types = str, bytes
 else:
-    text_types = basestring,
+    text_types = (basestring,)
 
 
 class CompoundIdType(object):
     """"""
+
     #: Original Deposited Compound
     DEPOSITED = 0
     #: Standardized Form of the Deposited Compound
@@ -114,202 +115,261 @@ class ProjectCategory(object):
 
 
 ELEMENTS = {
-    1: 'H',
-    2: 'He',
-    3: 'Li',
-    4: 'Be',
-    5: 'B',
-    6: 'C',
-    7: 'N',
-    8: 'O',
-    9: 'F',
-    10: 'Ne',
-    11: 'Na',
-    12: 'Mg',
-    13: 'Al',
-    14: 'Si',
-    15: 'P',
-    16: 'S',
-    17: 'Cl',
-    18: 'Ar',
-    19: 'K',
-    20: 'Ca',
-    21: 'Sc',
-    22: 'Ti',
-    23: 'V',
-    24: 'Cr',
-    25: 'Mn',
-    26: 'Fe',
-    27: 'Co',
-    28: 'Ni',
-    29: 'Cu',
-    30: 'Zn',
-    31: 'Ga',
-    32: 'Ge',
-    33: 'As',
-    34: 'Se',
-    35: 'Br',
-    36: 'Kr',
-    37: 'Rb',
-    38: 'Sr',
-    39: 'Y',
-    40: 'Zr',
-    41: 'Nb',
-    42: 'Mo',
-    43: 'Tc',
-    44: 'Ru',
-    45: 'Rh',
-    46: 'Pd',
-    47: 'Ag',
-    48: 'Cd',
-    49: 'In',
-    50: 'Sn',
-    51: 'Sb',
-    52: 'Te',
-    53: 'I',
-    54: 'Xe',
-    55: 'Cs',
-    56: 'Ba',
-    57: 'La',
-    58: 'Ce',
-    59: 'Pr',
-    60: 'Nd',
-    61: 'Pm',
-    62: 'Sm',
-    63: 'Eu',
-    64: 'Gd',
-    65: 'Tb',
-    66: 'Dy',
-    67: 'Ho',
-    68: 'Er',
-    69: 'Tm',
-    70: 'Yb',
-    71: 'Lu',
-    72: 'Hf',
-    73: 'Ta',
-    74: 'W',
-    75: 'Re',
-    76: 'Os',
-    77: 'Ir',
-    78: 'Pt',
-    79: 'Au',
-    80: 'Hg',
-    81: 'Tl',
-    82: 'Pb',
-    83: 'Bi',
-    84: 'Po',
-    85: 'At',
-    86: 'Rn',
-    87: 'Fr',
-    88: 'Ra',
-    89: 'Ac',
-    90: 'Th',
-    91: 'Pa',
-    92: 'U',
-    93: 'Np',
-    94: 'Pu',
-    95: 'Am',
-    96: 'Cm',
-    97: 'Bk',
-    98: 'Cf',
-    99: 'Es',
-    100: 'Fm',
-    101: 'Md',
-    102: 'No',
-    103: 'Lr',
-    104: 'Rf',
-    105: 'Db',
-    106: 'Sg',
-    107: 'Bh',
-    108: 'Hs',
-    109: 'Mt',
-    110: 'Ds',
-    111: 'Rg',
-    112: 'Cp',
-    113: 'ut',
-    114: 'uq',
-    115: 'up',
-    116: 'uh',
-    117: 'us',
-    118: 'uo',
+    1: "H",
+    2: "He",
+    3: "Li",
+    4: "Be",
+    5: "B",
+    6: "C",
+    7: "N",
+    8: "O",
+    9: "F",
+    10: "Ne",
+    11: "Na",
+    12: "Mg",
+    13: "Al",
+    14: "Si",
+    15: "P",
+    16: "S",
+    17: "Cl",
+    18: "Ar",
+    19: "K",
+    20: "Ca",
+    21: "Sc",
+    22: "Ti",
+    23: "V",
+    24: "Cr",
+    25: "Mn",
+    26: "Fe",
+    27: "Co",
+    28: "Ni",
+    29: "Cu",
+    30: "Zn",
+    31: "Ga",
+    32: "Ge",
+    33: "As",
+    34: "Se",
+    35: "Br",
+    36: "Kr",
+    37: "Rb",
+    38: "Sr",
+    39: "Y",
+    40: "Zr",
+    41: "Nb",
+    42: "Mo",
+    43: "Tc",
+    44: "Ru",
+    45: "Rh",
+    46: "Pd",
+    47: "Ag",
+    48: "Cd",
+    49: "In",
+    50: "Sn",
+    51: "Sb",
+    52: "Te",
+    53: "I",
+    54: "Xe",
+    55: "Cs",
+    56: "Ba",
+    57: "La",
+    58: "Ce",
+    59: "Pr",
+    60: "Nd",
+    61: "Pm",
+    62: "Sm",
+    63: "Eu",
+    64: "Gd",
+    65: "Tb",
+    66: "Dy",
+    67: "Ho",
+    68: "Er",
+    69: "Tm",
+    70: "Yb",
+    71: "Lu",
+    72: "Hf",
+    73: "Ta",
+    74: "W",
+    75: "Re",
+    76: "Os",
+    77: "Ir",
+    78: "Pt",
+    79: "Au",
+    80: "Hg",
+    81: "Tl",
+    82: "Pb",
+    83: "Bi",
+    84: "Po",
+    85: "At",
+    86: "Rn",
+    87: "Fr",
+    88: "Ra",
+    89: "Ac",
+    90: "Th",
+    91: "Pa",
+    92: "U",
+    93: "Np",
+    94: "Pu",
+    95: "Am",
+    96: "Cm",
+    97: "Bk",
+    98: "Cf",
+    99: "Es",
+    100: "Fm",
+    101: "Md",
+    102: "No",
+    103: "Lr",
+    104: "Rf",
+    105: "Db",
+    106: "Sg",
+    107: "Bh",
+    108: "Hs",
+    109: "Mt",
+    110: "Ds",
+    111: "Rg",
+    112: "Cp",
+    113: "ut",
+    114: "uq",
+    115: "up",
+    116: "uh",
+    117: "us",
+    118: "uo",
 }
 
 
-def request(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
+def request(
+    identifier,
+    namespace="cid",
+    domain="compound",
+    operation=None,
+    output="JSON",
+    searchtype=None,
+    **kwargs
+):
     """
     Construct API request from parameters and return the response.
 
     Full specification at http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html
     """
     if not identifier:
-        raise ValueError('identifier/cid cannot be None')
+        raise ValueError("identifier/cid cannot be None")
     # If identifier is a list, join with commas into string
     if isinstance(identifier, int):
         identifier = str(identifier)
     if not isinstance(identifier, text_types):
-        identifier = ','.join(str(x) for x in identifier)
+        identifier = ",".join(str(x) for x in identifier)
     # Filter None values from kwargs
     kwargs = dict((k, v) for k, v in kwargs.items() if v is not None)
     # Build API URL
     urlid, postdata = None, None
-    if namespace == 'sourceid':
-        identifier = identifier.replace('/', '.')
-    if namespace in ['listkey', 'formula', 'sourceid'] \
-            or searchtype == 'xref' \
-            or (searchtype and namespace == 'cid') or domain == 'sources':
-        urlid = quote(identifier.encode('utf8'))
+    if namespace == "sourceid":
+        identifier = identifier.replace("/", ".")
+    if (
+        namespace in ["listkey", "formula", "sourceid"]
+        or searchtype == "xref"
+        or (searchtype and namespace == "cid")
+        or domain == "sources"
+    ):
+        urlid = quote(identifier.encode("utf8"))
     else:
-        postdata = urlencode([(namespace, identifier)]).encode('utf8')
-    comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
-    apiurl = '/'.join(comps)
+        postdata = urlencode([(namespace, identifier)]).encode("utf8")
+    comps = filter(
+        None, [API_BASE, domain, searchtype, namespace, urlid, operation, output]
+    )
+    apiurl = "/".join(comps)
     if kwargs:
-        apiurl += '?%s' % urlencode(kwargs)
+        apiurl += "?%s" % urlencode(kwargs)
     # Make request
     try:
-        log.debug('Request URL: %s', apiurl)
-        log.debug('Request data: %s', postdata)
+        log.debug("Request URL: %s", apiurl)
+        log.debug("Request data: %s", postdata)
         response = urlopen(apiurl, postdata)
         return response
     except HTTPError as e:
         raise PubChemHTTPError(e)
 
 
-def get(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
+def get(
+    identifier,
+    namespace="cid",
+    domain="compound",
+    operation=None,
+    output="JSON",
+    searchtype=None,
+    **kwargs
+):
     """Request wrapper that automatically handles async requests."""
-    if (searchtype and searchtype != 'xref') or namespace in ['formula']:
-        response = request(identifier, namespace, domain, None, 'JSON', searchtype, **kwargs).read()
+    if (searchtype and searchtype != "xref") or namespace in ["formula"]:
+        response = request(
+            identifier, namespace, domain, None, "JSON", searchtype, **kwargs
+        ).read()
         status = json.loads(response.decode())
-        if 'Waiting' in status and 'ListKey' in status['Waiting']:
-            identifier = status['Waiting']['ListKey']
-            namespace = 'listkey'
-            while 'Waiting' in status and 'ListKey' in status['Waiting']:
+        if "Waiting" in status and "ListKey" in status["Waiting"]:
+            identifier = status["Waiting"]["ListKey"]
+            namespace = "listkey"
+            while "Waiting" in status and "ListKey" in status["Waiting"]:
                 time.sleep(2)
-                response = request(identifier, namespace, domain, operation, 'JSON', **kwargs).read()
+                response = request(
+                    identifier, namespace, domain, operation, "JSON", **kwargs
+                ).read()
                 status = json.loads(response.decode())
-            if not output == 'JSON':
-                response = request(identifier, namespace, domain, operation, output, searchtype, **kwargs).read()
+            if not output == "JSON":
+                response = request(
+                    identifier,
+                    namespace,
+                    domain,
+                    operation,
+                    output,
+                    searchtype,
+                    **kwargs
+                ).read()
     else:
-        response = request(identifier, namespace, domain, operation, output, searchtype, **kwargs).read()
+        response = request(
+            identifier, namespace, domain, operation, output, searchtype, **kwargs
+        ).read()
     return response
 
 
-def get_json(identifier, namespace='cid', domain='compound', operation=None, searchtype=None, **kwargs):
+def get_json(
+    identifier,
+    namespace="cid",
+    domain="compound",
+    operation=None,
+    searchtype=None,
+    **kwargs
+):
     """Request wrapper that automatically parses JSON response and supresses NotFoundError."""
     try:
-        return json.loads(get(identifier, namespace, domain, operation, 'JSON', searchtype, **kwargs).decode())
+        return json.loads(
+            get(
+                identifier, namespace, domain, operation, "JSON", searchtype, **kwargs
+            ).decode()
+        )
     except NotFoundError as e:
         log.info(e)
         return None
 
-def get_sdf(identifier, namespace='cid', domain='compound',operation=None, searchtype=None, **kwargs):
+
+def get_sdf(
+    identifier,
+    namespace="cid",
+    domain="compound",
+    operation=None,
+    searchtype=None,
+    **kwargs
+):
     """Request wrapper that automatically parses SDF response and supresses NotFoundError."""
     try:
-        return get(identifier, namespace, domain, operation, 'SDF', searchtype, **kwargs).decode()
+        return get(
+            identifier, namespace, domain, operation, "SDF", searchtype, **kwargs
+        ).decode()
     except NotFoundError as e:
         log.info(e)
         return None
 
-def get_compounds(identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
+
+def get_compounds(
+    identifier, namespace="cid", searchtype=None, as_dataframe=False, **kwargs
+):
     """Retrieve the specified compound records from PubChem.
 
     :param identifier: The compound identifier to use as a search query.
@@ -319,13 +379,13 @@ def get_compounds(identifier, namespace='cid', searchtype=None, as_dataframe=Fal
                          :class:`~pandas.DataFrame` and return that.
     """
     results = get_json(identifier, namespace, searchtype=searchtype, **kwargs)
-    compounds = [Compound(r) for r in results['PC_Compounds']] if results else []
+    compounds = [Compound(r) for r in results["PC_Compounds"]] if results else []
     if as_dataframe:
         return compounds_to_frame(compounds)
     return compounds
 
 
-def get_substances(identifier, namespace='sid', as_dataframe=False, **kwargs):
+def get_substances(identifier, namespace="sid", as_dataframe=False, **kwargs):
     """Retrieve the specified substance records from PubChem.
 
     :param identifier: The substance identifier to use as a search query.
@@ -333,69 +393,76 @@ def get_substances(identifier, namespace='sid', as_dataframe=False, **kwargs):
     :param as_dataframe: (optional) Automatically extract the :class:`~pubchempy.Substance` properties into a pandas
                          :class:`~pandas.DataFrame` and return that.
     """
-    results = get_json(identifier, namespace, 'substance', **kwargs)
-    substances = [Substance(r) for r in results['PC_Substances']] if results else []
+    results = get_json(identifier, namespace, "substance", **kwargs)
+    substances = [Substance(r) for r in results["PC_Substances"]] if results else []
     if as_dataframe:
         return substances_to_frame(substances)
     return substances
 
 
-def get_assays(identifier, namespace='aid', **kwargs):
+def get_assays(identifier, namespace="aid", **kwargs):
     """Retrieve the specified assay records from PubChem.
 
     :param identifier: The assay identifier to use as a search query.
     :param namespace: (optional) The identifier type.
     """
-    results = get_json(identifier, namespace, 'assay', 'description', **kwargs)
-    return [Assay(r) for r in results['PC_AssayContainer']] if results else []
+    results = get_json(identifier, namespace, "assay", "description", **kwargs)
+    return [Assay(r) for r in results["PC_AssayContainer"]] if results else []
 
 
 # Allows properties to optionally be specified as underscore_separated, consistent with Compound attributes
 PROPERTY_MAP = {
-    'molecular_formula': 'MolecularFormula',
-    'molecular_weight': 'MolecularWeight',
-    'canonical_smiles': 'SMILES',
-    'isomeric_smiles': 'SMILES',
-    'inchi': 'InChI',
-    'inchikey': 'InChIKey',
-    'iupac_name': 'IUPACName',
-    'xlogp': 'XLogP',
-    'exact_mass': 'ExactMass',
-    'monoisotopic_mass': 'MonoisotopicMass',
-    'tpsa': 'TPSA',
-    'complexity': 'Complexity',
-    'charge': 'Charge',
-    'h_bond_donor_count': 'HBondDonorCount',
-    'h_bond_acceptor_count': 'HBondAcceptorCount',
-    'rotatable_bond_count': 'RotatableBondCount',
-    'heavy_atom_count': 'HeavyAtomCount',
-    'isotope_atom_count': 'IsotopeAtomCount',
-    'atom_stereo_count': 'AtomStereoCount',
-    'defined_atom_stereo_count': 'DefinedAtomStereoCount',
-    'undefined_atom_stereo_count': 'UndefinedAtomStereoCount',
-    'bond_stereo_count': 'BondStereoCount',
-    'defined_bond_stereo_count': 'DefinedBondStereoCount',
-    'undefined_bond_stereo_count': 'UndefinedBondStereoCount',
-    'covalent_unit_count': 'CovalentUnitCount',
-    'volume_3d': 'Volume3D',
-    'conformer_rmsd_3d': 'ConformerModelRMSD3D',
-    'conformer_model_rmsd_3d': 'ConformerModelRMSD3D',
-    'x_steric_quadrupole_3d': 'XStericQuadrupole3D',
-    'y_steric_quadrupole_3d': 'YStericQuadrupole3D',
-    'z_steric_quadrupole_3d': 'ZStericQuadrupole3D',
-    'feature_count_3d': 'FeatureCount3D',
-    'feature_acceptor_count_3d': 'FeatureAcceptorCount3D',
-    'feature_donor_count_3d': 'FeatureDonorCount3D',
-    'feature_anion_count_3d': 'FeatureAnionCount3D',
-    'feature_cation_count_3d': 'FeatureCationCount3D',
-    'feature_ring_count_3d': 'FeatureRingCount3D',
-    'feature_hydrophobe_count_3d': 'FeatureHydrophobeCount3D',
-    'effective_rotor_count_3d': 'EffectiveRotorCount3D',
-    'conformer_count_3d': 'ConformerCount3D',
+    "molecular_formula": "MolecularFormula",
+    "molecular_weight": "MolecularWeight",
+    "canonical_smiles": "SMILES",
+    "isomeric_smiles": "SMILES",
+    "inchi": "InChI",
+    "inchikey": "InChIKey",
+    "iupac_name": "IUPACName",
+    "xlogp": "XLogP",
+    "exact_mass": "ExactMass",
+    "monoisotopic_mass": "MonoisotopicMass",
+    "tpsa": "TPSA",
+    "complexity": "Complexity",
+    "charge": "Charge",
+    "h_bond_donor_count": "HBondDonorCount",
+    "h_bond_acceptor_count": "HBondAcceptorCount",
+    "rotatable_bond_count": "RotatableBondCount",
+    "heavy_atom_count": "HeavyAtomCount",
+    "isotope_atom_count": "IsotopeAtomCount",
+    "atom_stereo_count": "AtomStereoCount",
+    "defined_atom_stereo_count": "DefinedAtomStereoCount",
+    "undefined_atom_stereo_count": "UndefinedAtomStereoCount",
+    "bond_stereo_count": "BondStereoCount",
+    "defined_bond_stereo_count": "DefinedBondStereoCount",
+    "undefined_bond_stereo_count": "UndefinedBondStereoCount",
+    "covalent_unit_count": "CovalentUnitCount",
+    "volume_3d": "Volume3D",
+    "conformer_rmsd_3d": "ConformerModelRMSD3D",
+    "conformer_model_rmsd_3d": "ConformerModelRMSD3D",
+    "x_steric_quadrupole_3d": "XStericQuadrupole3D",
+    "y_steric_quadrupole_3d": "YStericQuadrupole3D",
+    "z_steric_quadrupole_3d": "ZStericQuadrupole3D",
+    "feature_count_3d": "FeatureCount3D",
+    "feature_acceptor_count_3d": "FeatureAcceptorCount3D",
+    "feature_donor_count_3d": "FeatureDonorCount3D",
+    "feature_anion_count_3d": "FeatureAnionCount3D",
+    "feature_cation_count_3d": "FeatureCationCount3D",
+    "feature_ring_count_3d": "FeatureRingCount3D",
+    "feature_hydrophobe_count_3d": "FeatureHydrophobeCount3D",
+    "effective_rotor_count_3d": "EffectiveRotorCount3D",
+    "conformer_count_3d": "ConformerCount3D",
 }
 
 
-def get_properties(properties, identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
+def get_properties(
+    properties,
+    identifier,
+    namespace="cid",
+    searchtype=None,
+    as_dataframe=False,
+    **kwargs
+):
     """Retrieve the specified properties from PubChem.
 
     :param identifier: The compound, substance or assay identifier to use as a search query.
@@ -404,65 +471,91 @@ def get_properties(properties, identifier, namespace='cid', searchtype=None, as_
     :param as_dataframe: (optional) Automatically extract the properties into a pandas :class:`~pandas.DataFrame`.
     """
     if isinstance(properties, text_types):
-        properties = properties.split(',')
-    properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties])
-    properties = 'property/%s' % properties
-    results = get_json(identifier, namespace, 'compound', properties, searchtype=searchtype, **kwargs)
-    results = results['PropertyTable']['Properties'] if results else []
+        properties = properties.split(",")
+    properties = ",".join([PROPERTY_MAP.get(p, p) for p in properties])
+    properties = "property/%s" % properties
+    results = get_json(
+        identifier, namespace, "compound", properties, searchtype=searchtype, **kwargs
+    )
+    results = results["PropertyTable"]["Properties"] if results else []
     if as_dataframe:
         import pandas as pd
-        return pd.DataFrame.from_records(results, index='CID')
+
+        return pd.DataFrame.from_records(results, index="CID")
     return results
 
 
-def get_synonyms(identifier, namespace='cid', domain='compound', searchtype=None, **kwargs):
-    results = get_json(identifier, namespace, domain, 'synonyms', searchtype=searchtype, **kwargs)
-    return results['InformationList']['Information'] if results else []
+def get_synonyms(
+    identifier, namespace="cid", domain="compound", searchtype=None, **kwargs
+):
+    results = get_json(
+        identifier, namespace, domain, "synonyms", searchtype=searchtype, **kwargs
+    )
+    return results["InformationList"]["Information"] if results else []
 
 
-def get_cids(identifier, namespace='name', domain='compound', searchtype=None, **kwargs):
-    results = get_json(identifier, namespace, domain, 'cids', searchtype=searchtype, **kwargs)
+def get_cids(
+    identifier, namespace="name", domain="compound", searchtype=None, **kwargs
+):
+    results = get_json(
+        identifier, namespace, domain, "cids", searchtype=searchtype, **kwargs
+    )
     if not results:
         return []
-    elif 'IdentifierList' in results:
-        return results['IdentifierList']['CID']
-    elif 'InformationList' in results:
-        return results['InformationList']['Information']
+    elif "IdentifierList" in results:
+        return results["IdentifierList"]["CID"]
+    elif "InformationList" in results:
+        return results["InformationList"]["Information"]
 
 
-def get_sids(identifier, namespace='cid', domain='compound', searchtype=None, **kwargs):
-    results = get_json(identifier, namespace, domain, 'sids', searchtype=searchtype, **kwargs)
+def get_sids(identifier, namespace="cid", domain="compound", searchtype=None, **kwargs):
+    results = get_json(
+        identifier, namespace, domain, "sids", searchtype=searchtype, **kwargs
+    )
     if not results:
         return []
-    elif 'IdentifierList' in results:
-        return results['IdentifierList']['SID']
-    elif 'InformationList' in results:
-        return results['InformationList']['Information']
+    elif "IdentifierList" in results:
+        return results["IdentifierList"]["SID"]
+    elif "InformationList" in results:
+        return results["InformationList"]["Information"]
 
 
-def get_aids(identifier, namespace='cid', domain='compound', searchtype=None, **kwargs):
-    results = get_json(identifier, namespace, domain, 'aids', searchtype=searchtype, **kwargs)
+def get_aids(identifier, namespace="cid", domain="compound", searchtype=None, **kwargs):
+    results = get_json(
+        identifier, namespace, domain, "aids", searchtype=searchtype, **kwargs
+    )
     if not results:
         return []
-    elif 'IdentifierList' in results:
-        return results['IdentifierList']['AID']
-    elif 'InformationList' in results:
-        return results['InformationList']['Information']
+    elif "IdentifierList" in results:
+        return results["IdentifierList"]["AID"]
+    elif "InformationList" in results:
+        return results["InformationList"]["Information"]
 
 
-def get_all_sources(domain='substance'):
+def get_all_sources(domain="substance"):
     """Return a list of all current depositors of substances or assays."""
-    results = json.loads(get(domain, None, 'sources').decode())
-    return results['InformationList']['SourceName']
+    results = json.loads(get(domain, None, "sources").decode())
+    return results["InformationList"]["SourceName"]
 
 
-def download(outformat, path, identifier, namespace='cid', domain='compound', operation=None, searchtype=None,
-             overwrite=False, **kwargs):
+def download(
+    outformat,
+    path,
+    identifier,
+    namespace="cid",
+    domain="compound",
+    operation=None,
+    searchtype=None,
+    overwrite=False,
+    **kwargs
+):
     """Format can be  XML, ASNT/B, JSON, SDF, CSV, PNG, TXT."""
-    response = get(identifier, namespace, domain, operation, outformat, searchtype, **kwargs)
+    response = get(
+        identifier, namespace, domain, operation, outformat, searchtype, **kwargs
+    )
     if not overwrite and os.path.isfile(path):
         raise IOError("%s already exists. Use 'overwrite=True' to overwrite it." % path)
-    with open(path, 'wb') as f:
+    with open(path, "wb") as f:
         f.write(response)
 
 
@@ -472,28 +565,32 @@ def memoized_property(fget):
     Used to cache :class:`~pubchempy.Compound` and :class:`~pubchempy.Substance` properties that require an additional
     request.
     """
-    attr_name = '_{0}'.format(fget.__name__)
+    attr_name = "_{0}".format(fget.__name__)
 
     @functools.wraps(fget)
     def fget_memoized(self):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, fget(self))
         return getattr(self, attr_name)
+
     return property(fget_memoized)
 
 
 def deprecated(message=None):
     """Decorator to mark functions as deprecated. A warning will be emitted when the function is used."""
+
     def deco(func):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
             warnings.warn(
-                message or 'Call to deprecated function {}'.format(func.__name__),
+                message or "Call to deprecated function {}".format(func.__name__),
                 category=PubChemPyDeprecationWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             return func(*args, **kwargs)
+
         return wrapped
+
     return deco
 
 
@@ -524,28 +621,35 @@ class Atom(object):
         """The formal charge on this atom."""
 
     def __repr__(self):
-        return 'Atom(%s, %s)' % (self.aid, self.element)
+        return "Atom(%s, %s)" % (self.aid, self.element)
 
     def __eq__(self, other):
-        return (isinstance(other, type(self)) and self.aid == other.aid and self.element == other.element and
-                self.x == other.x and self.y == other.y and self.z == other.z and self.charge == other.charge)
+        return (
+            isinstance(other, type(self))
+            and self.aid == other.aid
+            and self.element == other.element
+            and self.x == other.x
+            and self.y == other.y
+            and self.z == other.z
+            and self.charge == other.charge
+        )
 
-    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    @deprecated("Dictionary style access to Atom attributes is deprecated")
     def __getitem__(self, prop):
         """Allow dict-style access to attributes to ease transition from when atoms were dicts."""
-        if prop in {'element', 'x', 'y', 'z', 'charge'}:
+        if prop in {"element", "x", "y", "z", "charge"}:
             return getattr(self, prop)
         raise KeyError(prop)
 
-    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    @deprecated("Dictionary style access to Atom attributes is deprecated")
     def __setitem__(self, prop, val):
         """Allow dict-style setting of attributes to ease transition from when atoms were dicts."""
         setattr(self, prop, val)
 
-    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    @deprecated("Dictionary style access to Atom attributes is deprecated")
     def __contains__(self, prop):
         """Allow dict-style checking of attributes to ease transition from when atoms were dicts."""
-        if prop in {'element', 'x', 'y', 'z', 'charge'}:
+        if prop in {"element", "x", "y", "z", "charge"}:
             return getattr(self, prop) is not None
         return False
 
@@ -556,12 +660,12 @@ class Atom(object):
 
     def to_dict(self):
         """Return a dictionary containing Atom data."""
-        data = {'aid': self.aid, 'number': self.number, 'element': self.element}
-        for coord in {'x', 'y', 'z'}:
+        data = {"aid": self.aid, "number": self.number, "element": self.element}
+        for coord in {"x", "y", "z"}:
             if getattr(self, coord) is not None:
                 data[coord] = getattr(self, coord)
         if self.charge != 0:
-            data['charge'] = self.charge
+            data["charge"] = self.charge
         return data
 
     def set_coordinates(self, x, y, z=None):
@@ -573,7 +677,7 @@ class Atom(object):
     @property
     def coordinate_type(self):
         """Whether this atom has 2D or 3D coordinates."""
-        return '2d' if self.z is None else '3d'
+        return "2d" if self.z is None else "3d"
 
 
 class Bond(object):
@@ -596,32 +700,37 @@ class Bond(object):
         """Bond style annotation."""
 
     def __repr__(self):
-        return 'Bond(%s, %s, %s)' % (self.aid1, self.aid2, self.order)
+        return "Bond(%s, %s, %s)" % (self.aid1, self.aid2, self.order)
 
     def __eq__(self, other):
-        return (isinstance(other, type(self)) and self.aid1 == other.aid1 and self.aid2 == other.aid2 and
-                self.order == other.order and self.style == other.style)
+        return (
+            isinstance(other, type(self))
+            and self.aid1 == other.aid1
+            and self.aid2 == other.aid2
+            and self.order == other.order
+            and self.style == other.style
+        )
 
-    @deprecated('Dictionary style access to Bond attributes is deprecated')
+    @deprecated("Dictionary style access to Bond attributes is deprecated")
     def __getitem__(self, prop):
         """Allow dict-style access to attributes to ease transition from when bonds were dicts."""
-        if prop in {'order', 'style'}:
+        if prop in {"order", "style"}:
             return getattr(self, prop)
         raise KeyError(prop)
 
-    @deprecated('Dictionary style access to Bond attributes is deprecated')
+    @deprecated("Dictionary style access to Bond attributes is deprecated")
     def __setitem__(self, prop, val):
         """Allow dict-style setting of attributes to ease transition from when bonds were dicts."""
         setattr(self, prop, val)
 
-    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    @deprecated("Dictionary style access to Atom attributes is deprecated")
     def __contains__(self, prop):
         """Allow dict-style checking of attributes to ease transition from when bonds were dicts."""
-        if prop in {'order', 'style'}:
+        if prop in {"order", "style"}:
             return getattr(self, prop) is not None
         return False
 
-    @deprecated('Dictionary style access to Atom attributes is deprecated')
+    @deprecated("Dictionary style access to Atom attributes is deprecated")
     def __delitem__(self, prop):
         """Delete the property prop from the wrapped object."""
         if not hasattr(self.__wrapped, prop):
@@ -630,9 +739,9 @@ class Bond(object):
 
     def to_dict(self):
         """Return a dictionary containing Bond data."""
-        data = {'aid1': self.aid1, 'aid2': self.aid2, 'order': self.order}
+        data = {"aid1": self.aid1, "aid2": self.aid2, "order": self.order}
         if self.style is not None:
-            data['style'] = self.style
+            data["style"] = self.style
         return data
 
 
@@ -642,6 +751,7 @@ class Compound(object):
     The PubChem Compound database is constructed from the Substance database using a standardization and deduplication
     process. Each Compound is uniquely identified by a CID.
     """
+
     def __init__(self, record):
         """Initialize with a record dict from the PubChem PUG REST service.
 
@@ -662,7 +772,7 @@ class Compound(object):
     @record.setter
     def record(self, record):
         self._record = record
-        log.debug('Created %s' % self)
+        log.debug("Created %s" % self)
         self._setup_atoms()
         self._setup_bonds()
 
@@ -671,45 +781,52 @@ class Compound(object):
         # Delete existing atoms
         self._atoms = {}
         # Create atoms
-        aids = self.record['atoms']['aid']
-        elements = self.record['atoms']['element']
+        aids = self.record["atoms"]["aid"]
+        elements = self.record["atoms"]["element"]
         if not len(aids) == len(elements):
-            raise ResponseParseError('Error parsing atom elements')
+            raise ResponseParseError("Error parsing atom elements")
         for aid, element in zip(aids, elements):
             self._atoms[aid] = Atom(aid=aid, number=element)
         # Add coordinates
-        if 'coords' in self.record:
-            coord_ids = self.record['coords'][0]['aid']
-            xs = self.record['coords'][0]['conformers'][0]['x']
-            ys = self.record['coords'][0]['conformers'][0]['y']
-            zs = self.record['coords'][0]['conformers'][0].get('z', [])
-            if not len(coord_ids) == len(xs) == len(ys) == len(self._atoms) or (zs and not len(zs) == len(coord_ids)):
-                raise ResponseParseError('Error parsing atom coordinates')
+        if "coords" in self.record:
+            coord_ids = self.record["coords"][0]["aid"]
+            xs = self.record["coords"][0]["conformers"][0]["x"]
+            ys = self.record["coords"][0]["conformers"][0]["y"]
+            zs = self.record["coords"][0]["conformers"][0].get("z", [])
+            if not len(coord_ids) == len(xs) == len(ys) == len(self._atoms) or (
+                zs and not len(zs) == len(coord_ids)
+            ):
+                raise ResponseParseError("Error parsing atom coordinates")
             for aid, x, y, z in zip_longest(coord_ids, xs, ys, zs):
                 self._atoms[aid].set_coordinates(x, y, z)
         # Add charges
-        if 'charge' in self.record['atoms']:
-            for charge in self.record['atoms']['charge']:
-                self._atoms[charge['aid']].charge = charge['value']
+        if "charge" in self.record["atoms"]:
+            for charge in self.record["atoms"]["charge"]:
+                self._atoms[charge["aid"]].charge = charge["value"]
 
     def _setup_bonds(self):
         """Derive Bond objects from the record."""
         self._bonds = {}
-        if 'bonds' not in self.record:
+        if "bonds" not in self.record:
             return
         # Create bonds
-        aid1s = self.record['bonds']['aid1']
-        aid2s = self.record['bonds']['aid2']
-        orders = self.record['bonds']['order']
+        aid1s = self.record["bonds"]["aid1"]
+        aid2s = self.record["bonds"]["aid2"]
+        orders = self.record["bonds"]["order"]
         if not len(aid1s) == len(aid2s) == len(orders):
-            raise ResponseParseError('Error parsing bonds')
+            raise ResponseParseError("Error parsing bonds")
         for aid1, aid2, order in zip(aid1s, aid2s, orders):
-            self._bonds[frozenset((aid1, aid2))] = Bond(aid1=aid1, aid2=aid2, order=order)
+            self._bonds[frozenset((aid1, aid2))] = Bond(
+                aid1=aid1, aid2=aid2, order=order
+            )
         # Add styles
-        if 'coords' in self.record and 'style' in self.record['coords'][0]['conformers'][0]:
-            aid1s = self.record['coords'][0]['conformers'][0]['style']['aid1']
-            aid2s = self.record['coords'][0]['conformers'][0]['style']['aid2']
-            styles = self.record['coords'][0]['conformers'][0]['style']['annotation']
+        if (
+            "coords" in self.record
+            and "style" in self.record["coords"][0]["conformers"][0]
+        ):
+            aid1s = self.record["coords"][0]["conformers"][0]["style"]["aid1"]
+            aid2s = self.record["coords"][0]["conformers"][0]["style"]["aid2"]
+            styles = self.record["coords"][0]["conformers"][0]["style"]["annotation"]
             for aid1, aid2, style in zip(aid1s, aid2s, styles):
                 self._bonds[frozenset((aid1, aid2))].style = style
 
@@ -723,11 +840,11 @@ class Compound(object):
 
         :param int cid: The PubChem Compound Identifier (CID).
         """
-        record = json.loads(request(cid, **kwargs).read().decode())['PC_Compounds'][0]
+        record = json.loads(request(cid, **kwargs).read().decode())["PC_Compounds"][0]
         return cls(record)
 
     def __repr__(self):
-        return 'Compound(%s)' % self.cid if self.cid else 'Compound()'
+        return "Compound(%s)" % self.cid if self.cid else "Compound()"
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
@@ -739,9 +856,20 @@ class Compound(object):
         because they each require an extra request.
         """
         if not properties:
-            skip = {'aids', 'sids', 'synonyms'}
-            properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) and p not in skip]
-        return {p: [i.to_dict() for i in getattr(self, p)] if p in {'atoms', 'bonds'} else getattr(self, p) for p in properties}
+            skip = {"aids", "sids", "synonyms"}
+            properties = [
+                p
+                for p in dir(Compound)
+                if isinstance(getattr(Compound, p), property) and p not in skip
+            ]
+        return {
+            p: (
+                [i.to_dict() for i in getattr(self, p)]
+                if p in {"atoms", "bonds"}
+                else getattr(self, p)
+            )
+            for p in properties
+        }
 
     def to_series(self, properties=None):
         """Return a pandas :class:`~pandas.Series` containing Compound data. Optionally specify a list of the desired
@@ -751,6 +879,7 @@ class Compound(object):
         because they each require an extra request.
         """
         import pandas as pd
+
         return pd.Series(self.to_dict(properties))
 
     @property
@@ -763,8 +892,12 @@ class Compound(object):
             automatically generated record may be returned that contains properties that have been calculated on the
             fly. These records will not have a CID property.
         """
-        if 'id' in self.record and 'id' in self.record['id'] and 'cid' in self.record['id']['id']:
-            return self.record['id']['id']['cid']
+        if (
+            "id" in self.record
+            and "id" in self.record["id"]
+            and "cid" in self.record["id"]["id"]
+        ):
+            return self.record["id"]["id"]["cid"]
 
     @property
     def elements(self):
@@ -788,128 +921,150 @@ class Compound(object):
         Requires an extra request. Result is cached.
         """
         if self.cid:
-            results = get_json(self.cid, operation='synonyms')
-            return results['InformationList']['Information'][0]['Synonym'] if results else []
+            results = get_json(self.cid, operation="synonyms")
+            return (
+                results["InformationList"]["Information"][0]["Synonym"]
+                if results
+                else []
+            )
 
     @memoized_property
     def sids(self):
         """Requires an extra request. Result is cached."""
         if self.cid:
-            results = get_json(self.cid, operation='sids')
-            return results['InformationList']['Information'][0]['SID'] if results else []
+            results = get_json(self.cid, operation="sids")
+            return (
+                results["InformationList"]["Information"][0]["SID"] if results else []
+            )
 
     @memoized_property
     def aids(self):
         """Requires an extra request. Result is cached."""
         if self.cid:
-            results = get_json(self.cid, operation='aids')
-            return results['InformationList']['Information'][0]['AID'] if results else []
+            results = get_json(self.cid, operation="aids")
+            return (
+                results["InformationList"]["Information"][0]["AID"] if results else []
+            )
 
     @property
     def coordinate_type(self):
-        if CoordinateType.TWO_D in self.record['coords'][0]['type']:
-            return '2d'
-        elif CoordinateType.THREE_D in self.record['coords'][0]['type']:
-            return '3d'
+        if CoordinateType.TWO_D in self.record["coords"][0]["type"]:
+            return "2d"
+        elif CoordinateType.THREE_D in self.record["coords"][0]["type"]:
+            return "3d"
 
     @property
     def charge(self):
         """Formal charge on this Compound."""
-        return self.record['charge'] if 'charge' in self.record else 0
+        return self.record["charge"] if "charge" in self.record else 0
 
     @property
     def molecular_formula(self):
         """Molecular formula."""
-        return _parse_prop({'label': 'Molecular Formula'}, self.record['props'])
+        return _parse_prop({"label": "Molecular Formula"}, self.record["props"])
 
     @property
     def molecular_weight(self):
         """Molecular Weight."""
-        return _parse_prop_as_float({'label': 'Molecular Weight'}, self.record['props'])
+        return _parse_prop_as_float({"label": "Molecular Weight"}, self.record["props"])
 
     @property
     def canonical_smiles(self):
         """Canonical SMILES, with no stereochemistry information.
-            This was replaced with the Connectivity SMILES
+        This was replaced with the Connectivity SMILES
         """
         return self.connectivity_smiles
 
     @property
     def isomeric_smiles(self):
         """Isomeric SMILES.
-            This was replaced with the Absolute SMILES"""
+        This was replaced with the Absolute SMILES"""
         return self.absolute_smiles
 
     @property
     def connectivity_smiles(self):
         """Connectivity SMILES, with no stereochemistry information."""
-        return _parse_prop({'label': 'SMILES', 'name': 'Connectivity'}, self.record['props'])
+        return _parse_prop(
+            {"label": "SMILES", "name": "Connectivity"}, self.record["props"]
+        )
 
     @property
     def absolute_smiles(self):
         """Absolute SMILES."""
-        return _parse_prop({'label': 'SMILES', 'name': 'Absolute'}, self.record['props'])
+        return _parse_prop(
+            {"label": "SMILES", "name": "Absolute"}, self.record["props"]
+        )
 
     @property
     def inchi(self):
         """InChI string."""
-        return _parse_prop({'label': 'InChI', 'name': 'Standard'}, self.record['props'])
+        return _parse_prop({"label": "InChI", "name": "Standard"}, self.record["props"])
 
     @property
     def inchikey(self):
         """InChIKey."""
-        return _parse_prop({'label': 'InChIKey', 'name': 'Standard'}, self.record['props'])
+        return _parse_prop(
+            {"label": "InChIKey", "name": "Standard"}, self.record["props"]
+        )
 
     @property
     def iupac_name(self):
         """Preferred IUPAC name."""
         # Note: Allowed, CAS-like Style, Preferred, Systematic, Traditional are available in full record
-        return _parse_prop({'label': 'IUPAC Name', 'name': 'Preferred'}, self.record['props'])
+        return _parse_prop(
+            {"label": "IUPAC Name", "name": "Preferred"}, self.record["props"]
+        )
 
     @property
     def xlogp(self):
         """XLogP."""
-        return _parse_prop_as_float({'label': 'Log P'}, self.record['props'])
+        return _parse_prop_as_float({"label": "Log P"}, self.record["props"])
 
     @property
     def exact_mass(self):
         """Exact mass."""
-        return _parse_prop_as_float({'label': 'Mass', 'name': 'Exact'}, self.record['props'])
+        return _parse_prop_as_float(
+            {"label": "Mass", "name": "Exact"}, self.record["props"]
+        )
 
     @property
     def monoisotopic_mass(self):
         """Monoisotopic mass."""
-        return _parse_prop_as_float({'label': 'Weight', 'name': 'MonoIsotopic'}, self.record['props'])
+        return _parse_prop_as_float(
+            {"label": "Weight", "name": "MonoIsotopic"}, self.record["props"]
+        )
 
     @property
     def tpsa(self):
         """Topological Polar Surface Area."""
-        return _parse_prop_as_float({'implementation': 'E_TPSA'}, self.record['props'])
+        return _parse_prop_as_float({"implementation": "E_TPSA"}, self.record["props"])
 
     @property
     def complexity(self):
         """Complexity."""
-        return _parse_prop_as_float({'implementation': 'E_COMPLEXITY'}, self.record['props'])
+        return _parse_prop_as_float(
+            {"implementation": "E_COMPLEXITY"}, self.record["props"]
+        )
 
     @property
     def h_bond_donor_count(self):
         """Hydrogen bond donor count."""
-        return _parse_prop({'implementation': 'E_NHDONORS'}, self.record['props'])
+        return _parse_prop({"implementation": "E_NHDONORS"}, self.record["props"])
 
     @property
     def h_bond_acceptor_count(self):
         """Hydrogen bond acceptor count."""
-        return _parse_prop({'implementation': 'E_NHACCEPTORS'}, self.record['props'])
+        return _parse_prop({"implementation": "E_NHACCEPTORS"}, self.record["props"])
 
     @property
     def rotatable_bond_count(self):
         """Rotatable bond count."""
-        return _parse_prop({'implementation': 'E_NROTBONDS'}, self.record['props'])
+        return _parse_prop({"implementation": "E_NROTBONDS"}, self.record["props"])
 
     @property
     def fingerprint(self):
         """Raw padded and hex-encoded fingerprint, as returned by the PUG REST API."""
-        return _parse_prop({'implementation': 'E_SCREEN'}, self.record['props'])
+        return _parse_prop({"implementation": "E_SCREEN"}, self.record["props"])
 
     @property
     def cactvs_fingerprint(self):
@@ -920,135 +1075,147 @@ class Compound(object):
         More information at ftp://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
         """
         # Skip first 4 bytes (contain length of fingerprint) and last 7 bits (padding) then re-pad to 881 bits
-        return '{0:020b}'.format(int(self.fingerprint[8:], 16))[:-7].zfill(881)
+        return "{0:020b}".format(int(self.fingerprint[8:], 16))[:-7].zfill(881)
 
     @property
     def heavy_atom_count(self):
         """Heavy atom count."""
-        if 'count' in self.record and 'heavy_atom' in self.record['count']:
-            return self.record['count']['heavy_atom']
+        if "count" in self.record and "heavy_atom" in self.record["count"]:
+            return self.record["count"]["heavy_atom"]
 
     @property
     def isotope_atom_count(self):
         """Isotope atom count."""
-        if 'count' in self.record and 'isotope_atom' in self.record['count']:
-            return self.record['count']['isotope_atom']
+        if "count" in self.record and "isotope_atom" in self.record["count"]:
+            return self.record["count"]["isotope_atom"]
 
     @property
     def atom_stereo_count(self):
         """Atom stereocenter count."""
-        if 'count' in self.record and 'atom_chiral' in self.record['count']:
-            return self.record['count']['atom_chiral']
+        if "count" in self.record and "atom_chiral" in self.record["count"]:
+            return self.record["count"]["atom_chiral"]
 
     @property
     def defined_atom_stereo_count(self):
         """Defined atom stereocenter count."""
-        if 'count' in self.record and 'atom_chiral_def' in self.record['count']:
-            return self.record['count']['atom_chiral_def']
+        if "count" in self.record and "atom_chiral_def" in self.record["count"]:
+            return self.record["count"]["atom_chiral_def"]
 
     @property
     def undefined_atom_stereo_count(self):
         """Undefined atom stereocenter count."""
-        if 'count' in self.record and 'atom_chiral_undef' in self.record['count']:
-            return self.record['count']['atom_chiral_undef']
+        if "count" in self.record and "atom_chiral_undef" in self.record["count"]:
+            return self.record["count"]["atom_chiral_undef"]
 
     @property
     def bond_stereo_count(self):
         """Bond stereocenter count."""
-        if 'count' in self.record and 'bond_chiral' in self.record['count']:
-            return self.record['count']['bond_chiral']
+        if "count" in self.record and "bond_chiral" in self.record["count"]:
+            return self.record["count"]["bond_chiral"]
 
     @property
     def defined_bond_stereo_count(self):
         """Defined bond stereocenter count."""
-        if 'count' in self.record and 'bond_chiral_def' in self.record['count']:
-            return self.record['count']['bond_chiral_def']
+        if "count" in self.record and "bond_chiral_def" in self.record["count"]:
+            return self.record["count"]["bond_chiral_def"]
 
     @property
     def undefined_bond_stereo_count(self):
         """Undefined bond stereocenter count."""
-        if 'count' in self.record and 'bond_chiral_undef' in self.record['count']:
-            return self.record['count']['bond_chiral_undef']
+        if "count" in self.record and "bond_chiral_undef" in self.record["count"]:
+            return self.record["count"]["bond_chiral_undef"]
 
     @property
     def covalent_unit_count(self):
         """Covalently-bonded unit count."""
-        if 'count' in self.record and 'covalent_unit' in self.record['count']:
-            return self.record['count']['covalent_unit']
+        if "count" in self.record and "covalent_unit" in self.record["count"]:
+            return self.record["count"]["covalent_unit"]
 
     @property
     def volume_3d(self):
-        conf = self.record['coords'][0]['conformers'][0]
-        if 'data' in conf:
-            return _parse_prop({'label': 'Shape', 'name': 'Volume'}, conf['data'])
+        conf = self.record["coords"][0]["conformers"][0]
+        if "data" in conf:
+            return _parse_prop({"label": "Shape", "name": "Volume"}, conf["data"])
 
     @property
     def multipoles_3d(self):
-        conf = self.record['coords'][0]['conformers'][0]
-        if 'data' in conf:
-            return _parse_prop({'label': 'Shape', 'name': 'Multipoles'}, conf['data'])
+        conf = self.record["coords"][0]["conformers"][0]
+        if "data" in conf:
+            return _parse_prop({"label": "Shape", "name": "Multipoles"}, conf["data"])
 
     @property
     def conformer_rmsd_3d(self):
-        coords = self.record['coords'][0]
-        if 'data' in coords:
-            return _parse_prop({'label': 'Conformer', 'name': 'RMSD'}, coords['data'])
+        coords = self.record["coords"][0]
+        if "data" in coords:
+            return _parse_prop({"label": "Conformer", "name": "RMSD"}, coords["data"])
 
     @property
     def effective_rotor_count_3d(self):
-        return _parse_prop({'label': 'Count', 'name': 'Effective Rotor'}, self.record['props'])
+        return _parse_prop(
+            {"label": "Count", "name": "Effective Rotor"}, self.record["props"]
+        )
 
     @property
     def pharmacophore_features_3d(self):
-        return _parse_prop({'label': 'Features', 'name': 'Pharmacophore'}, self.record['props'])
+        return _parse_prop(
+            {"label": "Features", "name": "Pharmacophore"}, self.record["props"]
+        )
 
     @property
     def mmff94_partial_charges_3d(self):
-        return _parse_prop({'label': 'Charge', 'name': 'MMFF94 Partial'}, self.record['props'])
+        return _parse_prop(
+            {"label": "Charge", "name": "MMFF94 Partial"}, self.record["props"]
+        )
 
     @property
     def mmff94_energy_3d(self):
-        conf = self.record['coords'][0]['conformers'][0]
-        if 'data' in conf:
-            return _parse_prop({'label': 'Energy', 'name': 'MMFF94 NoEstat'}, conf['data'])
+        conf = self.record["coords"][0]["conformers"][0]
+        if "data" in conf:
+            return _parse_prop(
+                {"label": "Energy", "name": "MMFF94 NoEstat"}, conf["data"]
+            )
 
     @property
     def conformer_id_3d(self):
-        conf = self.record['coords'][0]['conformers'][0]
-        if 'data' in conf:
-            return _parse_prop({'label': 'Conformer', 'name': 'ID'}, conf['data'])
+        conf = self.record["coords"][0]["conformers"][0]
+        if "data" in conf:
+            return _parse_prop({"label": "Conformer", "name": "ID"}, conf["data"])
 
     @property
     def shape_selfoverlap_3d(self):
-        conf = self.record['coords'][0]['conformers'][0]
-        if 'data' in conf:
-            return _parse_prop({'label': 'Shape', 'name': 'Self Overlap'}, conf['data'])
+        conf = self.record["coords"][0]["conformers"][0]
+        if "data" in conf:
+            return _parse_prop({"label": "Shape", "name": "Self Overlap"}, conf["data"])
 
     @property
     def feature_selfoverlap_3d(self):
-        conf = self.record['coords'][0]['conformers'][0]
-        if 'data' in conf:
-            return _parse_prop({'label': 'Feature', 'name': 'Self Overlap'}, conf['data'])
+        conf = self.record["coords"][0]["conformers"][0]
+        if "data" in conf:
+            return _parse_prop(
+                {"label": "Feature", "name": "Self Overlap"}, conf["data"]
+            )
 
     @property
     def shape_fingerprint_3d(self):
-        conf = self.record['coords'][0]['conformers'][0]
-        if 'data' in conf:
-            return _parse_prop({'label': 'Fingerprint', 'name': 'Shape'}, conf['data'])
+        conf = self.record["coords"][0]["conformers"][0]
+        if "data" in conf:
+            return _parse_prop({"label": "Fingerprint", "name": "Shape"}, conf["data"])
 
 
 def _parse_prop(search, proplist):
     """Extract property value from record using the given urn search filter."""
-    props = [i for i in proplist if all(item in i['urn'].items() for item in search.items())]
+    props = [
+        i for i in proplist if all(item in i["urn"].items() for item in search.items())
+    ]
     if len(props) > 0:
-        value_dict = props[0]['value']
+        value_dict = props[0]["value"]
         # Handle different value types from PubChem API
-        if 'ival' in value_dict:
-            return value_dict['ival']
-        elif 'fval' in value_dict:
-            return value_dict['fval']
-        elif 'sval' in value_dict:
-            return value_dict['sval']
+        if "ival" in value_dict:
+            return value_dict["ival"]
+        elif "fval" in value_dict:
+            return value_dict["fval"]
+        elif "sval" in value_dict:
+            return value_dict["sval"]
         else:
             # Fallback to original behavior for backwards compatibility
             return value_dict[list(value_dict.keys())[0]]
@@ -1094,7 +1261,9 @@ class Substance(object):
 
         :param int sid: The PubChem Substance Identifier (SID).
         """
-        record = json.loads(request(sid, 'sid', 'substance').read().decode())['PC_Substances'][0]
+        record = json.loads(request(sid, "sid", "substance").read().decode())[
+            "PC_Substances"
+        ][0]
         return cls(record)
 
     def __init__(self, record):
@@ -1102,7 +1271,7 @@ class Substance(object):
         """A dictionary containing the full Substance record that all other properties are obtained from."""
 
     def __repr__(self):
-        return 'Substance(%s)' % self.sid if self.sid else 'Substance()'
+        return "Substance(%s)" % self.sid if self.sid else "Substance()"
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
@@ -1116,8 +1285,12 @@ class Substance(object):
         :param properties: (optional) A list of the desired properties.
         """
         if not properties:
-            skip = {'deposited_compound', 'standardized_compound', 'cids', 'aids'}
-            properties = [p for p in dir(Substance) if isinstance(getattr(Substance, p), property) and p not in skip]
+            skip = {"deposited_compound", "standardized_compound", "cids", "aids"}
+            properties = [
+                p
+                for p in dir(Substance)
+                if isinstance(getattr(Substance, p), property) and p not in skip
+            ]
         return {p: getattr(self, p) for p in properties}
 
     def to_series(self, properties=None):
@@ -1129,28 +1302,29 @@ class Substance(object):
         :param properties: (optional) A list of the desired properties.
         """
         import pandas as pd
+
         return pd.Series(self.to_dict(properties))
 
     @property
     def sid(self):
         """The PubChem Substance Idenfitier (SID)."""
-        return self.record['sid']['id']
+        return self.record["sid"]["id"]
 
     @property
     def synonyms(self):
         """A ranked list of all the names associated with this Substance."""
-        if 'synonyms' in self.record:
-            return self.record['synonyms']
+        if "synonyms" in self.record:
+            return self.record["synonyms"]
 
     @property
     def source_name(self):
         """The name of the PubChem depositor that was the source of this Substance."""
-        return self.record['source']['db']['name']
+        return self.record["source"]["db"]["name"]
 
     @property
     def source_id(self):
         """Unique ID for this Substance within those from the same PubChem depositor source."""
-        return self.record['source']['db']['source_id']['str']
+        return self.record["source"]["db"]["source_id"]["str"]
 
     @property
     def standardized_cid(self):
@@ -1158,9 +1332,11 @@ class Substance(object):
 
         May not exist if this Substance was not standardizable.
         """
-        for c in self.record['compound']:
-            if c['id']['type'] == CompoundIdType.STANDARDIZED:
-                return c['id']['id']['cid']
+        if "compound" in self.record:
+            for c in self.record["compound"]:
+                if c["id"]["type"] == CompoundIdType.STANDARDIZED:
+                    return c["id"]["id"]["cid"]
+        return None
 
     @memoized_property
     def standardized_compound(self):
@@ -1168,9 +1344,11 @@ class Substance(object):
 
         Requires an extra request. Result is cached.
         """
-        for c in self.record['compound']:
-            if c['id']['type'] == CompoundIdType.STANDARDIZED:
-                return Compound.from_cid(c['id']['id']['cid'])
+        if "compound" in self.record:
+            for c in self.record["compound"]:
+                if c["id"]["type"] == CompoundIdType.STANDARDIZED:
+                    return Compound.from_cid(c["id"]["id"]["cid"])
+        return None
 
     @property
     def deposited_compound(self):
@@ -1178,25 +1356,27 @@ class Substance(object):
 
         The resulting :class:`~pubchempy.Compound` will not have a ``cid`` and will be missing most properties.
         """
-        for c in self.record['compound']:
-            if c['id']['type'] == CompoundIdType.DEPOSITED:
-                return Compound(c)
+        if "compound" in self.record:
+            for c in self.record["compound"]:
+                if c["id"]["type"] == CompoundIdType.DEPOSITED:
+                    return Compound(c)
+        return None
 
     @memoized_property
     def cids(self):
         """A list of all CIDs for Compounds that were produced when this Substance was standardized.
 
         Requires an extra request. Result is cached."""
-        results = get_json(self.sid, 'sid', 'substance', 'cids')
-        return results['InformationList']['Information'][0]['CID'] if results else []
+        results = get_json(self.sid, "sid", "substance", "cids")
+        return results["InformationList"]["Information"][0]["CID"] if results else []
 
     @memoized_property
     def aids(self):
         """A list of all AIDs for Assays associated with this Substance.
 
         Requires an extra request. Result is cached."""
-        results = get_json(self.sid, 'sid', 'substance', 'aids')
-        return results['InformationList']['Information'][0]['AID'] if results else []
+        results = get_json(self.sid, "sid", "substance", "aids")
+        return results["InformationList"]["Information"][0]["AID"] if results else []
 
 
 class Assay(object):
@@ -1207,7 +1387,9 @@ class Assay(object):
 
         :param int aid: The PubChem Assay Identifier (AID).
         """
-        record = json.loads(request(aid, 'aid', 'assay', 'description').read().decode())['PC_AssayContainer'][0]
+        record = json.loads(
+            request(aid, "aid", "assay", "description").read().decode()
+        )["PC_AssayContainer"][0]
         return cls(record)
 
     def __init__(self, record):
@@ -1215,7 +1397,7 @@ class Assay(object):
         """A dictionary containing the full Assay record that all other properties are obtained from."""
 
     def __repr__(self):
-        return 'Assay(%s)' % self.aid if self.aid else 'Assay()'
+        return "Assay(%s)" % self.aid if self.aid else "Assay()"
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
@@ -1228,23 +1410,25 @@ class Assay(object):
         :param properties: (optional) A list of the desired properties.
         """
         if not properties:
-            properties = [p for p in dir(Assay) if isinstance(getattr(Assay, p), property)]
+            properties = [
+                p for p in dir(Assay) if isinstance(getattr(Assay, p), property)
+            ]
         return {p: getattr(self, p) for p in properties}
 
     @property
     def aid(self):
         """The PubChem Substance Idenfitier (SID)."""
-        return self.record['assay']['descr']['aid']['id']
+        return self.record["assay"]["descr"]["aid"]["id"]
 
     @property
     def name(self):
         """The short assay name, used for display purposes."""
-        return self.record['assay']['descr']['name']
+        return self.record["assay"]["descr"]["name"]
 
     @property
     def description(self):
         """Description"""
-        return self.record['assay']['descr']['description']
+        return self.record["assay"]["descr"]["description"]
 
     @property
     def project_category(self):
@@ -1253,34 +1437,36 @@ class Assay(object):
         Possible values include mlscn, mlpcn, mlscn-ap, mlpcn-ap, literature-extracted, literature-author,
         literature-publisher, rnaigi.
         """
-        if 'project_category' in self.record['assay']['descr']:
-            return self.record['assay']['descr']['project_category']
+        if "project_category" in self.record["assay"]["descr"]:
+            return self.record["assay"]["descr"]["project_category"]
 
     @property
     def comments(self):
         """Comments and additional information."""
-        return [comment for comment in self.record['assay']['descr']['comment'] if comment]
+        return [
+            comment for comment in self.record["assay"]["descr"]["comment"] if comment
+        ]
 
     @property
     def results(self):
         """A list of dictionaries containing details of the results from this Assay."""
-        return self.record['assay']['descr']['results']
+        return self.record["assay"]["descr"]["results"]
 
     @property
     def target(self):
         """A list of dictionaries containing details of the Assay targets."""
-        if 'target' in self.record['assay']['descr']:
-            return self.record['assay']['descr']['target']
+        if "target" in self.record["assay"]["descr"]:
+            return self.record["assay"]["descr"]["target"]
 
     @property
     def revision(self):
         """Revision identifier for textual description."""
-        return self.record['assay']['descr']['revision']
+        return self.record["assay"]["descr"]["revision"]
 
     @property
     def aid_version(self):
         """Incremented when the original depositor updates the record."""
-        return self.record['assay']['descr']['aid']['version']
+        return self.record["assay"]["descr"]["aid"]["version"]
 
 
 def compounds_to_frame(compounds, properties=None):
@@ -1289,10 +1475,13 @@ def compounds_to_frame(compounds, properties=None):
     Optionally specify a list of the desired :class:`~pubchempy.Compound` properties.
     """
     import pandas as pd
+
     if isinstance(compounds, Compound):
         compounds = [compounds]
-    properties = set(properties) | set(['cid']) if properties else None
-    return pd.DataFrame.from_records([c.to_dict(properties) for c in compounds], index='cid')
+    properties = set(properties) | set(["cid"]) if properties else None
+    return pd.DataFrame.from_records(
+        [c.to_dict(properties) for c in compounds], index="cid"
+    )
 
 
 def substances_to_frame(substances, properties=None):
@@ -1301,10 +1490,13 @@ def substances_to_frame(substances, properties=None):
     Optionally specify a list of the desired :class:`~pubchempy.Substance` properties.
     """
     import pandas as pd
+
     if isinstance(substances, Substance):
         substances = [substances]
-    properties = set(properties) | set(['sid']) if properties else None
-    return pd.DataFrame.from_records([s.to_dict(properties) for s in substances], index='sid')
+    properties = set(properties) | set(["sid"]) if properties else None
+    return pd.DataFrame.from_records(
+        [s.to_dict(properties) for s in substances], index="sid"
+    )
 
 
 # def add_columns_to_frame(dataframe, id_col, id_namespace, add_cols):
@@ -1316,26 +1508,30 @@ def substances_to_frame(substances, properties=None):
 
 class PubChemPyDeprecationWarning(Warning):
     """Warning category for deprecated features."""
+
     pass
 
 
 class PubChemPyError(Exception):
     """Base class for all PubChemPy exceptions."""
+
     pass
 
 
 class ResponseParseError(PubChemPyError):
     """PubChem response is uninterpretable."""
+
     pass
 
 
 class PubChemHTTPError(PubChemPyError):
     """Generic error class to handle all HTTP error codes."""
+
     def __init__(self, e):
         self.code = e.code
         self.msg = e.reason
         try:
-            self.msg += ': %s' % json.loads(e.read().decode())['Fault']['Details'][0]
+            self.msg += ": %s" % json.loads(e.read().decode())["Fault"]["Details"][0]
         except (ValueError, IndexError, KeyError):
             pass
         if self.code == 400:
@@ -1357,19 +1553,22 @@ class PubChemHTTPError(PubChemPyError):
 
 class BadRequestError(PubChemHTTPError):
     """Request is improperly formed (syntax error in the URL, POST body, etc.)."""
-    def __init__(self, msg='Request is improperly formed'):
+
+    def __init__(self, msg="Request is improperly formed"):
         self.msg = msg
 
 
 class NotFoundError(PubChemHTTPError):
     """The input record was not found (e.g. invalid CID)."""
-    def __init__(self, msg='The input record was not found'):
+
+    def __init__(self, msg="The input record was not found"):
         self.msg = msg
 
 
 class MethodNotAllowedError(PubChemHTTPError):
     """Request not allowed (such as invalid MIME type in the HTTP Accept header)."""
-    def __init__(self, msg='Request not allowed'):
+
+    def __init__(self, msg="Request not allowed"):
         self.msg = msg
 
 
@@ -1378,21 +1577,24 @@ class TimeoutError(PubChemHTTPError):
 
     See :ref:`Avoiding TimeoutError <avoiding_timeouterror>` for more information.
     """
-    def __init__(self, msg='The request timed out'):
+
+    def __init__(self, msg="The request timed out"):
         self.msg = msg
 
 
 class UnimplementedError(PubChemHTTPError):
     """The requested operation has not (yet) been implemented by the server."""
-    def __init__(self, msg='The requested operation has not been implemented'):
+
+    def __init__(self, msg="The requested operation has not been implemented"):
         self.msg = msg
 
 
 class ServerError(PubChemHTTPError):
     """Some problem on the server side (such as a database server down, etc.)."""
-    def __init__(self, msg='Some problem on the server side'):
+
+    def __init__(self, msg="Some problem on the server side"):
         self.msg = msg
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(__version__)
