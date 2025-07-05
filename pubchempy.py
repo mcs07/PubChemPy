@@ -354,8 +354,8 @@ def get_assays(identifier, namespace='aid', **kwargs):
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
-    'canonical_smiles': 'CanonicalSMILES',
-    'isomeric_smiles': 'IsomericSMILES',
+    'canonical_smiles': 'SMILES',
+    'isomeric_smiles': 'SMILES',
     'inchi': 'InChI',
     'inchikey': 'InChIKey',
     'iupac_name': 'IUPACName',
@@ -825,7 +825,7 @@ class Compound(object):
     @property
     def molecular_weight(self):
         """Molecular Weight."""
-        return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
+        return _parse_prop_as_float({'label': 'Molecular Weight'}, self.record['props'])
 
     @property
     def canonical_smiles(self):
@@ -869,27 +869,27 @@ class Compound(object):
     @property
     def xlogp(self):
         """XLogP."""
-        return _parse_prop({'label': 'Log P'}, self.record['props'])
+        return _parse_prop_as_float({'label': 'Log P'}, self.record['props'])
 
     @property
     def exact_mass(self):
         """Exact mass."""
-        return _parse_prop({'label': 'Mass', 'name': 'Exact'}, self.record['props'])
+        return _parse_prop_as_float({'label': 'Mass', 'name': 'Exact'}, self.record['props'])
 
     @property
     def monoisotopic_mass(self):
         """Monoisotopic mass."""
-        return _parse_prop({'label': 'Weight', 'name': 'MonoIsotopic'}, self.record['props'])
+        return _parse_prop_as_float({'label': 'Weight', 'name': 'MonoIsotopic'}, self.record['props'])
 
     @property
     def tpsa(self):
         """Topological Polar Surface Area."""
-        return _parse_prop({'implementation': 'E_TPSA'}, self.record['props'])
+        return _parse_prop_as_float({'implementation': 'E_TPSA'}, self.record['props'])
 
     @property
     def complexity(self):
         """Complexity."""
-        return _parse_prop({'implementation': 'E_COMPLEXITY'}, self.record['props'])
+        return _parse_prop_as_float({'implementation': 'E_COMPLEXITY'}, self.record['props'])
 
     @property
     def h_bond_donor_count(self):
@@ -1041,7 +1041,39 @@ def _parse_prop(search, proplist):
     """Extract property value from record using the given urn search filter."""
     props = [i for i in proplist if all(item in i['urn'].items() for item in search.items())]
     if len(props) > 0:
-        return props[0]['value'][list(props[0]['value'].keys())[0]]
+        value_dict = props[0]['value']
+        # Handle different value types from PubChem API
+        if 'ival' in value_dict:
+            return value_dict['ival']
+        elif 'fval' in value_dict:
+            return value_dict['fval']
+        elif 'sval' in value_dict:
+            return value_dict['sval']
+        else:
+            # Fallback to original behavior for backwards compatibility
+            return value_dict[list(value_dict.keys())[0]]
+
+
+def _parse_prop_as_float(search, proplist):
+    """Extract property value as float from record using the given urn search filter."""
+    value = _parse_prop(search, proplist)
+    if value is not None:
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            pass
+    return value
+
+
+def _parse_prop_as_int(search, proplist):
+    """Extract property value as int from record using the given urn search filter."""
+    value = _parse_prop(search, proplist)
+    if value is not None:
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            pass
+    return value
 
 
 class Substance(object):

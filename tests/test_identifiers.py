@@ -36,4 +36,4 @@ def test_no_identifiers():
     assert get_cids('asfgaerghaeirughae', 'name', 'substance') == []
     assert get_cids('asfgaerghaeirughae', 'name', 'compound') == []
     assert get_sids(999999999, 'cid', 'compound') == []
-    assert get_aids(150194, 'cid', 'compound') == []
+    assert get_aids(999999999, 'cid', 'compound') == []
