@@ -44,10 +44,12 @@ log = logging.getLogger("pubchempy")
 log.addHandler(logging.NullHandler())
 
 
-if sys.version_info[0] == 3:
-    text_types = str, bytes
-else:
+try:
+    # Python 2
     text_types = (basestring,)
+except NameError:
+    # Python 3
+    text_types = (str, bytes)
 
 
 class CompoundIdType(object):
