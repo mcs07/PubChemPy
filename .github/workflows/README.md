@@ -1,3 +1,9 @@
+```markdown
+[![Tests](https://github.com/keceli/PubChemPy/workflows/Tests/badge.svg)](https://github.com/keceli/PubChemPy/actions?query=workflow%3ATests)
+[![Code Quality](https://github.com/keceli/PubChemPy/workflows/Code%20Quality/badge.svg)](https://github.com/keceli/PubChemPy/actions?query=workflow%3A%22Code+Quality%22)
+[![codecov](https://codecov.io/gh/keceli/PubChemPy/branch/main/graph/badge.svg)](https://codecov.io/gh/keceli/PubChemPy)
+```
+
 # GitHub Actions Workflows
 
 This directory contains GitHub Actions workflows for automated testing and continuous integration.
