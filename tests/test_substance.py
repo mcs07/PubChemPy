@@ -17,7 +17,7 @@ import pytest
 from pubchempy import *
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def s1():
     """Substance SID 24864499."""
     return Substance.from_sid(24864499)
@@ -26,13 +26,19 @@ def s1():
 def test_basic(s1):
     """Test Substance is retrieved and has a record and correct SID."""
     assert s1.sid == 24864499
-    assert repr(s1) == 'Substance(24864499)'
+    assert repr(s1) == "Substance(24864499)"
     assert s1.record
 
 
 def test_substance_equality():
-    assert Substance.from_sid(24864499) == Substance.from_sid(24864499)
-    assert get_substances('Coumarin 343, Dye Content 97 %', 'name')[0] == get_substances(24864499)[0]
+    try:
+        assert Substance.from_sid(24864499) == Substance.from_sid(24864499)
+        assert (
+            get_substances("Coumarin 343, Dye Content 97 %", "name")[0]
+            == get_substances(24864499)[0]
+        )
+    except (PubChemHTTPError, ServerError, TimeoutError) as e:
+        pytest.skip(f"PubChem server error: {e}")
 
 
 def test_synonyms(s1):
@@ -40,8 +46,8 @@ def test_synonyms(s1):
 
 
 def test_source(s1):
-    assert s1.source_name == 'Sigma-Aldrich'
-    assert s1.source_id == '393029_ALDRICH'
+    assert s1.source_name == "Sigma-Aldrich"
+    assert s1.source_id == "393029_ALDRICH"
 
 
 def test_deposited_compound(s1):
@@ -51,8 +57,11 @@ def test_deposited_compound(s1):
 
 def test_deposited_compound2():
     """Check that a Compound object can be constructed from the embedded deposited compound record."""
-    s2 = Substance.from_sid(223766453)
-    assert s2.deposited_compound.record
+    try:
+        s2 = Substance.from_sid(223766453)
+        assert s2.deposited_compound.record
+    except (PubChemHTTPError, ServerError, TimeoutError) as e:
+        pytest.skip(f"PubChem server error: {e}")
 
 
 def test_standardized_compound(s1):
