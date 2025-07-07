@@ -19,20 +19,26 @@ from pubchempy import *
 
 def test_invalid_identifier():
     """BadRequestError should be raised if identifier is not a positive integer."""
-    with pytest.raises(BadRequestError):
-        Compound.from_cid("aergaerhg")
-    with pytest.raises(BadRequestError):
-        get_compounds("srthrthsr")
-    with pytest.raises(BadRequestError):
-        get_substances("grgrqjksa")
+    try:
+        with pytest.raises(BadRequestError):
+            Compound.from_cid("aergaerhg")
+        with pytest.raises(BadRequestError):
+            get_compounds("srthrthsr")
+        with pytest.raises(BadRequestError):
+            get_substances("grgrqjksa")
+    except (PubChemHTTPError, ServerError, TimeoutError) as e:
+        pytest.skip(f"PubChem server error preventing error test: {e}")
 
 
 def test_notfound_identifier():
     """NotFoundError should be raised if identifier is a positive integer but record doesn't exist."""
-    with pytest.raises(NotFoundError):
-        Compound.from_cid(999999999)
-    with pytest.raises(NotFoundError):
-        Substance.from_sid(999999999)
+    try:
+        with pytest.raises(NotFoundError):
+            Compound.from_cid(999999999)
+        with pytest.raises(NotFoundError):
+            Substance.from_sid(999999999)
+    except (PubChemHTTPError, ServerError, TimeoutError) as e:
+        pytest.skip(f"PubChem server error preventing error test: {e}")
 
 
 def test_notfound_search():

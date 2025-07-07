@@ -133,8 +133,11 @@ def test_server_resilient_substances_dataframe():
 @pytest.mark.network
 def test_error_conditions_still_work():
     """Test that proper errors are still raised for invalid inputs."""
-    with pytest.raises(BadRequestError):
-        Compound.from_cid("invalid")
+    try:
+        with pytest.raises(BadRequestError):
+            Compound.from_cid("invalid")
 
-    with pytest.raises(NotFoundError):
-        Compound.from_cid(999999999)
+        with pytest.raises(NotFoundError):
+            Compound.from_cid(999999999)
+    except (PubChemHTTPError, ServerError, TimeoutError) as e:
+        pytest.skip(f"PubChem server error preventing error test: {e}")
