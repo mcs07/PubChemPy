@@ -13,6 +13,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import pytest
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 
 from pubchempy import *
 
@@ -37,8 +39,8 @@ def test_substance_equality():
             get_substances("Coumarin 343, Dye Content 97 %", "name")[0]
             == get_substances(24864499)[0]
         )
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f"PubChem server error: {e}")
+    except (PubChemHTTPError, ServerError, TimeoutError, RemoteDisconnected, URLError, ConnectionError) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_synonyms(s1):
@@ -60,8 +62,8 @@ def test_deposited_compound2():
     try:
         s2 = Substance.from_sid(223766453)
         assert s2.deposited_compound.record
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f"PubChem server error: {e}")
+    except (PubChemHTTPError, ServerError, TimeoutError, RemoteDisconnected, URLError, ConnectionError) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_standardized_compound(s1):

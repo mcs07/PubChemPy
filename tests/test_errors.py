@@ -13,6 +13,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import pytest
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 
 from pubchempy import *
 
@@ -26,8 +28,15 @@ def test_invalid_identifier():
             get_compounds("srthrthsr")
         with pytest.raises(BadRequestError):
             get_substances("grgrqjksa")
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f"PubChem server error preventing error test: {e}")
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error preventing error test: {e}")
 
 
 def test_notfound_identifier():
@@ -37,8 +46,15 @@ def test_notfound_identifier():
             Compound.from_cid(999999999)
         with pytest.raises(NotFoundError):
             Substance.from_sid(999999999)
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f"PubChem server error preventing error test: {e}")
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error preventing error test: {e}")
 
 
 def test_notfound_search():
@@ -46,5 +62,12 @@ def test_notfound_search():
     try:
         get_compounds(999999999)
         get_substances(999999999)
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f"PubChem server error: {e}")
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")

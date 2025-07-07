@@ -13,6 +13,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import pytest
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 
 from pubchempy import *
 
@@ -46,14 +48,34 @@ def test_listkey_requests():
 # @pytest.mark.xfail(reason="Patent ID US6187568B1 no longer exists in PubChem")
 def test_xref_request():
     """Test requests with xref inputs."""
-    response = request(
-        "US20050159403A1", "PatentID", "substance", operation="sids", searchtype="xref"
-    )
-    assert response.code == 200
-    response2 = get_json(
-        "US20050159403A1", "PatentID", "substance", operation="sids", searchtype="xref"
-    )
-    assert "IdentifierList" in response2
-    assert "SID" in response2["IdentifierList"]
-    sids = get_sids("US20050159403A1", "PatentID", "substance", searchtype="xref")
-    assert all(isinstance(sid, int) for sid in sids)
+    try:
+        response = request(
+            "US20050159403A1",
+            "PatentID",
+            "substance",
+            operation="sids",
+            searchtype="xref",
+        )
+        assert response.code == 200
+        response2 = get_json(
+            "US20050159403A1",
+            "PatentID",
+            "substance",
+            operation="sids",
+            searchtype="xref",
+        )
+        assert "IdentifierList" in response2
+        assert "SID" in response2["IdentifierList"]
+        sids = get_sids("US20050159403A1", "PatentID", "substance", searchtype="xref")
+        assert all(isinstance(sid, int) for sid in sids)
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error in xref test: {e}")
+    except NotFoundError:
+        pytest.skip("Patent ID US20050159403A1 no longer exists in PubChem")

@@ -15,6 +15,8 @@ from __future__ import unicode_literals
 import pytest
 import time
 import warnings
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 
 from pubchempy import *
 
@@ -25,9 +27,16 @@ def safe_api_call(func, *args, **kwargs):
     for attempt in range(max_retries):
         try:
             return func(*args, **kwargs)
-        except (PubChemHTTPError, TimeoutError, ServerError) as e:
+        except (
+            PubChemHTTPError,
+            TimeoutError,
+            ServerError,
+            RemoteDisconnected,
+            URLError,
+            ConnectionError,
+        ) as e:
             if attempt == max_retries - 1:
-                pytest.skip(f"PubChem server error after {max_retries} attempts: {e}")
+                pytest.skip(f"Network/server error after {max_retries} attempts: {e}")
             time.sleep(1.0 * (2**attempt))  # Exponential backoff
         except NotFoundError:
             # NotFoundError is expected for some tests, don't retry

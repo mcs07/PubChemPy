@@ -14,6 +14,8 @@ from __future__ import unicode_literals
 
 import pytest
 import time
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 from pubchempy import *
 
 
@@ -23,8 +25,15 @@ def skip_on_server_error(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (PubChemHTTPError, TimeoutError, ServerError) as e:
-            pytest.skip(f"Skipping due to PubChem server error: {e}")
+        except (
+            PubChemHTTPError,
+            TimeoutError,
+            ServerError,
+            RemoteDisconnected,
+            URLError,
+            ConnectionError,
+        ) as e:
+            pytest.skip(f"Skipping due to network/server error: {e}")
         except Exception as e:
             # Re-raise other exceptions normally
             raise
@@ -139,5 +148,12 @@ def test_error_conditions_still_work():
 
         with pytest.raises(NotFoundError):
             Compound.from_cid(999999999)
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f"PubChem server error preventing error test: {e}")
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error preventing error test: {e}")

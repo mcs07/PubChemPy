@@ -11,6 +11,8 @@ import pytest
 import time
 import warnings
 import threading
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 from pubchempy import *
 import pubchempy
 
@@ -38,16 +40,23 @@ def patched_request(*args, **kwargs):
 
 
 def retry_on_server_error(func, max_retries=3, delay=1.0):
-    """Retry a function call on server errors (503, 504, 500)."""
+    """Retry a function call on server errors (503, 504, 500) and network errors."""
     for attempt in range(max_retries):
         try:
             # Add rate limiting before each request
             rate_limited_request()
             return func()
-        except (PubChemHTTPError, TimeoutError, ServerError) as e:
+        except (
+            PubChemHTTPError,
+            TimeoutError,
+            ServerError,
+            RemoteDisconnected,
+            URLError,
+            ConnectionError,
+        ) as e:
             if attempt == max_retries - 1:
                 # On final attempt, skip the test instead of failing
-                pytest.skip(f"PubChem server error after {max_retries} attempts: {e}")
+                pytest.skip(f"Network/server error after {max_retries} attempts: {e}")
             time.sleep(delay * (2**attempt))  # Exponential backoff
         except Exception as e:
             # For other exceptions, don't retry

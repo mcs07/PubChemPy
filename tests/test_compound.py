@@ -12,19 +12,21 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 import re
-
+import warnings
 import pytest
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 
 from pubchempy import *
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def c1():
     """Compound CID 241."""
     return Compound.from_cid(241)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def c2():
     """Compound CID 175."""
     return Compound.from_cid(175)
@@ -33,22 +35,25 @@ def c2():
 def test_basic(c1):
     """Test Compound is retrieved and has a record and correct CID."""
     assert c1.cid == 241
-    assert repr(c1) == 'Compound(241)'
+    assert repr(c1) == "Compound(241)"
     assert c1.record
 
 
 def test_atoms(c1):
     assert len(c1.atoms) == 12
-    assert set(a.element for a in c1.atoms) == {'C', 'H'}
-    assert set(c1.elements) == {'C', 'H'}
+    assert set(a.element for a in c1.atoms) == {"C", "H"}
+    assert set(c1.elements) == {"C", "H"}
 
 
 def test_atoms_deprecated(c1):
     with warnings.catch_warnings(record=True) as w:
-        assert set(a['element'] for a in c1.atoms) == {'C', 'H'}
+        assert set(a["element"] for a in c1.atoms) == {"C", "H"}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == 'Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == "Dictionary style access to Atom attributes is deprecated"
+        )
 
 
 def test_single_atom():
@@ -65,10 +70,13 @@ def test_bonds(c1):
 
 def test_bonds_deprecated(c1):
     with warnings.catch_warnings(record=True) as w:
-        assert set(b['order'] for b in c1.bonds) == {BondType.SINGLE, BondType.DOUBLE}
+        assert set(b["order"] for b in c1.bonds) == {BondType.SINGLE, BondType.DOUBLE}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == 'Dictionary style access to Bond attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == "Dictionary style access to Bond attributes is deprecated"
+        )
 
 
 def test_charge(c1):
@@ -84,19 +92,22 @@ def test_coordinates(c1):
 
 def test_coordinates_deprecated(c1):
     with warnings.catch_warnings(record=True) as w:
-        assert isinstance(c1.atoms[0]['x'], (float, int))
-        assert isinstance(c1.atoms[0]['y'], (float, int))
-        assert 'z' not in c1.atoms[0]
+        assert isinstance(c1.atoms[0]["x"], (float, int))
+        assert isinstance(c1.atoms[0]["y"], (float, int))
+        assert "z" not in c1.atoms[0]
         assert len(w) == 3
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == 'Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == "Dictionary style access to Atom attributes is deprecated"
+        )
 
 
 def test_identifiers(c1):
     assert len(c1.canonical_smiles) > 10
     assert len(c1.isomeric_smiles) > 10
-    assert c1.inchi.startswith('InChI=')
-    assert re.match(r'^[A-Z]{14}-[A-Z]{10}-[A-Z\d]$', c1.inchikey)
+    assert c1.inchi.startswith("InChI=")
+    assert re.match(r"^[A-Z]{14}-[A-Z]{10}-[A-Z\d]$", c1.inchikey)
     # TODO: c1.molecular_formula
 
 
@@ -124,39 +135,62 @@ def test_properties_types(c1):
 
 
 def test_coordinate_type(c1):
-    assert c1.coordinate_type == '2d'
+    assert c1.coordinate_type == "2d"
 
 
 def test_compound_equality():
     try:
         assert Compound.from_cid(241) == Compound.from_cid(241)
-        assert get_compounds('Benzene', 'name')[0], get_compounds('c1ccccc1' == 'smiles')[0]
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f'PubChem server error: {e}')
+        assert get_compounds("Benzene", "name")[0], get_compounds(
+            "c1ccccc1" == "smiles"
+        )[0]
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_synonyms(c1):
     try:
         assert len(c1.synonyms) > 5
         assert len(c1.synonyms) > 5
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f'PubChem server error: {e}')
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_related_records(c1):
     try:
         assert len(c1.sids) > 20
         assert len(c1.aids) > 20
-    except (PubChemHTTPError, ServerError, TimeoutError) as e:
-        pytest.skip(f'PubChem server error: {e}')
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_compound_dict(c1):
     assert isinstance(c1.to_dict(), dict)
     assert c1.to_dict()
-    assert 'atoms' in c1.to_dict()
-    assert 'bonds' in c1.to_dict()
-    assert 'element' in c1.to_dict()['atoms'][0]
+    assert "atoms" in c1.to_dict()
+    assert "bonds" in c1.to_dict()
+    assert "element" in c1.to_dict()["atoms"][0]
 
 
 def test_charged_compound(c2):
@@ -166,10 +200,13 @@ def test_charged_compound(c2):
 
 def test_charged_compound_deprecated(c2):
     with warnings.catch_warnings(record=True) as w:
-        assert c2.atoms[0]['charge'] == -1
+        assert c2.atoms[0]["charge"] == -1
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == 'Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == "Dictionary style access to Atom attributes is deprecated"
+        )
 
 
 def test_fingerprint(c1):
