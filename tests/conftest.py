@@ -10,13 +10,39 @@ Pytest configuration and shared fixtures for pubchempy tests.
 import pytest
 import time
 import warnings
+import threading
 from pubchempy import *
+import pubchempy
+
+# Global rate limiting
+_last_request_time = 0
+_request_lock = threading.Lock()
+_original_request = None
+
+
+def rate_limited_request(min_delay=0.5):
+    """Ensure minimum delay between API requests to avoid overwhelming PubChem servers."""
+    global _last_request_time
+    with _request_lock:
+        current_time = time.time()
+        elapsed = current_time - _last_request_time
+        if elapsed < min_delay:
+            time.sleep(min_delay - elapsed)
+        _last_request_time = time.time()
+
+
+def patched_request(*args, **kwargs):
+    """Patched version of pubchempy.request that includes rate limiting."""
+    rate_limited_request(0.3)  # 300ms minimum delay between API calls
+    return _original_request(*args, **kwargs)
 
 
 def retry_on_server_error(func, max_retries=3, delay=1.0):
     """Retry a function call on server errors (503, 504, 500)."""
     for attempt in range(max_retries):
         try:
+            # Add rate limiting before each request
+            rate_limited_request()
             return func()
         except (PubChemHTTPError, TimeoutError, ServerError) as e:
             if attempt == max_retries - 1:
@@ -75,6 +101,18 @@ def pytest_configure(config):
         "markers", "network: marks tests as requiring network access"
     )
 
+    # Monkey patch the request function to add rate limiting
+    global _original_request
+    _original_request = pubchempy.request
+    pubchempy.request = patched_request
+
+
+def pytest_unconfigure(config):
+    """Restore original request function after tests."""
+    global _original_request
+    if _original_request:
+        pubchempy.request = _original_request
+
 
 def pytest_collection_modifyitems(config, items):
     """Modify test collection to handle network-dependent tests."""
@@ -93,5 +131,6 @@ def pytest_collection_modifyitems(config, items):
 def handle_server_errors():
     """Automatically handle server errors in all tests."""
     # This fixture runs before each test
-    # We can add global error handling here if needed
+    # Add a small delay to prevent overwhelming servers
+    rate_limited_request(0.2)  # 200ms minimum between tests
     yield

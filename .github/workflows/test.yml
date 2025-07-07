@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 2  # Limit parallel jobs to reduce server load
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
         optional-deps: [true, false]
@@ -32,6 +33,11 @@ jobs:
           pip install pandas
         fi
         
+    - name: Add delay to stagger API requests
+      run: |
+        # Add random delay to avoid simultaneous API requests
+        sleep $((RANDOM % 30 + 10))
+        
     - name: Run tests
       run: |
         coverage run --source=pubchempy -m pytest tests/ -v
@@ -52,8 +58,10 @@ jobs:
 
   test-windows:
     runs-on: windows-latest
+    needs: test  # Wait for Ubuntu tests to complete first
     strategy:
       fail-fast: false
+      max-parallel: 1  # Run Windows tests sequentially
       matrix:
         python-version: ["3.11", "3.12"]
         
@@ -70,6 +78,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest pandas
         pip install -e .
+        
+    - name: Add delay to stagger API requests
+      run: |
+        # Add delay to avoid overwhelming PubChem servers
+        Start-Sleep -Seconds (Get-Random -Minimum 10 -Maximum 30)
+      shell: powershell
         
     - name: Run tests
       run: |
@@ -77,8 +91,10 @@ jobs:
 
   test-macos:
     runs-on: macos-latest
+    needs: test-windows  # Wait for Windows tests to complete first
     strategy:
       fail-fast: false
+      max-parallel: 1  # Run macOS tests sequentially
       matrix:
         python-version: ["3.11", "3.12"]
         
@@ -95,6 +111,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest pandas
         pip install -e .
+        
+    - name: Add delay to stagger API requests
+      run: |
+        # Add delay to avoid overwhelming PubChem servers
+        sleep $((RANDOM % 30 + 10))
         
     - name: Run tests
       run: |

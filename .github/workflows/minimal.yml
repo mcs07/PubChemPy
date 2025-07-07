@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 2  # Limit parallel jobs to reduce server load
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
         
@@ -29,6 +30,11 @@ jobs:
         pip install -e .
         # Explicitly do NOT install pandas to test minimal functionality
         
+    - name: Add delay to stagger API requests
+      run: |
+        # Add random delay to avoid simultaneous API requests
+        sleep $((RANDOM % 20 + 5))
+        
     - name: Test core functionality without optional dependencies
       run: |
         # Run only tests that don't require pandas
@@ -38,6 +44,9 @@ jobs:
       run: |
         python -c "
         import pubchempy as pcp
+        import time
+        # Add small delay before API call
+        time.sleep(1)
         # Test basic functionality
         c = pcp.Compound.from_cid(2244)
         print(f'Compound CID: {c.cid}')
