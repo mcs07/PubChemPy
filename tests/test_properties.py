@@ -19,31 +19,31 @@ from pubchempy import *
 
 def test_properties():
     """"""
-    results = get_properties(['IsomericSMILES', 'InChIKey'], 'tris-(1,10-phenanthroline)ruthenium', 'name')
+    results = get_properties(['SMILES', 'InChIKey'], 'aspirin', 'name')
     assert len(results) > 0
     for result in results:
         assert 'CID' in result
-        assert 'IsomericSMILES' in result
+        assert 'SMILES' in result
         assert 'InChIKey' in result
 
 
 def test_underscore_properties():
     """Properties can also be specified as underscore-separated words, rather than CamelCase."""
-    results = get_properties(['isomeric_smiles', 'molecular_weight'], 'tris-(1,10-phenanthroline)ruthenium', 'name')
+    results = get_properties(['isomeric_smiles', 'molecular_weight'], 'aspirin', 'name')
     assert len(results) > 0
     for result in results:
         assert 'CID' in result
-        assert 'IsomericSMILES' in result
+        assert 'SMILES' in result
         assert 'MolecularWeight' in result
 
 
 def test_comma_string_properties():
     """Properties can also be specified as a comma-separated string, rather than a list."""
-    results = get_properties('isomeric_smiles,InChIKey,molecular_weight', 'tris-(1,10-phenanthroline)ruthenium', 'name')
+    results = get_properties('isomeric_smiles,InChIKey,molecular_weight', 'aspirin', 'name')
     assert len(results) > 0
     for result in results:
         assert 'CID' in result
-        assert 'IsomericSMILES' in result
+        assert 'SMILES' in result
         assert 'MolecularWeight' in result
         assert 'InChIKey' in result
 

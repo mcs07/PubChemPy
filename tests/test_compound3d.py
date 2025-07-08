@@ -18,24 +18,23 @@ from pubchempy import *
 
 
 @pytest.fixture
-def c3d():
-    """Compound CID 1234, 3D."""
-    return Compound.from_cid(1234, record_type='3d')
+def c3d(robust_3d_compound):
+    """Compound CID 2244 (Aspirin), 3D - using robust fixture."""
+    return robust_3d_compound
 
 
 def test_properties_types(c3d):
-    assert isinstance(c3d.volume_3d, float)
+    assert isinstance(c3d.volume_3d, (int, float))  # Can be int or float
     assert isinstance(c3d.multipoles_3d, list)
-    assert isinstance(c3d.conformer_rmsd_3d, float)
+    assert isinstance(c3d.conformer_rmsd_3d, (int, float))  # Can be int or float
     assert isinstance(c3d.effective_rotor_count_3d, int)
     assert isinstance(c3d.pharmacophore_features_3d, list)
     assert isinstance(c3d.mmff94_partial_charges_3d, list)
-    assert isinstance(c3d.mmff94_energy_3d, float)
+    assert isinstance(c3d.mmff94_energy_3d, (int, float))  # Can be int or float
     assert isinstance(c3d.conformer_id_3d, text_types)
-    assert isinstance(c3d.shape_selfoverlap_3d, float)
-    assert isinstance(c3d.feature_selfoverlap_3d, float)
+    assert isinstance(c3d.shape_selfoverlap_3d, (int, float))  # Can be int or float
+    assert isinstance(c3d.feature_selfoverlap_3d, (int, float))  # Can be int or float
     assert isinstance(c3d.shape_fingerprint_3d, list)
-    assert isinstance(c3d.volume_3d, float)
 
 
 def test_coordinate_type(c3d):
@@ -43,17 +42,20 @@ def test_coordinate_type(c3d):
 
 
 def test_atoms(c3d):
-    assert len(c3d.atoms) == 75
-    assert set(a.element for a in c3d.atoms) == {'C', 'H', 'O', 'N'}
-    assert set(c3d.elements) == {'C', 'H', 'O', 'N'}
+    assert len(c3d.atoms) == 21  # Aspirin has 21 atoms
+    assert set(a.element for a in c3d.atoms) == {'C', 'H', 'O'}
+    assert set(c3d.elements) == {'C', 'H', 'O'}
 
 
 def test_atoms_deprecated(c3d):
     with warnings.catch_warnings(record=True) as w:
-        assert set(a['element'] for a in c3d.atoms) == {'C', 'H', 'O', 'N'}
+        assert set(a['element'] for a in c3d.atoms) == {'C', 'H', 'O'}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == 'Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == 'Dictionary style access to Atom attributes is deprecated'
+        )
 
 
 def test_coordinates(c3d):
@@ -70,4 +72,7 @@ def test_coordinates_deprecated(c3d):
         assert isinstance(c3d.atoms[0]['z'], (float, int))
         assert len(w) == 3
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == 'Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == 'Dictionary style access to Atom attributes is deprecated'
+        )

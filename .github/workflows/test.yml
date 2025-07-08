@@ -1,0 +1,122 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 2  # Limit parallel jobs to reduce server load
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        optional-deps: [true, false]
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest coverage
+        pip install -e .
+        if [ "${{ matrix.optional-deps }}" = "true" ]; then
+          pip install pandas
+        fi
+        
+    - name: Add delay to stagger API requests
+      run: |
+        # Add random delay to avoid simultaneous API requests
+        sleep $((RANDOM % 30 + 10))
+        
+    - name: Run tests
+      run: |
+        coverage run --source=pubchempy -m pytest tests/ -v
+        
+    - name: Generate coverage report
+      run: |
+        coverage report -m
+        coverage xml
+        
+    - name: Upload coverage to Codecov
+      if: matrix.python-version == '3.11' && matrix.optional-deps == true
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  test-windows:
+    runs-on: windows-latest
+    needs: test  # Wait for Ubuntu tests to complete first
+    strategy:
+      fail-fast: false
+      max-parallel: 1  # Run Windows tests sequentially
+      matrix:
+        python-version: ["3.11", "3.12"]
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pandas
+        pip install -e .
+        
+    - name: Add delay to stagger API requests
+      run: |
+        # Add delay to avoid overwhelming PubChem servers
+        Start-Sleep -Seconds (Get-Random -Minimum 10 -Maximum 30)
+      shell: powershell
+        
+    - name: Run tests
+      run: |
+        pytest tests/ -v
+
+  test-macos:
+    runs-on: macos-latest
+    needs: test-windows  # Wait for Windows tests to complete first
+    strategy:
+      fail-fast: false
+      max-parallel: 1  # Run macOS tests sequentially
+      matrix:
+        python-version: ["3.11", "3.12"]
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pandas
+        pip install -e .
+        
+    - name: Add delay to stagger API requests
+      run: |
+        # Add delay to avoid overwhelming PubChem servers
+        sleep $((RANDOM % 30 + 10))
+        
+    - name: Run tests
+      run: |
+        pytest tests/ -v 
