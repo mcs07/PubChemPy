@@ -7,12 +7,6 @@ PubChemPy
 .. image:: http://img.shields.io/pypi/l/PubChemPy.svg?style=flat
     :target: https://github.com/mcs07/PubChemPy/blob/master/LICENSE
 
-.. image:: http://img.shields.io/travis/mcs07/PubChemPy/master.svg?style=flat
-    :target: https://travis-ci.org/mcs07/PubChemPy
-
-.. image:: http://img.shields.io/coveralls/mcs07/PubChemPy/master.svg?style=flat
-    :target: https://coveralls.io/r/mcs07/PubChemPy?branch=master
-
 PubChemPy provides a way to interact with PubChem in Python. It allows chemical searches by name, substructure and
 similarity, chemical standardization, conversion between chemical file formats, depiction and retrieval of chemical
 properties.
