@@ -32,7 +32,7 @@ PubChem website.
 PubChemPy license
 -----------------
 
-.. include:: ../../../LICENSE
+.. include:: ../../LICENSE
 
 .. rubric:: Footnotes
 
