@@ -1,0 +1,69 @@
+[project]
+name = "PubChemPy"
+version = "1.0.4"
+description = "A simple Python wrapper around the PubChem PUG REST API."
+readme = "README.rst"
+authors = [
+    { name = "Matt Swain", email = "m.swain@me.com" }
+]
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+dependencies = []
+keywords = ["pubchem", "python", "rest", "api", "chemistry", "cheminformatics"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database :: Front-Ends",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/mcs07/PubChemPy"
+Repository = "https://github.com/mcs07/PubChemPy"
+Documentation = "https://pubchempy.readthedocs.io"
+Releases = "https://github.com/mcs07/PubChemPy/releases"
+"Issue Tracker" = "https://github.com/mcs07/PubChemPy/issues"
+
+[project.optional-dependencies]
+pandas = [
+    "pandas>=0.16.2",
+]
+
+[dependency-groups]
+dev = [
+  {include-group = "docs"},
+  {include-group = "lint"},
+  {include-group = "test"},
+]
+docs = [
+    "furo>=2025.7.19",
+    "sphinx>=7.4.7",
+]
+lint = [
+  "ruff>=0.12.5",
+]
+test = [
+  "pytest>=8.4.1",
+]
+
+[tool.setuptools]
+py-modules = ["pubchempy"]
+
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
