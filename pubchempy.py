@@ -839,7 +839,9 @@ class Compound(object):
     def canonical_smiles(self):
         """Canonical SMILES, with no stereochemistry information (deprecated).
 
-        Replaced by :meth:`~pubchempy.Compound.connectivity_smiles`.
+        .. deprecated:: 1.0.5
+           :attr:`canonical_smiles` is deprecated, use :attr:`connectivity_smiles`
+           instead.
         """
         return self.connectivity_smiles
 
@@ -848,7 +850,9 @@ class Compound(object):
     def isomeric_smiles(self):
         """Isomeric SMILES.
 
-        Replaced by :meth:`~pubchempy.Compound.absolute_smiles`.
+        .. deprecated:: 1.0.5
+           :attr:`isomeric_smiles` is deprecated, use :attr:`absolute_smiles`
+           instead.
         """
         return self.absolute_smiles
 
