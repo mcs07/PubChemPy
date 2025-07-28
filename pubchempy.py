@@ -828,6 +828,10 @@ class Compound(object):
         return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
 
     @property
+    def smiles(self):
+        """SMILES (equivalent to absolute SMILES)."""
+        return self.absolute_smiles
+
     def canonical_smiles(self):
         """Canonical SMILES, with no stereochemistry information.
             This was replaced with the Connectivity SMILES
