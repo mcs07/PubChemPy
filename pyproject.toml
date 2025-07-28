@@ -46,16 +46,15 @@ pandas = [
 
 [dependency-groups]
 dev = [
-  {include-group = "docs"},
-  {include-group = "lint"},
-  {include-group = "test"},
+    {include-group = "docs"},
+    {include-group = "test"},
+    "pre-commit>=4.2.0",
+    "ruff>=0.12.5",
+    "nb-clean>=4.0.1",
 ]
 docs = [
     "furo>=2025.7.19",
     "sphinx>=7.4.7",
-]
-lint = [
-  "ruff>=0.12.5",
 ]
 test = [
   "pytest>=8.4.1",
