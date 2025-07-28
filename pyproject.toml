@@ -51,6 +51,7 @@ dev = [
     "pre-commit>=4.2.0",
     "ruff>=0.12.5",
     "nb-clean>=4.0.1",
+    "ipykernel>=6.30.0",
 ]
 docs = [
     "furo>=2025.7.19",
