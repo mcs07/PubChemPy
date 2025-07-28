@@ -482,13 +482,13 @@ def memoized_property(fget):
     return property(fget_memoized)
 
 
-def deprecated(message=None):
-    """Decorator to mark functions as deprecated. A warning will be emitted when the function is used."""
+def deprecated(message):
+    """Decorator to mark as deprecated and emit a warning when used."""
     def deco(func):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
             warnings.warn(
-                message or 'Call to deprecated function {}'.format(func.__name__),
+                '{} is deprecated: {}'.format(func.__name__, message),
                 category=PubChemPyDeprecationWarning,
                 stacklevel=2
             )
@@ -832,16 +832,22 @@ class Compound(object):
         """SMILES (equivalent to absolute SMILES)."""
         return self.absolute_smiles
 
+    @property
+    @deprecated('Use connectivity_smiles instead')
     def canonical_smiles(self):
-        """Canonical SMILES, with no stereochemistry information.
-            This was replaced with the Connectivity SMILES
+        """Canonical SMILES, with no stereochemistry information (deprecated).
+
+        Replaced by :meth:`~pubchempy.Compound.connectivity_smiles`.
         """
         return self.connectivity_smiles
 
     @property
+    @deprecated('Use absolute_smiles instead')
     def isomeric_smiles(self):
         """Isomeric SMILES.
-            This was replaced with the Absolute SMILES"""
+
+        Replaced by :meth:`~pubchempy.Compound.absolute_smiles`.
+        """
         return self.absolute_smiles
 
     @property
