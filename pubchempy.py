@@ -354,6 +354,8 @@ def get_assays(identifier, namespace='aid', **kwargs):
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
+    'smiles': 'SMILES',
+    'connectivity_smiles': 'ConnectivitySMILES',
     'canonical_smiles': 'CanonicalSMILES',
     'isomeric_smiles': 'IsomericSMILES',
     'inchi': 'InChI',
@@ -482,13 +484,13 @@ def memoized_property(fget):
     return property(fget_memoized)
 
 
-def deprecated(message=None):
-    """Decorator to mark functions as deprecated. A warning will be emitted when the function is used."""
+def deprecated(message):
+    """Decorator to mark as deprecated and emit a warning when used."""
     def deco(func):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
             warnings.warn(
-                message or 'Call to deprecated function {}'.format(func.__name__),
+                '{} is deprecated: {}'.format(func.__name__, message),
                 category=PubChemPyDeprecationWarning,
                 stacklevel=2
             )
@@ -828,16 +830,30 @@ class Compound(object):
         return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
 
     @property
+    def smiles(self):
+        """SMILES (equivalent to absolute SMILES)."""
+        return self.absolute_smiles
+
+    @property
+    @deprecated('Use connectivity_smiles instead')
     def canonical_smiles(self):
-        """Canonical SMILES, with no stereochemistry information.
-            This was replaced with the Connectivity SMILES
+        """Canonical SMILES, with no stereochemistry information (deprecated).
+
+        .. deprecated:: 1.0.5
+           :attr:`canonical_smiles` is deprecated, use :attr:`connectivity_smiles`
+           instead.
         """
         return self.connectivity_smiles
 
     @property
+    @deprecated('Use absolute_smiles instead')
     def isomeric_smiles(self):
         """Isomeric SMILES.
-            This was replaced with the Absolute SMILES"""
+
+        .. deprecated:: 1.0.5
+           :attr:`isomeric_smiles` is deprecated, use :attr:`absolute_smiles`
+           instead.
+        """
         return self.absolute_smiles
 
     @property
