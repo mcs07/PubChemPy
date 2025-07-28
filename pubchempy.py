@@ -354,6 +354,8 @@ def get_assays(identifier, namespace='aid', **kwargs):
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
+    'smiles': 'SMILES',
+    'connectivity_smiles': 'ConnectivitySMILES',
     'canonical_smiles': 'CanonicalSMILES',
     'isomeric_smiles': 'IsomericSMILES',
     'inchi': 'InChI',
