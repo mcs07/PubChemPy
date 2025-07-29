@@ -1149,7 +1149,7 @@ class Substance(object):
 
         May not exist if this Substance was not standardizable.
         """
-        for c in self.record['compound']:
+        for c in self.record.get('compound', []):
             if c['id']['type'] == CompoundIdType.STANDARDIZED:
                 return c['id']['id']['cid']
 
@@ -1159,9 +1159,9 @@ class Substance(object):
 
         Requires an extra request. Result is cached.
         """
-        for c in self.record['compound']:
-            if c['id']['type'] == CompoundIdType.STANDARDIZED:
-                return Compound.from_cid(c['id']['id']['cid'])
+        cid = self.standardized_cid
+        if cid:
+            return Compound.from_cid(cid)
 
     @property
     def deposited_compound(self):
@@ -1169,7 +1169,7 @@ class Substance(object):
 
         The resulting :class:`~pubchempy.Compound` will not have a ``cid`` and will be missing most properties.
         """
-        for c in self.record['compound']:
+        for c in self.record.get('compound', []):
             if c['id']['type'] == CompoundIdType.DEPOSITED:
                 return Compound(c)
 
