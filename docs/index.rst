@@ -14,7 +14,7 @@ Here's a quick example showing how to search for a compound by name::
 
     for compound in get_compounds('glucose', 'name'):
         print(compound.cid)
-        print(compound.isomeric_smiles)
+        print(compound.smiles)
 
 Here's how you get calculated properties for a specific compound::
 

@@ -6,10 +6,10 @@ Properties
 The ``get_properties`` function allows the retrieval of specific properties without having to deal with entire compound
 records. This is especially useful for retrieving the properties of a large number of compounds at once::
 
-    p = pcp.get_properties('IsomericSMILES', 'CC', 'smiles', searchtype='superstructure')
+    p = pcp.get_properties('SMILES', 'CC', 'smiles', searchtype='superstructure')
 
 Multiple properties may be specified in a list, or in a comma-separated string. The available properties are:
-MolecularFormula, MolecularWeight, CanonicalSMILES, IsomericSMILES, InChI, InChIKey, IUPACName, XLogP, ExactMass,
+MolecularFormula, MolecularWeight, ConnectivitySMILES, SMILES, InChI, InChIKey, IUPACName, XLogP, ExactMass,
 MonoisotopicMass, TPSA, Complexity, Charge, HBondDonorCount, HBondAcceptorCount, RotatableBondCount, HeavyAtomCount,
 IsotopeAtomCount, AtomStereoCount, DefinedAtomStereoCount, UndefinedAtomStereoCount, BondStereoCount,
 DefinedBondStereoCount, UndefinedBondStereoCount, CovalentUnitCount, Volume3D, XStericQuadrupole3D, YStericQuadrupole3D,
