@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# Build documentation for PubChemPy using Sphinx.
+# Usage: uv run scripts/make-docs [html|clean|pdf|epub|dirhtml|...]
+
+set -e
+
+DOCS_DIR="$(dirname $(dirname "$0"))/docs"
+SPHINXOPTS="${SPHINXOPTS:-}"
+TARGET="${1:-html}"
+
+exec sphinx-build -M $TARGET "$DOCS_DIR" "$DOCS_DIR/_build" $SPHINXOPTS
