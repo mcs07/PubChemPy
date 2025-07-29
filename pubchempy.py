@@ -739,9 +739,12 @@ class Compound(object):
 
         synonyms, aids and sids are not included unless explicitly specified using the properties parameter. This is
         because they each require an extra request.
+
+        ``canonical_smiles`` and ``isomeric_smiles`` are not included by default, as they are deprecated and have
+        been replaced by ``connectivity_smiles`` and ``smiles`` respectively.
         """
         if not properties:
-            skip = {'aids', 'sids', 'synonyms'}
+            skip = {'aids', 'sids', 'synonyms', 'canonical_smiles', 'isomeric_smiles'}
             properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) and p not in skip]
         return {p: [i.to_dict() for i in getattr(self, p)] if p in {'atoms', 'bonds'} else getattr(self, p) for p in properties}
 
@@ -830,11 +833,6 @@ class Compound(object):
         return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
 
     @property
-    def smiles(self):
-        """SMILES (equivalent to absolute SMILES)."""
-        return self.absolute_smiles
-
-    @property
     @deprecated('Use connectivity_smiles instead')
     def canonical_smiles(self):
         """Canonical SMILES, with no stereochemistry information (deprecated).
@@ -846,24 +844,33 @@ class Compound(object):
         return self.connectivity_smiles
 
     @property
-    @deprecated('Use absolute_smiles instead')
+    @deprecated('Use smiles instead')
     def isomeric_smiles(self):
         """Isomeric SMILES.
 
         .. deprecated:: 1.0.5
-           :attr:`isomeric_smiles` is deprecated, use :attr:`absolute_smiles`
-           instead.
+           :attr:`isomeric_smiles` is deprecated, use :attr:`smiles` instead.
         """
-        return self.absolute_smiles
+        return self.smiles
 
     @property
     def connectivity_smiles(self):
-        """Connectivity SMILES, with no stereochemistry information."""
+        """Connectivity SMILES.
+
+        A canonical SMILES string that excludes stereochemical and isotopic information.
+
+        Replaces the the deprecated :attr:`canonical_smiles` property.
+        """
         return _parse_prop({'label': 'SMILES', 'name': 'Connectivity'}, self.record['props'])
 
     @property
-    def absolute_smiles(self):
-        """Absolute SMILES."""
+    def smiles(self):
+        """Absolute SMILES (isomeric and canonical).
+
+        A canonical SMILES string that includes stereochemical and isotopic information.
+
+        Replaces the deprecated :attr:`isomeric_smiles` property.
+        """
         return _parse_prop({'label': 'SMILES', 'name': 'Absolute'}, self.record['props'])
 
     @property
