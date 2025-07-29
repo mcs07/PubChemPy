@@ -35,10 +35,10 @@ def test_image_download(tmp_dir):
 
 
 def test_csv_download(tmp_dir):
-    download('CSV', os.path.join(tmp_dir, 's.csv'), [1, 2, 3], operation='property/CanonicalSMILES,IsomericSMILES')
+    download('CSV', os.path.join(tmp_dir, 's.csv'), [1, 2, 3], operation='property/ConnectivitySMILES,SMILES')
     with open(os.path.join(tmp_dir, 's.csv')) as f:
         rows = list(csv.reader(f))
-        assert rows[0] == ['CID', 'CanonicalSMILES', 'IsomericSMILES']
+        assert rows[0] == ['CID', 'ConnectivitySMILES', 'SMILES']
         assert rows[1][0] == '1'
         assert rows[2][0] == '2'
         assert rows[3][0] == '3'
