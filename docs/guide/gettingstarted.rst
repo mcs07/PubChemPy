@@ -26,7 +26,7 @@ object::
     C17H14O4S
     >>> print(c.molecular_weight)
     314.4
-    >>> print(c.isomeric_smiles)
+    >>> print(c.smiles)
     CS(=O)(=O)C1=CC=C(C=C1)C2=C(C(=O)OC2)C3=CC=CC=C3
     >>> print(c.xlogp)
     2.3
@@ -59,7 +59,7 @@ The first argument is the identifier, and the second argument is the identifier 
 Database that have the name Glucose associated with them. Let's take a look at them in more detail::
 
     >>> for compound in results:
-    ...    print(compound.isomeric_smiles)
+    ...    print(compound.smiles)
     C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)O
 
 It looks like they all have different stereochemistry information.
