@@ -27,6 +27,22 @@ Get a list of synonyms for a given input using the ``get_synonyms`` function::
 
 Inputs that match more than one SID/CID will have multiple, separate synonyms lists returned.
 
+CAS Registry Numbers
+--------------------
+
+CAS Registry Numbers are not officially supported by PubChem, but they are often present in the synonyms associated
+with a compound. Therefore it is straightforward to retrieve them by filtering the synonyms to just those with the
+CAS Registry Number format::
+
+    for result in pcp.get_synonyms('Aspirin', 'name'):
+        cid = result['CID']
+        cas_rns = []
+        for syn in result.get('Synonym', []):
+            match = re.match(r'(\d{2,7}-\d\d-\d)', syn)
+            if match:
+                cas_rns.append(match.group(1))
+        print(f'CAS registry numbers for CID {cid}: {cas_rns}')
+
 Identifiers
 -----------
 
