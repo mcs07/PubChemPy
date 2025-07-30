@@ -840,7 +840,8 @@ class Compound(object):
     @property
     def molecular_weight(self):
         """Molecular Weight."""
-        return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
+        sval = _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
+        return float(sval) if sval else None
 
     @property
     @deprecated('Use connectivity_smiles instead')
@@ -907,12 +908,14 @@ class Compound(object):
     @property
     def exact_mass(self):
         """Exact mass."""
-        return _parse_prop({'label': 'Mass', 'name': 'Exact'}, self.record['props'])
+        sval = _parse_prop({'label': 'Mass', 'name': 'Exact'}, self.record['props'])
+        return float(sval) if sval else None
 
     @property
     def monoisotopic_mass(self):
         """Monoisotopic mass."""
-        return _parse_prop({'label': 'Weight', 'name': 'MonoIsotopic'}, self.record['props'])
+        sval = _parse_prop({'label': 'Weight', 'name': 'MonoIsotopic'}, self.record['props'])
+        return float(sval) if sval else None
 
     @property
     def tpsa(self):
