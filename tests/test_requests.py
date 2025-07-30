@@ -43,10 +43,10 @@ def test_listkey_requests():
 
 def test_xref_request():
     """Test requests with xref inputs."""
-    response = request('US6187568B1', 'PatentID', 'substance',  operation='sids', searchtype='xref')
+    response = request('EP0711162A1', 'PatentID', 'substance',  operation='sids', searchtype='xref')
     assert response.code == 200
-    response2 = get_json('US6187568B1', 'PatentID', 'substance', operation='sids', searchtype='xref')
+    response2 = get_json('EP0711162A1', 'PatentID', 'substance', operation='sids', searchtype='xref')
     assert 'IdentifierList' in response2
     assert 'SID' in response2['IdentifierList']
-    sids = get_sids('US6187568B1', 'PatentID', 'substance', searchtype='xref')
+    sids = get_sids('EP0711162A1', 'PatentID', 'substance', searchtype='xref')
     assert all(isinstance(sid, int) for sid in sids)

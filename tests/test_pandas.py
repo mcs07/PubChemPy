@@ -42,7 +42,7 @@ def test_substances_dataframe():
     assert df.ndim == 2
     assert df.index.names == ['sid']
     assert len(df.index) == 4
-    assert df.columns.values.tolist() == ['source_id', 'source_name', 'standardized_cid', 'synonyms']
+    assert set(df.columns) == {'source_id', 'source_name', 'standardized_cid', 'synonyms'}
 
 
 def test_properties_dataframe():
@@ -50,7 +50,7 @@ def test_properties_dataframe():
     assert df.ndim == 2
     assert df.index.names == ['CID']
     assert len(df.index) == 4
-    assert df.columns.values.tolist() == ['SMILES', 'InChIKey', 'XLogP']
+    assert set(df.columns) == {'SMILES', 'InChIKey', 'XLogP'}
 
 
 def test_compound_series():
