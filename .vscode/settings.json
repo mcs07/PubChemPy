@@ -1,0 +1,20 @@
+{
+    "python.testing.pytestArgs": [
+        "tests",
+        "-s",
+        "-vv"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+    "python.defaultInterpreterPath": "./venv/bin/python",
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.rulers": [88]
+    },
+    "[shellscript]": {
+        "editor.tabSize": 2
+    }
+}

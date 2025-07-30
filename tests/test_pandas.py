@@ -33,7 +33,7 @@ def test_compounds_dataframe():
     columns = df.columns.values.tolist()
     assert 'atom_stereo_count' in columns
     assert 'atoms' in columns
-    assert 'canonical_smiles' in columns
+    assert 'connectivity_smiles' in columns
     assert 'exact_mass' in columns
 
 
@@ -46,11 +46,11 @@ def test_substances_dataframe():
 
 
 def test_properties_dataframe():
-    df = get_properties(['isomeric_smiles', 'xlogp', 'inchikey'], '1,2,3,4', 'cid', as_dataframe=True)
+    df = get_properties(['smiles', 'xlogp', 'inchikey'], '1,2,3,4', 'cid', as_dataframe=True)
     assert df.ndim == 2
     assert df.index.names == ['CID']
     assert len(df.index) == 4
-    assert df.columns.values.tolist() == ['InChIKey', 'IsomericSMILES', 'XLogP']
+    assert df.columns.values.tolist() == ['SMILES', 'InChIKey', 'XLogP']
 
 
 def test_compound_series():

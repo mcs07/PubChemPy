@@ -357,6 +357,8 @@ def get_assays(identifier, namespace='aid', **kwargs):
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
+    'smiles': 'SMILES',
+    'connectivity_smiles': 'ConnectivitySMILES',
     'canonical_smiles': 'CanonicalSMILES',
     'isomeric_smiles': 'IsomericSMILES',
     'inchi': 'InChI',
@@ -485,13 +487,13 @@ def memoized_property(fget):
     return property(fget_memoized)
 
 
-def deprecated(message=None):
-    """Decorator to mark functions as deprecated. A warning will be emitted when the function is used."""
+def deprecated(message):
+    """Decorator to mark as deprecated and emit a warning when used."""
     def deco(func):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
             warnings.warn(
-                message or 'Call to deprecated function {}'.format(func.__name__),
+                '{} is deprecated: {}'.format(func.__name__, message),
                 category=PubChemPyDeprecationWarning,
                 stacklevel=2
             )
@@ -740,9 +742,12 @@ class Compound(object):
 
         synonyms, aids and sids are not included unless explicitly specified using the properties parameter. This is
         because they each require an extra request.
+
+        ``canonical_smiles`` and ``isomeric_smiles`` are not included by default, as they are deprecated and have
+        been replaced by ``connectivity_smiles`` and ``smiles`` respectively.
         """
         if not properties:
-            skip = {'aids', 'sids', 'synonyms'}
+            skip = {'aids', 'sids', 'synonyms', 'canonical_smiles', 'isomeric_smiles'}
             properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) and p not in skip]
         return {p: [i.to_dict() for i in getattr(self, p)] if p in {'atoms', 'bonds'} else getattr(self, p) for p in properties}
 
@@ -831,14 +836,45 @@ class Compound(object):
         return _parse_prop({'label': 'Molecular Weight'}, self.record['props'])
 
     @property
+    @deprecated('Use connectivity_smiles instead')
     def canonical_smiles(self):
-        """Canonical SMILES, with no stereochemistry information."""
-        return _parse_prop({'label': 'SMILES', 'name': 'Canonical'}, self.record['props'])
+        """Canonical SMILES, with no stereochemistry information (deprecated).
+
+        .. deprecated:: 1.0.5
+           :attr:`canonical_smiles` is deprecated, use :attr:`connectivity_smiles`
+           instead.
+        """
+        return self.connectivity_smiles
 
     @property
+    @deprecated('Use smiles instead')
     def isomeric_smiles(self):
-        """Isomeric SMILES."""
-        return _parse_prop({'label': 'SMILES', 'name': 'Isomeric'}, self.record['props'])
+        """Isomeric SMILES.
+
+        .. deprecated:: 1.0.5
+           :attr:`isomeric_smiles` is deprecated, use :attr:`smiles` instead.
+        """
+        return self.smiles
+
+    @property
+    def connectivity_smiles(self):
+        """Connectivity SMILES.
+
+        A canonical SMILES string that excludes stereochemical and isotopic information.
+
+        Replaces the the deprecated :attr:`canonical_smiles` property.
+        """
+        return _parse_prop({'label': 'SMILES', 'name': 'Connectivity'}, self.record['props'])
+
+    @property
+    def smiles(self):
+        """Absolute SMILES (isomeric and canonical).
+
+        A canonical SMILES string that includes stereochemical and isotopic information.
+
+        Replaces the deprecated :attr:`isomeric_smiles` property.
+        """
+        return _parse_prop({'label': 'SMILES', 'name': 'Absolute'}, self.record['props'])
 
     @property
     def inchi(self):
@@ -1116,7 +1152,7 @@ class Substance(object):
 
         May not exist if this Substance was not standardizable.
         """
-        for c in self.record['compound']:
+        for c in self.record.get('compound', []):
             if c['id']['type'] == CompoundIdType.STANDARDIZED:
                 return c['id']['id']['cid']
 
@@ -1126,9 +1162,9 @@ class Substance(object):
 
         Requires an extra request. Result is cached.
         """
-        for c in self.record['compound']:
-            if c['id']['type'] == CompoundIdType.STANDARDIZED:
-                return Compound.from_cid(c['id']['id']['cid'])
+        cid = self.standardized_cid
+        if cid:
+            return Compound.from_cid(cid)
 
     @property
     def deposited_compound(self):
@@ -1136,7 +1172,7 @@ class Substance(object):
 
         The resulting :class:`~pubchempy.Compound` will not have a ``cid`` and will be missing most properties.
         """
-        for c in self.record['compound']:
+        for c in self.record.get('compound', []):
             if c['id']['type'] == CompoundIdType.DEPOSITED:
                 return Compound(c)
 

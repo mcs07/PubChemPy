@@ -17,7 +17,7 @@ Advanced search types
 By default, requests look for an exact match with the input. Alternatively, you can specify substructure,
 superstructure, similarity and identity searches using the ``searchtype`` keyword argument::
 
-    pcp.get_compounds('CC', searchtype='superstructure', listkey_count=3)
+    pcp.get_compounds('CC', 'smiles', searchtype='superstructure', listkey_count=3)
 
 The ``listkey_count`` and ``listkey_start`` arguments can be used for pagination. Each ``searchtype`` has its own
 options that can be specified as keyword arguments. For example, similarity searches have a ``Threshold``, and
