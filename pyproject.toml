@@ -43,6 +43,9 @@ Releases = "https://github.com/mcs07/PubChemPy/releases"
 pandas = [
     "pandas>=0.16.2",
 ]
+ssl = [
+    "certifi>=2025.7.14",
+]
 
 [dependency-groups]
 dev = [

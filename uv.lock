@@ -1127,6 +1127,9 @@ source = { editable = "." }
 pandas = [
     { name = "pandas" },
 ]
+ssl = [
+    { name = "certifi" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -1151,8 +1154,11 @@ test = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pandas", marker = "extra == 'pandas'", specifier = ">=0.16.2" }]
-provides-extras = ["pandas"]
+requires-dist = [
+    { name = "certifi", marker = "extra == 'ssl'", specifier = ">=2025.7.14" },
+    { name = "pandas", marker = "extra == 'pandas'", specifier = ">=0.16.2" },
+]
+provides-extras = ["pandas", "ssl"]
 
 [package.metadata.requires-dev]
 dev = [
