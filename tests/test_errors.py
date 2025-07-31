@@ -8,7 +8,14 @@ Test errors.
 
 import pytest
 
-from pubchempy import *
+from pubchempy import (
+    BadRequestError,
+    Compound,
+    NotFoundError,
+    Substance,
+    get_compounds,
+    get_substances,
+)
 
 
 def test_invalid_identifier():

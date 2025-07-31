@@ -6,7 +6,7 @@ Test downloading.
 
 """
 
-from pubchempy import *
+from pubchempy import get_all_sources
 
 
 def test_substance_sources():

@@ -6,7 +6,7 @@ Test identifiers requests.
 
 """
 
-from pubchempy import *
+from pubchempy import get_aids, get_cids, get_sids
 
 
 def test_identifiers_from_name():

@@ -8,7 +8,7 @@ Test substance object.
 
 import pytest
 
-from pubchempy import *
+from pubchempy import Substance, get_substances
 
 
 @pytest.fixture(scope='module')

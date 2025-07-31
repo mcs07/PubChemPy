@@ -6,7 +6,7 @@ Test properties requests.
 
 """
 
-from pubchempy import *
+from pubchempy import get_properties, get_synonyms
 
 
 def test_properties():

@@ -7,12 +7,13 @@ Test downloading.
 """
 
 import csv
+import os
 import shutil
 import tempfile
 
 import pytest
 
-from pubchempy import *
+from pubchempy import download
 
 
 @pytest.fixture(scope='module')
