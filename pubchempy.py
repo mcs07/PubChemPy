@@ -192,125 +192,133 @@ class ProjectCategory(enum.IntEnum):
     OTHER = 255
 
 
+#: Dictionary mapping atomic numbers to their element symbols.
 ELEMENTS = {
-    1: 'H',
-    2: 'He',
-    3: 'Li',
-    4: 'Be',
-    5: 'B',
-    6: 'C',
-    7: 'N',
-    8: 'O',
-    9: 'F',
-    10: 'Ne',
-    11: 'Na',
-    12: 'Mg',
-    13: 'Al',
-    14: 'Si',
-    15: 'P',
-    16: 'S',
-    17: 'Cl',
-    18: 'Ar',
-    19: 'K',
-    20: 'Ca',
-    21: 'Sc',
-    22: 'Ti',
-    23: 'V',
-    24: 'Cr',
-    25: 'Mn',
-    26: 'Fe',
-    27: 'Co',
-    28: 'Ni',
-    29: 'Cu',
-    30: 'Zn',
-    31: 'Ga',
-    32: 'Ge',
-    33: 'As',
-    34: 'Se',
-    35: 'Br',
-    36: 'Kr',
-    37: 'Rb',
-    38: 'Sr',
-    39: 'Y',
-    40: 'Zr',
-    41: 'Nb',
-    42: 'Mo',
-    43: 'Tc',
-    44: 'Ru',
-    45: 'Rh',
-    46: 'Pd',
-    47: 'Ag',
-    48: 'Cd',
-    49: 'In',
-    50: 'Sn',
-    51: 'Sb',
-    52: 'Te',
-    53: 'I',
-    54: 'Xe',
-    55: 'Cs',
-    56: 'Ba',
-    57: 'La',
-    58: 'Ce',
-    59: 'Pr',
-    60: 'Nd',
-    61: 'Pm',
-    62: 'Sm',
-    63: 'Eu',
-    64: 'Gd',
-    65: 'Tb',
-    66: 'Dy',
-    67: 'Ho',
-    68: 'Er',
-    69: 'Tm',
-    70: 'Yb',
-    71: 'Lu',
-    72: 'Hf',
-    73: 'Ta',
-    74: 'W',
-    75: 'Re',
-    76: 'Os',
-    77: 'Ir',
-    78: 'Pt',
-    79: 'Au',
-    80: 'Hg',
-    81: 'Tl',
-    82: 'Pb',
-    83: 'Bi',
-    84: 'Po',
-    85: 'At',
-    86: 'Rn',
-    87: 'Fr',
-    88: 'Ra',
-    89: 'Ac',
-    90: 'Th',
-    91: 'Pa',
-    92: 'U',
-    93: 'Np',
-    94: 'Pu',
-    95: 'Am',
-    96: 'Cm',
-    97: 'Bk',
-    98: 'Cf',
-    99: 'Es',
-    100: 'Fm',
-    101: 'Md',
-    102: 'No',
-    103: 'Lr',
-    104: 'Rf',
-    105: 'Db',
-    106: 'Sg',
-    107: 'Bh',
-    108: 'Hs',
-    109: 'Mt',
-    110: 'Ds',
-    111: 'Rg',
-    112: 'Cp',
-    113: 'ut',
-    114: 'uq',
-    115: 'up',
-    116: 'uh',
-    117: 'us',
-    118: 'uo',
+    # Standard chemical elements
+    1: 'H',  # Hydrogen
+    2: 'He',  # Helium
+    3: 'Li',  # Lithium
+    4: 'Be',  # Beryllium
+    5: 'B',  # Boron
+    6: 'C',  # Carbon
+    7: 'N',  # Nitrogen
+    8: 'O',  # Oxygen
+    9: 'F',  # Fluorine
+    10: 'Ne',  # Neon
+    11: 'Na',  # Sodium
+    12: 'Mg',  # Magnesium
+    13: 'Al',  # Aluminium
+    14: 'Si',  # Silicon
+    15: 'P',  # Phosphorus
+    16: 'S',  # Sulfur
+    17: 'Cl',  # Chlorine
+    18: 'Ar',  # Argon
+    19: 'K',  # Potassium
+    20: 'Ca',  # Calcium
+    21: 'Sc',  # Scandium
+    22: 'Ti',  # Titanium
+    23: 'V',  # Vanadium
+    24: 'Cr',  # Chromium
+    25: 'Mn',  # Manganese
+    26: 'Fe',  # Iron
+    27: 'Co',  # Cobalt
+    28: 'Ni',  # Nickel
+    29: 'Cu',  # Copper
+    30: 'Zn',  # Zinc
+    31: 'Ga',  # Gallium
+    32: 'Ge',  # Germanium
+    33: 'As',  # Arsenic
+    34: 'Se',  # Selenium
+    35: 'Br',  # Bromine
+    36: 'Kr',  # Krypton
+    37: 'Rb',  # Rubidium
+    38: 'Sr',  # Strontium
+    39: 'Y',  # Yttrium
+    40: 'Zr',  # Zirconium
+    41: 'Nb',  # Niobium
+    42: 'Mo',  # Molybdenum
+    43: 'Tc',  # Technetium
+    44: 'Ru',  # Ruthenium
+    45: 'Rh',  # Rhodium
+    46: 'Pd',  # Palladium
+    47: 'Ag',  # Silver
+    48: 'Cd',  # Cadmium
+    49: 'In',  # Indium
+    50: 'Sn',  # Tin
+    51: 'Sb',  # Antimony
+    52: 'Te',  # Tellurium
+    53: 'I',  # Iodine
+    54: 'Xe',  # Xenon
+    55: 'Cs',  # Cesium
+    56: 'Ba',  # Barium
+    57: 'La',  # Lanthanum
+    58: 'Ce',  # Cerium
+    59: 'Pr',  # Praseodymium
+    60: 'Nd',  # Neodymium
+    61: 'Pm',  # Promethium
+    62: 'Sm',  # Samarium
+    63: 'Eu',  # Europium
+    64: 'Gd',  # Gadolinium
+    65: 'Tb',  # Terbium
+    66: 'Dy',  # Dysprosium
+    67: 'Ho',  # Holmium
+    68: 'Er',  # Erbium
+    69: 'Tm',  # Thulium
+    70: 'Yb',  # Ytterbium
+    71: 'Lu',  # Lutetium
+    72: 'Hf',  # Hafnium
+    73: 'Ta',  # Tantalum
+    74: 'W',  # Tungsten
+    75: 'Re',  # Rhenium
+    76: 'Os',  # Osmium
+    77: 'Ir',  # Iridium
+    78: 'Pt',  # Platinum
+    79: 'Au',  # Gold
+    80: 'Hg',  # Mercury
+    81: 'Tl',  # Thallium
+    82: 'Pb',  # Lead
+    83: 'Bi',  # Bismuth
+    84: 'Po',  # Polonium
+    85: 'At',  # Astatine
+    86: 'Rn',  # Radon
+    87: 'Fr',  # Francium
+    88: 'Ra',  # Radium
+    89: 'Ac',  # Actinium
+    90: 'Th',  # Thorium
+    91: 'Pa',  # Protactinium
+    92: 'U',  # Uranium
+    93: 'Np',  # Neptunium
+    94: 'Pu',  # Plutonium
+    95: 'Am',  # Americium
+    96: 'Cm',  # Curium
+    97: 'Bk',  # Berkelium
+    98: 'Cf',  # Californium
+    99: 'Es',  # Einsteinium
+    100: 'Fm',  # Fermium
+    101: 'Md',  # Mendelevium
+    102: 'No',  # Nobelium
+    103: 'Lr',  # Lawrencium
+    104: 'Rf',  # Rutherfordium
+    105: 'Db',  # Dubnium
+    106: 'Sg',  # Seaborgium
+    107: 'Bh',  # Bohrium
+    108: 'Hs',  # Hassium
+    109: 'Mt',  # Meitnerium
+    110: 'Ds',  # Darmstadtium
+    111: 'Rg',  # Roentgenium
+    112: 'Cn',  # Copernicium
+    113: 'Nh',  # Nihonium
+    114: 'Fl',  # Flerovium
+    115: 'Mc',  # Moscovium
+    116: 'Lv',  # Livermorium
+    117: 'Ts',  # Tennessine
+    118: 'Og',  # Oganesson
+
+    # Special atom types
+    252: 'Lp',  # Lone Pair
+    253: 'R',  # Rgroup Label
+    254: '*',  # Dummy Atom
+    255: '*',  # Unspecified Atom (Asterisk)
 }
 
 
@@ -634,7 +642,7 @@ class Atom:
     @property
     def element(self):
         """The element symbol for this atom."""
-        return ELEMENTS.get(self.number, None)
+        return ELEMENTS.get(self.number, str(self.number))
 
     def to_dict(self):
         """Return a dictionary containing Atom data."""
