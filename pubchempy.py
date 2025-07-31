@@ -5,7 +5,7 @@ Python interface for the PubChem PUG REST service.
 https://github.com/mcs07/PubChemPy
 """
 
-
+import enum
 import functools
 import json
 import logging
@@ -92,66 +92,103 @@ log = logging.getLogger('pubchempy')
 log.addHandler(logging.NullHandler())
 
 
-class CompoundIdType:
-    """"""
+class CompoundIdType(enum.IntEnum):
+    """Compound record type."""
     #: Original Deposited Compound
     DEPOSITED = 0
-    #: Standardized Form of the Deposited Compound
+    #: Standardized Form of a Deposited Compound
     STANDARDIZED = 1
-    #: Component of the Standardized Form
+    #: Component of a Standardized Compound
     COMPONENT = 2
-    #: Neutralized Form of the Standardized Form
+    #: Neutralized Form of a Standardized Compound
     NEUTRALIZED = 3
-    #: Deposited Mixture Component
+    #: Substance that is a component of a mixture
     MIXTURE = 4
-    #: Alternate Tautomer Form of the Standardized Form
+    #: Predicted Tautomer Form
     TAUTOMER = 5
-    #: Ionized pKa Form of the Standardized Form
+    #: Predicted Ionized pKa Form
     IONIZED = 6
-    #: Unspecified or Unknown Compound Type
+    #: Unknown Compound Type
     UNKNOWN = 255
 
 
-class BondType:
+class BondType(enum.IntEnum):
+    """Bond Type Information."""
+    #: Single Bond
     SINGLE = 1
+    #: Double Bond
     DOUBLE = 2
+    #: Triple Bond
     TRIPLE = 3
+    #: Quadruple Bond
     QUADRUPLE = 4
+    #: Dative Bond
     DATIVE = 5
+    #: Complex Bond
     COMPLEX = 6
+    #: Ionic Bond
     IONIC = 7
+    #: Unknown/Unspecified Connectivity
     UNKNOWN = 255
 
 
-class CoordinateType:
+class CoordinateType(enum.IntEnum):
+    """Coordinate Set Type Distinctions"""
+    #: 2D Coordinates
     TWO_D = 1
+    #: 3D Coordinates (should also indicate units, below)
     THREE_D = 2
+    #: Depositor Provided Coordinates
     SUBMITTED = 3
+    #: Experimentally Determined Coordinates
     EXPERIMENTAL = 4
+    #: Computed Coordinates
     COMPUTED = 5
+    #: Standardized Coordinates
     STANDARDIZED = 6
+    #: Hybrid Original with Computed Coordinates (e.g., explicit H)
     AUGMENTED = 7
+    #: Template used to align drawing
     ALIGNED = 8
+    #: Drawing uses shorthand forms (e.g., COOH, OCH3, Et, etc.)
     COMPACT = 9
+    #: (3D) Coordinate units are Angstroms
     UNITS_ANGSTROMS = 10
+    #: (3D) Coordinate units are nanometers
     UNITS_NANOMETERS = 11
+    #: (2D) Coordinate units are pixels
     UNITS_PIXEL = 12
+    #: (2D) Coordinate units are points
     UNITS_POINTS = 13
+    #: (2D) Coordinate units are standard bond lengths (1.0)
     UNITS_STDBONDS = 14
+    #: Coordinate units are unknown or unspecified
     UNITS_UNKNOWN = 255
 
 
-class ProjectCategory:
+class ProjectCategory(enum.IntEnum):
+    """To distinguish projects funded through MLSCN, MLPCN or other."""
+    #: Assay depositions from MLSCN screen center
     MLSCN = 1
+    #: Assay depositions from MLPCN screen center
     MPLCN = 2
+    #: Assay depositions from MLSCN assay provider
     MLSCN_AP = 3
+    #: Assay depositions from MLPCN assay provider
     MPLCN_AP = 4
+    #: To be deprecated and replaced by options 7, 8 & 9
     JOURNAL_ARTICLE = 5
+    #: Assay depositions from assay vendors
     ASSAY_VENDOR = 6
+    #: Data from literature, extracted by curators
     LITERATURE_EXTRACTED = 7
+    #: Data from literature, submitted by author of articles
     LITERATURE_AUTHOR = 8
+    #: Data from literature, submitted by journals/publishers
     LITERATURE_PUBLISHER = 9
+    #: RNAi screenings from RNAi Global Initiative
     RNAIGI = 10
+    #: Other project category
     OTHER = 255
 
 
@@ -1280,7 +1317,7 @@ class Assay:
 
     @property
     def description(self):
-        """Description"""
+        """Description."""
         return self.record['assay']['descr']['description']
 
     @property
@@ -1291,7 +1328,7 @@ class Assay:
         literature-publisher, rnaigi.
         """
         if 'project_category' in self.record['assay']['descr']:
-            return self.record['assay']['descr']['project_category']
+            return ProjectCategory(self.record['assay']['descr']['project_category'])
 
     @property
     def comments(self):
