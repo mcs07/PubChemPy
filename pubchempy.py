@@ -248,7 +248,7 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     """
     Construct API request from parameters and return the response.
 
-    Full specification at http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html
+    Full specification at https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest
     """
     if not identifier:
         raise ValueError('identifier/cid cannot be None')
