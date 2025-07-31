@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 PubChemPy
 
@@ -6,31 +5,18 @@ Python interface for the PubChem PUG REST service.
 https://github.com/mcs07/PubChemPy
 """
 
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
 
 import functools
 import json
 import logging
 import os
 import ssl
-import sys
 import time
 import warnings
-
-try:
-    from urllib.error import HTTPError
-    from urllib.parse import quote, urlencode
-    from urllib.request import urlopen
-except ImportError:
-    from urllib import urlencode
-    from urllib2 import quote, urlopen, HTTPError
-
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
+from itertools import zip_longest
+from urllib.error import HTTPError
+from urllib.parse import quote, urlencode
+from urllib.request import urlopen
 
 # Get SSL certs from env var or certifi package if available.
 _CA_FILE = os.getenv("PUBCHEMPY_CA_BUNDLE") or os.getenv("REQUESTS_CA_BUNDLE")
@@ -53,13 +39,7 @@ log = logging.getLogger('pubchempy')
 log.addHandler(logging.NullHandler())
 
 
-if sys.version_info[0] == 3:
-    text_types = str, bytes
-else:
-    text_types = basestring,
-
-
-class CompoundIdType(object):
+class CompoundIdType:
     """"""
     #: Original Deposited Compound
     DEPOSITED = 0
@@ -79,7 +59,7 @@ class CompoundIdType(object):
     UNKNOWN = 255
 
 
-class BondType(object):
+class BondType:
     SINGLE = 1
     DOUBLE = 2
     TRIPLE = 3
@@ -90,7 +70,7 @@ class BondType(object):
     UNKNOWN = 255
 
 
-class CoordinateType(object):
+class CoordinateType:
     TWO_D = 1
     THREE_D = 2
     SUBMITTED = 3
@@ -108,7 +88,7 @@ class CoordinateType(object):
     UNITS_UNKNOWN = 255
 
 
-class ProjectCategory(object):
+class ProjectCategory:
     MLSCN = 1
     MPLCN = 2
     MLSCN_AP = 3
@@ -255,10 +235,10 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     # If identifier is a list, join with commas into string
     if isinstance(identifier, int):
         identifier = str(identifier)
-    if not isinstance(identifier, text_types):
+    if not isinstance(identifier, str):
         identifier = ','.join(str(x) for x in identifier)
     # Filter None values from kwargs
-    kwargs = dict((k, v) for k, v in kwargs.items() if v is not None)
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
     # Build API URL
     urlid, postdata = None, None
     if namespace == 'sourceid':
@@ -272,11 +252,11 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     comps = filter(None, [API_BASE, domain, searchtype, namespace, urlid, operation, output])
     apiurl = '/'.join(comps)
     if kwargs:
-        apiurl += '?%s' % urlencode(kwargs)
+        apiurl += f'?{urlencode(kwargs)}'
     # Make request
     try:
-        log.debug('Request URL: %s', apiurl)
-        log.debug('Request data: %s', postdata)
+        log.debug(f'Request URL: {apiurl}')
+        log.debug(f'Request data: {postdata}')
         context = ssl.create_default_context(cafile=_CA_FILE)
         response = urlopen(apiurl, postdata, context=context)
         return response
@@ -415,10 +395,10 @@ def get_properties(properties, identifier, namespace='cid', searchtype=None, as_
     :param searchtype: (optional) The advanced search type, one of substructure, superstructure or similarity.
     :param as_dataframe: (optional) Automatically extract the properties into a pandas :class:`~pandas.DataFrame`.
     """
-    if isinstance(properties, text_types):
+    if isinstance(properties, str):
         properties = properties.split(',')
     properties = ','.join([PROPERTY_MAP.get(p, p) for p in properties])
-    properties = 'property/%s' % properties
+    properties = f'property/{properties}'
     results = get_json(identifier, namespace, 'compound', properties, searchtype=searchtype, **kwargs)
     results = results['PropertyTable']['Properties'] if results else []
     if as_dataframe:
@@ -473,7 +453,7 @@ def download(outformat, path, identifier, namespace='cid', domain='compound', op
     """Format can be  XML, ASNT/B, JSON, SDF, CSV, PNG, TXT."""
     response = get(identifier, namespace, domain, operation, outformat, searchtype, **kwargs)
     if not overwrite and os.path.isfile(path):
-        raise IOError("%s already exists. Use 'overwrite=True' to overwrite it." % path)
+        raise OSError(f"{path} already exists. Use 'overwrite=True' to overwrite it.")
     with open(path, 'wb') as f:
         f.write(response)
 
@@ -484,7 +464,7 @@ def memoized_property(fget):
     Used to cache :class:`~pubchempy.Compound` and :class:`~pubchempy.Substance` properties that require an additional
     request.
     """
-    attr_name = '_{0}'.format(fget.__name__)
+    attr_name = f'_{fget.__name__}'
 
     @functools.wraps(fget)
     def fget_memoized(self):
@@ -500,7 +480,7 @@ def deprecated(message):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
             warnings.warn(
-                '{} is deprecated: {}'.format(func.__name__, message),
+                f'{func.__name__} is deprecated: {message}',
                 category=PubChemPyDeprecationWarning,
                 stacklevel=2
             )
@@ -509,7 +489,7 @@ def deprecated(message):
     return deco
 
 
-class Atom(object):
+class Atom:
     """Class to represent an atom in a :class:`~pubchempy.Compound`."""
 
     def __init__(self, aid, number, x=None, y=None, z=None, charge=0):
@@ -536,7 +516,7 @@ class Atom(object):
         """The formal charge on this atom."""
 
     def __repr__(self):
-        return 'Atom(%s, %s)' % (self.aid, self.element)
+        return f'Atom({self.aid!r}, {self.element!r})'
 
     def __eq__(self, other):
         return (isinstance(other, type(self)) and self.aid == other.aid and self.element == other.element and
@@ -588,7 +568,7 @@ class Atom(object):
         return '2d' if self.z is None else '3d'
 
 
-class Bond(object):
+class Bond:
     """Class to represent a bond between two atoms in a :class:`~pubchempy.Compound`."""
 
     def __init__(self, aid1, aid2, order=BondType.SINGLE, style=None):
@@ -608,7 +588,7 @@ class Bond(object):
         """Bond style annotation."""
 
     def __repr__(self):
-        return 'Bond(%s, %s, %s)' % (self.aid1, self.aid2, self.order)
+        return f'Bond({self.aid1!r}, {self.aid2!r}, {self.order!r})'
 
     def __eq__(self, other):
         return (isinstance(other, type(self)) and self.aid1 == other.aid1 and self.aid2 == other.aid2 and
@@ -648,7 +628,7 @@ class Bond(object):
         return data
 
 
-class Compound(object):
+class Compound:
     """Corresponds to a single record from the PubChem Compound database.
 
     The PubChem Compound database is constructed from the Substance database using a standardization and deduplication
@@ -674,7 +654,7 @@ class Compound(object):
     @record.setter
     def record(self, record):
         self._record = record
-        log.debug('Created %s' % self)
+        log.debug(f'Created {self}')
         self._setup_atoms()
         self._setup_bonds()
 
@@ -739,7 +719,7 @@ class Compound(object):
         return cls(record)
 
     def __repr__(self):
-        return 'Compound(%s)' % self.cid if self.cid else 'Compound()'
+        return f'Compound({self.cid if self.cid else ""})'
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
@@ -956,7 +936,7 @@ class Compound(object):
         More information at ftp://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
         """
         # Skip first 4 bytes (contain length of fingerprint) and last 7 bits (padding) then re-pad to 881 bits
-        return '{0:020b}'.format(int(self.fingerprint[8:], 16))[:-7].zfill(881)
+        return f'{int(self.fingerprint[8:], 16):020b}'[:-7].zfill(881)
 
     @property
     def heavy_atom_count(self):
@@ -1080,7 +1060,7 @@ def _parse_prop(search, proplist):
         return props[0]['value'][list(props[0]['value'].keys())[0]]
 
 
-class Substance(object):
+class Substance:
     """Corresponds to a single record from the PubChem Substance database.
 
     The PubChem Substance database contains all chemical records deposited in PubChem in their most raw form, before
@@ -1106,7 +1086,7 @@ class Substance(object):
         """A dictionary containing the full Substance record that all other properties are obtained from."""
 
     def __repr__(self):
-        return 'Substance(%s)' % self.sid if self.sid else 'Substance()'
+        return f'Substance({self.sid if self.sid else ""})'
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
@@ -1203,7 +1183,7 @@ class Substance(object):
         return results['InformationList']['Information'][0]['AID'] if results else []
 
 
-class Assay(object):
+class Assay:
 
     @classmethod
     def from_aid(cls, aid):
@@ -1219,7 +1199,7 @@ class Assay(object):
         """A dictionary containing the full Assay record that all other properties are obtained from."""
 
     def __repr__(self):
-        return 'Assay(%s)' % self.aid if self.aid else 'Assay()'
+        return f'Assay({self.aid if self.aid else ""})'
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and self.record == other.record
@@ -1295,7 +1275,7 @@ def compounds_to_frame(compounds, properties=None):
     import pandas as pd
     if isinstance(compounds, Compound):
         compounds = [compounds]
-    properties = set(properties) | set(['cid']) if properties else None
+    properties = set(properties) | {'cid'} if properties else None
     return pd.DataFrame.from_records([c.to_dict(properties) for c in compounds], index='cid')
 
 
@@ -1307,7 +1287,7 @@ def substances_to_frame(substances, properties=None):
     import pandas as pd
     if isinstance(substances, Substance):
         substances = [substances]
-    properties = set(properties) | set(['sid']) if properties else None
+    properties = set(properties) | {'sid'} if properties else None
     return pd.DataFrame.from_records([s.to_dict(properties) for s in substances], index='sid')
 
 

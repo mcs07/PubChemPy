@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 test_assay
 ~~~~~~~~~~
@@ -6,11 +5,6 @@ test_assay
 Test assay object.
 
 """
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import pytest
 
@@ -30,7 +24,7 @@ def test_basic(a1):
 
 
 def test_meta(a1):
-    assert isinstance(a1.name, text_types)
+    assert isinstance(a1.name, str)
     assert a1.project_category == ProjectCategory.LITERATURE_EXTRACTED
     assert isinstance(a1.description, list)
     assert isinstance(a1.comments, list)

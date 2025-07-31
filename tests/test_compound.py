@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 test_compound
 ~~~~~~~~~~~~~
@@ -7,10 +6,6 @@ Test compound object.
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 import re
 import warnings
 
@@ -40,13 +35,13 @@ def test_basic(c1):
 
 def test_atoms(c1):
     assert len(c1.atoms) == 12
-    assert set(a.element for a in c1.atoms) == {'C', 'H'}
+    assert {a.element for a in c1.atoms} == {'C', 'H'}
     assert set(c1.elements) == {'C', 'H'}
 
 
 def test_atoms_deprecated(c1):
     with warnings.catch_warnings(record=True) as w:
-        assert set(a['element'] for a in c1.atoms) == {'C', 'H'}
+        assert {a['element'] for a in c1.atoms} == {'C', 'H'}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
         assert str(w[0].message) == '__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated'
@@ -61,12 +56,12 @@ def test_single_atom():
 
 def test_bonds(c1):
     assert len(c1.bonds) == 12
-    assert set(b.order for b in c1.bonds) == {BondType.SINGLE, BondType.DOUBLE}
+    assert {b.order for b in c1.bonds} == {BondType.SINGLE, BondType.DOUBLE}
 
 
 def test_bonds_deprecated(c1):
     with warnings.catch_warnings(record=True) as w:
-        assert set(b['order'] for b in c1.bonds) == {BondType.SINGLE, BondType.DOUBLE}
+        assert {b['order'] for b in c1.bonds} == {BondType.SINGLE, BondType.DOUBLE}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
         assert str(w[0].message) == '__getitem__ is deprecated: Dictionary style access to Bond attributes is deprecated'
@@ -103,7 +98,7 @@ def test_identifiers(c1):
 
 def test_properties_types(c1):
     assert isinstance(c1.molecular_weight, float)
-    assert isinstance(c1.iupac_name, text_types)
+    assert isinstance(c1.iupac_name, str)
     assert isinstance(c1.xlogp, float)
     assert isinstance(c1.exact_mass, float)
     assert isinstance(c1.monoisotopic_mass, float)
@@ -121,7 +116,7 @@ def test_properties_types(c1):
     assert isinstance(c1.defined_bond_stereo_count, int)
     assert isinstance(c1.undefined_bond_stereo_count, int)
     assert isinstance(c1.covalent_unit_count, int)
-    assert isinstance(c1.fingerprint, text_types)
+    assert isinstance(c1.fingerprint, str)
 
 
 def test_coordinate_type(c1):
