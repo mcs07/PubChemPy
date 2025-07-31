@@ -6,7 +6,7 @@ Test searching.
 
 """
 
-from pubchempy import *
+from pubchempy import get_assays, get_compounds
 
 
 def test_search_assays():

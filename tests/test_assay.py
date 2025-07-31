@@ -8,7 +8,7 @@ Test assay object.
 
 import pytest
 
-from pubchempy import *
+from pubchempy import Assay, ProjectCategory
 
 
 @pytest.fixture(scope='module')

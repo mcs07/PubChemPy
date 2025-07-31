@@ -6,10 +6,19 @@ Test optional pandas functionality.
 
 """
 
+import logging
+
 import pytest
 
-from pubchempy import *
-
+from pubchempy import (
+    Compound,
+    Substance,
+    compounds_to_frame,
+    get_compounds,
+    get_properties,
+    get_substances,
+    substances_to_frame,
+)
 
 log = logging.getLogger(__name__)
 

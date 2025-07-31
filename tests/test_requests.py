@@ -6,7 +6,7 @@ Test basic requests.
 
 """
 
-from pubchempy import *
+from pubchempy import get_json, get_sids, request
 
 
 def test_requests():

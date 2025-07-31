@@ -11,7 +11,13 @@ import warnings
 
 import pytest
 
-from pubchempy import *
+from pubchempy import (
+    Atom,
+    BondType,
+    Compound,
+    PubChemPyDeprecationWarning,
+    get_compounds,
+)
 
 
 @pytest.fixture(scope='module')

@@ -6,9 +6,11 @@ Test compound object with 3D record.
 
 """
 
+import warnings
+
 import pytest
 
-from pubchempy import *
+from pubchempy import Compound, PubChemPyDeprecationWarning
 
 
 @pytest.fixture
