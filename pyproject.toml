@@ -51,10 +51,7 @@ dev = [
     "ipykernel>=6.30.0",
 ]
 docs = ["furo>=2025.7.19", "sphinx>=7.4.7"]
-test = [
-    "pytest>=8.4.1",
- "pytest-rerunfailures>=15.1",
-]
+test = ["pytest>=8.4.1", "pytest-rerunfailures>=15.1"]
 
 [tool.setuptools]
 py-modules = ["pubchempy"]
