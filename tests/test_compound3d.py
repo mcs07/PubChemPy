@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 test_compound3d
 ~~~~~~~~~~~~~~~
@@ -6,11 +5,6 @@ test_compound3d
 Test compound object with 3D record.
 
 """
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import pytest
 
@@ -31,7 +25,7 @@ def test_properties_types(c3d):
     assert isinstance(c3d.pharmacophore_features_3d, list)
     assert isinstance(c3d.mmff94_partial_charges_3d, list)
     assert isinstance(c3d.mmff94_energy_3d, float)
-    assert isinstance(c3d.conformer_id_3d, text_types)
+    assert isinstance(c3d.conformer_id_3d, str)
     assert isinstance(c3d.shape_selfoverlap_3d, float)
     assert isinstance(c3d.feature_selfoverlap_3d, float)
     assert isinstance(c3d.shape_fingerprint_3d, list)
@@ -44,13 +38,13 @@ def test_coordinate_type(c3d):
 
 def test_atoms(c3d):
     assert len(c3d.atoms) == 75
-    assert set(a.element for a in c3d.atoms) == {'C', 'H', 'O', 'N'}
+    assert {a.element for a in c3d.atoms} == {'C', 'H', 'O', 'N'}
     assert set(c3d.elements) == {'C', 'H', 'O', 'N'}
 
 
 def test_atoms_deprecated(c3d):
     with warnings.catch_warnings(record=True) as w:
-        assert set(a['element'] for a in c3d.atoms) == {'C', 'H', 'O', 'N'}
+        assert {a['element'] for a in c3d.atoms} == {'C', 'H', 'O', 'N'}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
         assert str(w[0].message) == '__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated'

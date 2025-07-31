@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 test_search
 ~~~~~~~~~~~
@@ -7,20 +6,13 @@ Test searching.
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-import pytest
-
 from pubchempy import *
 
 
 def test_search_assays():
     assays = get_assays([1, 1000, 490])
     for assay in assays:
-        assert isinstance(assay.name, text_types)
+        assert isinstance(assay.name, str)
 
 
 def test_substructure():
