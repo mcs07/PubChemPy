@@ -33,6 +33,59 @@ __email__ = 'm.swain@me.com'
 __version__ = '1.0.4'
 __license__ = 'MIT'
 
+__all__ = [
+    # Main API functions
+    'get_compounds',
+    'get_substances', 
+    'get_assays',
+    'get_properties',
+    'get_synonyms',
+    'get_cids',
+    'get_sids',
+    'get_aids',
+    'get_all_sources',
+    'download',
+    'request',
+    'get',
+    'get_json',
+    'get_sdf',
+    
+    # Core classes
+    'Compound',
+    'Substance',
+    'Assay',
+    'Atom',
+    'Bond',
+    
+    # Enum/constant classes
+    'CompoundIdType',
+    'BondType',
+    'CoordinateType',
+    'ProjectCategory',
+    
+    # Data conversion functions
+    'compounds_to_frame',
+    'substances_to_frame',
+    
+    # Constants
+    'API_BASE',
+    'ELEMENTS',
+    'PROPERTY_MAP',
+    
+    # Exceptions
+    'PubChemPyError',
+    'ResponseParseError',
+    'PubChemHTTPError',
+    'BadRequestError',
+    'NotFoundError',
+    'MethodNotAllowedError',
+    'ServerError',
+    'UnimplementedError',
+    'ServerBusyError',
+    'TimeoutError',
+    'PubChemPyDeprecationWarning',
+]
+
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
 
 log = logging.getLogger('pubchempy')
