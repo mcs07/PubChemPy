@@ -36,7 +36,7 @@ __license__ = 'MIT'
 __all__ = [
     # Main API functions
     'get_compounds',
-    'get_substances', 
+    'get_substances',
     'get_assays',
     'get_properties',
     'get_synonyms',
@@ -49,29 +49,29 @@ __all__ = [
     'get',
     'get_json',
     'get_sdf',
-    
+
     # Core classes
     'Compound',
     'Substance',
     'Assay',
     'Atom',
     'Bond',
-    
+
     # Enum/constant classes
     'CompoundIdType',
     'BondType',
     'CoordinateType',
     'ProjectCategory',
-    
+
     # Data conversion functions
     'compounds_to_frame',
     'substances_to_frame',
-    
+
     # Constants
     'API_BASE',
     'ELEMENTS',
     'PROPERTY_MAP',
-    
+
     # Exceptions
     'PubChemPyError',
     'ResponseParseError',
@@ -86,6 +86,7 @@ __all__ = [
     'PubChemPyDeprecationWarning',
 ]
 
+#: Base URL for the PubChem PUG REST API.
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
 
 log = logging.getLogger('pubchempy')
@@ -438,7 +439,7 @@ def get_assays(identifier, namespace='aid', **kwargs):
     return [Assay(r) for r in results['PC_AssayContainer']] if results else []
 
 
-# Allows properties to optionally be specified as underscore_separated, consistent with Compound attributes
+#: Allows properties to optionally be specified as underscore_separated, consistent with Compound attributes.
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
@@ -1457,30 +1458,30 @@ def create_http_error(e: HTTPError) -> PubChemHTTPError:
 
 
 class BadRequestError(PubChemHTTPError):
-    """Request is improperly formed (syntax error in the URL, POST body, etc.)."""
+    """400: Request is improperly formed (syntax error in the URL, POST body, etc.)."""
 
 
 class NotFoundError(PubChemHTTPError):
-    """The input record was not found (e.g. invalid CID)."""
+    """404: The input record was not found (e.g. invalid CID)."""
 
 
 class MethodNotAllowedError(PubChemHTTPError):
-    """Request not allowed (such as invalid MIME type in the HTTP Accept header)."""
+    """405: Request not allowed (such as invalid MIME type in the HTTP Accept header)."""
 
 class ServerError(PubChemHTTPError):
-    """Some problem on the server side (such as a database server down, etc.)."""
+    """500: Some problem on the server side (such as a database server down, etc.)."""
 
 
 class UnimplementedError(PubChemHTTPError):
-    """The requested operation has not (yet) been implemented by the server."""
+    """501: The requested operation has not (yet) been implemented by the server."""
 
 
 class ServerBusyError(PubChemHTTPError):
-    """Too many requests or server is busy, retry later."""
+    """503: Too many requests or server is busy, retry later."""
 
 
 class TimeoutError(PubChemHTTPError):
-    """The request timed out, from server overload or too broad a request.
+    """504: The request timed out, from server overload or too broad a request.
 
     See :ref:`Avoiding TimeoutError <avoiding_timeouterror>` for more information.
     """
