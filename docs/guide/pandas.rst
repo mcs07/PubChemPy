@@ -26,4 +26,4 @@ An existing list of Compound objects can be converted into a dataframe, optional
     cs = pcp.get_compounds('C20H41Br', 'formula')
     df4 = pcp.compounds_to_frame(cs, properties=['smiles', 'xlogp', 'rotatable_bond_count'])
 
-.. _`pandas documentation`: http://pandas.pydata.org/pandas-docs/stable/
+.. _`pandas documentation`: https://pandas.pydata.org/pandas-docs/stable/

@@ -106,10 +106,10 @@ Summary of possible inputs
     <output> = XML | ASNT | ASNB | JSON | JSONP [ ?callback=<callback name> ] | SDF | CSV | PNG | TXT
 
 
-.. _`Python logging documentation`: http://docs.python.org/2/howto/logging.html
-.. _`json`: http://docs.python.org/2/library/json.html
-.. _`xml`: http://docs.python.org/2/library/xml.etree.elementtree.html
-.. _`csv`: http://docs.python.org/2/library/csv.html
-.. _`PUG REST Specification`: https://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html
-.. _`Open Babel`: http://openbabel.org/docs/current/UseTheLibrary/Python.html
-.. _`RDKit`: http://www.rdkit.org
+.. _`Python logging documentation`: https://docs.python.org/3/howto/logging.html
+.. _`json`: https://docs.python.org/3/library/json.html
+.. _`xml`: https://docs.python.org/3/library/xml.etree.elementtree.html
+.. _`csv`: https://docs.python.org/3/library/csv.html
+.. _`PUG REST Specification`: https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest
+.. _`Open Babel`: https://openbabel.org/docs/UseTheLibrary/Python.html
+.. _`RDKit`: https://www.rdkit.org

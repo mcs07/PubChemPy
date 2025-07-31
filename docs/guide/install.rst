@@ -52,7 +52,7 @@ stable, but may include new features that have not yet been released. Simply clo
     cd PubChemPy
     python setup.py install
 
-.. _`install it using get-pip.py`: http://www.pip-installer.org/en/latest/installing.html
+.. _`install it using get-pip.py`: https://pip.pypa.io/en/stable/installation/
 .. _`Anaconda Python`: https://www.continuum.io/anaconda-overview
 .. _`download the latest release`: https://github.com/mcs07/PubChemPy/releases/
 .. _`available on GitHub`: https://github.com/mcs07/PubChemPy
