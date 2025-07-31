@@ -3,9 +3,7 @@ name = "PubChemPy"
 version = "1.0.4"
 description = "A simple Python wrapper around the PubChem PUG REST API."
 readme = "README.rst"
-authors = [
-    { name = "Matt Swain", email = "m.swain@me.com" }
-]
+authors = [{ name = "Matt Swain", email = "m.swain@me.com" }]
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.9"
@@ -40,28 +38,22 @@ Releases = "https://github.com/mcs07/PubChemPy/releases"
 "Issue Tracker" = "https://github.com/mcs07/PubChemPy/issues"
 
 [project.optional-dependencies]
-pandas = [
-    "pandas>=0.16.2",
-]
-ssl = [
-    "certifi>=2025.7.14",
-]
+pandas = ["pandas>=0.16.2"]
+ssl = ["certifi>=2025.7.14"]
 
 [dependency-groups]
 dev = [
-    {include-group = "docs"},
-    {include-group = "test"},
+    { include-group = "docs" },
+    { include-group = "test" },
     "pre-commit>=4.2.0",
     "ruff>=0.12.5",
     "nb-clean>=4.0.1",
     "ipykernel>=6.30.0",
 ]
-docs = [
-    "furo>=2025.7.19",
-    "sphinx>=7.4.7",
-]
+docs = ["furo>=2025.7.19", "sphinx>=7.4.7"]
 test = [
-  "pytest>=8.4.1",
+    "pytest>=8.4.1",
+ "pytest-rerunfailures>=15.1",
 ]
 
 [tool.setuptools]
@@ -70,3 +62,8 @@ py-modules = ["pubchempy"]
 [build-system]
 requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+addopts = "-v --reruns 3 --reruns-delay 5 --only-rerun TimeoutError --only-rerun ServerBusyError"
+testpaths = ["tests"]
+log_cli = true
