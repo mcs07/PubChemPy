@@ -96,11 +96,11 @@ Exceptions
 ----------
 
 .. autoexception:: pubchempy.PubChemPyError
+   :show-inheritance:
 .. autoexception:: pubchempy.ResponseParseError
    :show-inheritance:
 .. autoexception:: pubchempy.PubChemHTTPError
    :show-inheritance:
-   :members:
 .. autoexception:: pubchempy.BadRequestError
    :show-inheritance:
 .. autoexception:: pubchempy.NotFoundError
@@ -114,6 +114,8 @@ Exceptions
 .. autoexception:: pubchempy.ServerBusyError
    :show-inheritance:
 .. autoexception:: pubchempy.TimeoutError
+   :show-inheritance:
+.. autoexception:: pubchempy.PubChemPyDeprecationWarning
    :show-inheritance:
 
 Changes
