@@ -1,10 +1,4 @@
-"""
-test_errors
-~~~~~~~~~~~~~
-
-Test errors.
-
-"""
+"""Test errors."""
 
 import pytest
 
@@ -21,11 +15,11 @@ from pubchempy import (
 def test_invalid_identifier():
     """BadRequestError should be raised if identifier is not a positive integer."""
     with pytest.raises(BadRequestError):
-        Compound.from_cid('aergaerhg')
+        Compound.from_cid("aergaerhg")
     with pytest.raises(BadRequestError):
-        get_compounds('srthrthsr')
+        get_compounds("srthrthsr")
     with pytest.raises(BadRequestError):
-        get_substances('grgrqjksa')
+        get_substances("grgrqjksa")
 
 
 def test_notfound_identifier():

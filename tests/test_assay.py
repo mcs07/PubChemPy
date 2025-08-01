@@ -1,17 +1,11 @@
-"""
-test_assay
-~~~~~~~~~~
-
-Test assay object.
-
-"""
+"""Test assay object."""
 
 import pytest
 
 from pubchempy import Assay, ProjectCategory
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def a1():
     """Assay AID 1973374."""
     return Assay.from_aid(1973374)
@@ -19,7 +13,7 @@ def a1():
 
 def test_basic(a1):
     assert a1.aid == 1973374
-    assert repr(a1) == 'Assay(1973374)'
+    assert repr(a1) == "Assay(1973374)"
     assert a1.record
 
 

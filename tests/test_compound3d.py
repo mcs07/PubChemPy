@@ -1,10 +1,4 @@
-"""
-test_compound3d
-~~~~~~~~~~~~~~~
-
-Test compound object with 3D record.
-
-"""
+"""Test compound object with 3D record."""
 
 import warnings
 
@@ -16,7 +10,7 @@ from pubchempy import Compound, PubChemPyDeprecationWarning
 @pytest.fixture
 def c3d():
     """Compound CID 1234, 3D."""
-    return Compound.from_cid(1234, record_type='3d')
+    return Compound.from_cid(1234, record_type="3d")
 
 
 def test_properties_types(c3d):
@@ -35,21 +29,24 @@ def test_properties_types(c3d):
 
 
 def test_coordinate_type(c3d):
-    assert c3d.coordinate_type == '3d'
+    assert c3d.coordinate_type == "3d"
 
 
 def test_atoms(c3d):
     assert len(c3d.atoms) == 75
-    assert {a.element for a in c3d.atoms} == {'C', 'H', 'O', 'N'}
-    assert set(c3d.elements) == {'C', 'H', 'O', 'N'}
+    assert {a.element for a in c3d.atoms} == {"C", "H", "O", "N"}
+    assert set(c3d.elements) == {"C", "H", "O", "N"}
 
 
 def test_atoms_deprecated(c3d):
     with warnings.catch_warnings(record=True) as w:
-        assert {a['element'] for a in c3d.atoms} == {'C', 'H', 'O', 'N'}
+        assert {a["element"] for a in c3d.atoms} == {"C", "H", "O", "N"}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == '__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == "__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated"
+        )
 
 
 def test_coordinates(c3d):
@@ -61,9 +58,12 @@ def test_coordinates(c3d):
 
 def test_coordinates_deprecated(c3d):
     with warnings.catch_warnings(record=True) as w:
-        assert isinstance(c3d.atoms[0]['x'], (float, int))
-        assert isinstance(c3d.atoms[0]['y'], (float, int))
-        assert isinstance(c3d.atoms[0]['z'], (float, int))
+        assert isinstance(c3d.atoms[0]["x"], (float, int))
+        assert isinstance(c3d.atoms[0]["y"], (float, int))
+        assert isinstance(c3d.atoms[0]["z"], (float, int))
         assert len(w) == 3
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == '__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == "__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated"
+        )

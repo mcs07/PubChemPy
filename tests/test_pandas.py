@@ -1,14 +1,8 @@
-"""
-test_pandas
-~~~~~~~~~~~
-
-Test optional pandas functionality.
-
-"""
+"""Test optional pandas functionality."""
 
 import logging
 
-import pytest
+import pandas as pd
 
 from pubchempy import (
     Compound,
@@ -23,37 +17,40 @@ from pubchempy import (
 log = logging.getLogger(__name__)
 
 
-# Import pandas as pd, skipping tests in this module if pandas is not installed
-pd = pytest.importorskip('pandas')
-
-
 def test_compounds_dataframe():
     """"""
-    df = get_compounds('C20H41Br', 'formula', as_dataframe=True)
+    df = get_compounds("C20H41Br", "formula", as_dataframe=True)
     assert df.ndim == 2
-    assert df.index.names == ['cid']
+    assert df.index.names == ["cid"]
     assert len(df.index) > 5
     columns = df.columns.values.tolist()
-    assert 'atom_stereo_count' in columns
-    assert 'atoms' in columns
-    assert 'connectivity_smiles' in columns
-    assert 'exact_mass' in columns
+    assert "atom_stereo_count" in columns
+    assert "atoms" in columns
+    assert "connectivity_smiles" in columns
+    assert "exact_mass" in columns
 
 
 def test_substances_dataframe():
     df = get_substances([1, 2, 3, 4], as_dataframe=True)
     assert df.ndim == 2
-    assert df.index.names == ['sid']
+    assert df.index.names == ["sid"]
     assert len(df.index) == 4
-    assert set(df.columns) == {'source_id', 'source_name', 'standardized_cid', 'synonyms'}
+    assert set(df.columns) == {
+        "source_id",
+        "source_name",
+        "standardized_cid",
+        "synonyms",
+    }
 
 
 def test_properties_dataframe():
-    df = get_properties(['smiles', 'xlogp', 'inchikey'], '1,2,3,4', 'cid', as_dataframe=True)
+    df = get_properties(
+        ["smiles", "xlogp", "inchikey"], "1,2,3,4", "cid", as_dataframe=True
+    )
     assert df.ndim == 2
-    assert df.index.names == ['CID']
+    assert df.index.names == ["CID"]
     assert len(df.index) == 4
-    assert set(df.columns) == {'SMILES', 'InChIKey', 'XLogP'}
+    assert set(df.columns) == {"SMILES", "InChIKey", "XLogP"}
 
 
 def test_compound_series():
