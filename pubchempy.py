@@ -5,7 +5,7 @@ Python interface for the PubChem PUG REST service.
 https://github.com/mcs07/PubChemPy
 """
 
-
+import enum
 import functools
 import json
 import logging
@@ -36,7 +36,7 @@ __license__ = 'MIT'
 __all__ = [
     # Main API functions
     'get_compounds',
-    'get_substances', 
+    'get_substances',
     'get_assays',
     'get_properties',
     'get_synonyms',
@@ -49,29 +49,29 @@ __all__ = [
     'get',
     'get_json',
     'get_sdf',
-    
+
     # Core classes
     'Compound',
     'Substance',
     'Assay',
     'Atom',
     'Bond',
-    
+
     # Enum/constant classes
     'CompoundIdType',
     'BondType',
     'CoordinateType',
     'ProjectCategory',
-    
+
     # Data conversion functions
     'compounds_to_frame',
     'substances_to_frame',
-    
+
     # Constants
     'API_BASE',
     'ELEMENTS',
     'PROPERTY_MAP',
-    
+
     # Exceptions
     'PubChemPyError',
     'ResponseParseError',
@@ -86,194 +86,240 @@ __all__ = [
     'PubChemPyDeprecationWarning',
 ]
 
+#: Base URL for the PubChem PUG REST API.
 API_BASE = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
 
 log = logging.getLogger('pubchempy')
 log.addHandler(logging.NullHandler())
 
 
-class CompoundIdType:
-    """"""
+class CompoundIdType(enum.IntEnum):
+    """Compound record type."""
     #: Original Deposited Compound
     DEPOSITED = 0
-    #: Standardized Form of the Deposited Compound
+    #: Standardized Form of a Deposited Compound
     STANDARDIZED = 1
-    #: Component of the Standardized Form
+    #: Component of a Standardized Compound
     COMPONENT = 2
-    #: Neutralized Form of the Standardized Form
+    #: Neutralized Form of a Standardized Compound
     NEUTRALIZED = 3
-    #: Deposited Mixture Component
+    #: Substance that is a component of a mixture
     MIXTURE = 4
-    #: Alternate Tautomer Form of the Standardized Form
+    #: Predicted Tautomer Form
     TAUTOMER = 5
-    #: Ionized pKa Form of the Standardized Form
+    #: Predicted Ionized pKa Form
     IONIZED = 6
-    #: Unspecified or Unknown Compound Type
+    #: Unknown Compound Type
     UNKNOWN = 255
 
 
-class BondType:
+class BondType(enum.IntEnum):
+    """Bond Type Information."""
+    #: Single Bond
     SINGLE = 1
+    #: Double Bond
     DOUBLE = 2
+    #: Triple Bond
     TRIPLE = 3
+    #: Quadruple Bond
     QUADRUPLE = 4
+    #: Dative Bond
     DATIVE = 5
+    #: Complex Bond
     COMPLEX = 6
+    #: Ionic Bond
     IONIC = 7
+    #: Unknown/Unspecified Connectivity
     UNKNOWN = 255
 
 
-class CoordinateType:
+class CoordinateType(enum.IntEnum):
+    """Coordinate Set Type Distinctions"""
+    #: 2D Coordinates
     TWO_D = 1
+    #: 3D Coordinates (should also indicate units, below)
     THREE_D = 2
+    #: Depositor Provided Coordinates
     SUBMITTED = 3
+    #: Experimentally Determined Coordinates
     EXPERIMENTAL = 4
+    #: Computed Coordinates
     COMPUTED = 5
+    #: Standardized Coordinates
     STANDARDIZED = 6
+    #: Hybrid Original with Computed Coordinates (e.g., explicit H)
     AUGMENTED = 7
+    #: Template used to align drawing
     ALIGNED = 8
+    #: Drawing uses shorthand forms (e.g., COOH, OCH3, Et, etc.)
     COMPACT = 9
+    #: (3D) Coordinate units are Angstroms
     UNITS_ANGSTROMS = 10
+    #: (3D) Coordinate units are nanometers
     UNITS_NANOMETERS = 11
+    #: (2D) Coordinate units are pixels
     UNITS_PIXEL = 12
+    #: (2D) Coordinate units are points
     UNITS_POINTS = 13
+    #: (2D) Coordinate units are standard bond lengths (1.0)
     UNITS_STDBONDS = 14
+    #: Coordinate units are unknown or unspecified
     UNITS_UNKNOWN = 255
 
 
-class ProjectCategory:
+class ProjectCategory(enum.IntEnum):
+    """To distinguish projects funded through MLSCN, MLPCN or other."""
+    #: Assay depositions from MLSCN screen center
     MLSCN = 1
+    #: Assay depositions from MLPCN screen center
     MPLCN = 2
+    #: Assay depositions from MLSCN assay provider
     MLSCN_AP = 3
+    #: Assay depositions from MLPCN assay provider
     MPLCN_AP = 4
+    #: To be deprecated and replaced by options 7, 8 & 9
     JOURNAL_ARTICLE = 5
+    #: Assay depositions from assay vendors
     ASSAY_VENDOR = 6
+    #: Data from literature, extracted by curators
     LITERATURE_EXTRACTED = 7
+    #: Data from literature, submitted by author of articles
     LITERATURE_AUTHOR = 8
+    #: Data from literature, submitted by journals/publishers
     LITERATURE_PUBLISHER = 9
+    #: RNAi screenings from RNAi Global Initiative
     RNAIGI = 10
+    #: Other project category
     OTHER = 255
 
 
+#: Dictionary mapping atomic numbers to their element symbols.
 ELEMENTS = {
-    1: 'H',
-    2: 'He',
-    3: 'Li',
-    4: 'Be',
-    5: 'B',
-    6: 'C',
-    7: 'N',
-    8: 'O',
-    9: 'F',
-    10: 'Ne',
-    11: 'Na',
-    12: 'Mg',
-    13: 'Al',
-    14: 'Si',
-    15: 'P',
-    16: 'S',
-    17: 'Cl',
-    18: 'Ar',
-    19: 'K',
-    20: 'Ca',
-    21: 'Sc',
-    22: 'Ti',
-    23: 'V',
-    24: 'Cr',
-    25: 'Mn',
-    26: 'Fe',
-    27: 'Co',
-    28: 'Ni',
-    29: 'Cu',
-    30: 'Zn',
-    31: 'Ga',
-    32: 'Ge',
-    33: 'As',
-    34: 'Se',
-    35: 'Br',
-    36: 'Kr',
-    37: 'Rb',
-    38: 'Sr',
-    39: 'Y',
-    40: 'Zr',
-    41: 'Nb',
-    42: 'Mo',
-    43: 'Tc',
-    44: 'Ru',
-    45: 'Rh',
-    46: 'Pd',
-    47: 'Ag',
-    48: 'Cd',
-    49: 'In',
-    50: 'Sn',
-    51: 'Sb',
-    52: 'Te',
-    53: 'I',
-    54: 'Xe',
-    55: 'Cs',
-    56: 'Ba',
-    57: 'La',
-    58: 'Ce',
-    59: 'Pr',
-    60: 'Nd',
-    61: 'Pm',
-    62: 'Sm',
-    63: 'Eu',
-    64: 'Gd',
-    65: 'Tb',
-    66: 'Dy',
-    67: 'Ho',
-    68: 'Er',
-    69: 'Tm',
-    70: 'Yb',
-    71: 'Lu',
-    72: 'Hf',
-    73: 'Ta',
-    74: 'W',
-    75: 'Re',
-    76: 'Os',
-    77: 'Ir',
-    78: 'Pt',
-    79: 'Au',
-    80: 'Hg',
-    81: 'Tl',
-    82: 'Pb',
-    83: 'Bi',
-    84: 'Po',
-    85: 'At',
-    86: 'Rn',
-    87: 'Fr',
-    88: 'Ra',
-    89: 'Ac',
-    90: 'Th',
-    91: 'Pa',
-    92: 'U',
-    93: 'Np',
-    94: 'Pu',
-    95: 'Am',
-    96: 'Cm',
-    97: 'Bk',
-    98: 'Cf',
-    99: 'Es',
-    100: 'Fm',
-    101: 'Md',
-    102: 'No',
-    103: 'Lr',
-    104: 'Rf',
-    105: 'Db',
-    106: 'Sg',
-    107: 'Bh',
-    108: 'Hs',
-    109: 'Mt',
-    110: 'Ds',
-    111: 'Rg',
-    112: 'Cp',
-    113: 'ut',
-    114: 'uq',
-    115: 'up',
-    116: 'uh',
-    117: 'us',
-    118: 'uo',
+    # Standard chemical elements
+    1: 'H',  # Hydrogen
+    2: 'He',  # Helium
+    3: 'Li',  # Lithium
+    4: 'Be',  # Beryllium
+    5: 'B',  # Boron
+    6: 'C',  # Carbon
+    7: 'N',  # Nitrogen
+    8: 'O',  # Oxygen
+    9: 'F',  # Fluorine
+    10: 'Ne',  # Neon
+    11: 'Na',  # Sodium
+    12: 'Mg',  # Magnesium
+    13: 'Al',  # Aluminium
+    14: 'Si',  # Silicon
+    15: 'P',  # Phosphorus
+    16: 'S',  # Sulfur
+    17: 'Cl',  # Chlorine
+    18: 'Ar',  # Argon
+    19: 'K',  # Potassium
+    20: 'Ca',  # Calcium
+    21: 'Sc',  # Scandium
+    22: 'Ti',  # Titanium
+    23: 'V',  # Vanadium
+    24: 'Cr',  # Chromium
+    25: 'Mn',  # Manganese
+    26: 'Fe',  # Iron
+    27: 'Co',  # Cobalt
+    28: 'Ni',  # Nickel
+    29: 'Cu',  # Copper
+    30: 'Zn',  # Zinc
+    31: 'Ga',  # Gallium
+    32: 'Ge',  # Germanium
+    33: 'As',  # Arsenic
+    34: 'Se',  # Selenium
+    35: 'Br',  # Bromine
+    36: 'Kr',  # Krypton
+    37: 'Rb',  # Rubidium
+    38: 'Sr',  # Strontium
+    39: 'Y',  # Yttrium
+    40: 'Zr',  # Zirconium
+    41: 'Nb',  # Niobium
+    42: 'Mo',  # Molybdenum
+    43: 'Tc',  # Technetium
+    44: 'Ru',  # Ruthenium
+    45: 'Rh',  # Rhodium
+    46: 'Pd',  # Palladium
+    47: 'Ag',  # Silver
+    48: 'Cd',  # Cadmium
+    49: 'In',  # Indium
+    50: 'Sn',  # Tin
+    51: 'Sb',  # Antimony
+    52: 'Te',  # Tellurium
+    53: 'I',  # Iodine
+    54: 'Xe',  # Xenon
+    55: 'Cs',  # Cesium
+    56: 'Ba',  # Barium
+    57: 'La',  # Lanthanum
+    58: 'Ce',  # Cerium
+    59: 'Pr',  # Praseodymium
+    60: 'Nd',  # Neodymium
+    61: 'Pm',  # Promethium
+    62: 'Sm',  # Samarium
+    63: 'Eu',  # Europium
+    64: 'Gd',  # Gadolinium
+    65: 'Tb',  # Terbium
+    66: 'Dy',  # Dysprosium
+    67: 'Ho',  # Holmium
+    68: 'Er',  # Erbium
+    69: 'Tm',  # Thulium
+    70: 'Yb',  # Ytterbium
+    71: 'Lu',  # Lutetium
+    72: 'Hf',  # Hafnium
+    73: 'Ta',  # Tantalum
+    74: 'W',  # Tungsten
+    75: 'Re',  # Rhenium
+    76: 'Os',  # Osmium
+    77: 'Ir',  # Iridium
+    78: 'Pt',  # Platinum
+    79: 'Au',  # Gold
+    80: 'Hg',  # Mercury
+    81: 'Tl',  # Thallium
+    82: 'Pb',  # Lead
+    83: 'Bi',  # Bismuth
+    84: 'Po',  # Polonium
+    85: 'At',  # Astatine
+    86: 'Rn',  # Radon
+    87: 'Fr',  # Francium
+    88: 'Ra',  # Radium
+    89: 'Ac',  # Actinium
+    90: 'Th',  # Thorium
+    91: 'Pa',  # Protactinium
+    92: 'U',  # Uranium
+    93: 'Np',  # Neptunium
+    94: 'Pu',  # Plutonium
+    95: 'Am',  # Americium
+    96: 'Cm',  # Curium
+    97: 'Bk',  # Berkelium
+    98: 'Cf',  # Californium
+    99: 'Es',  # Einsteinium
+    100: 'Fm',  # Fermium
+    101: 'Md',  # Mendelevium
+    102: 'No',  # Nobelium
+    103: 'Lr',  # Lawrencium
+    104: 'Rf',  # Rutherfordium
+    105: 'Db',  # Dubnium
+    106: 'Sg',  # Seaborgium
+    107: 'Bh',  # Bohrium
+    108: 'Hs',  # Hassium
+    109: 'Mt',  # Meitnerium
+    110: 'Ds',  # Darmstadtium
+    111: 'Rg',  # Roentgenium
+    112: 'Cn',  # Copernicium
+    113: 'Nh',  # Nihonium
+    114: 'Fl',  # Flerovium
+    115: 'Mc',  # Moscovium
+    116: 'Lv',  # Livermorium
+    117: 'Ts',  # Tennessine
+    118: 'Og',  # Oganesson
+
+    # Special atom types
+    252: 'Lp',  # Lone Pair
+    253: 'R',  # Rgroup Label
+    254: '*',  # Dummy Atom
+    255: '*',  # Unspecified Atom (Asterisk)
 }
 
 
@@ -393,7 +439,7 @@ def get_assays(identifier, namespace='aid', **kwargs):
     return [Assay(r) for r in results['PC_AssayContainer']] if results else []
 
 
-# Allows properties to optionally be specified as underscore_separated, consistent with Compound attributes
+#: Allows properties to optionally be specified as underscore_separated, consistent with Compound attributes.
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
@@ -597,7 +643,7 @@ class Atom:
     @property
     def element(self):
         """The element symbol for this atom."""
-        return ELEMENTS.get(self.number, None)
+        return ELEMENTS.get(self.number, str(self.number))
 
     def to_dict(self):
         """Return a dictionary containing Atom data."""
@@ -1280,7 +1326,7 @@ class Assay:
 
     @property
     def description(self):
-        """Description"""
+        """Description."""
         return self.record['assay']['descr']['description']
 
     @property
@@ -1291,7 +1337,7 @@ class Assay:
         literature-publisher, rnaigi.
         """
         if 'project_category' in self.record['assay']['descr']:
-            return self.record['assay']['descr']['project_category']
+            return ProjectCategory(self.record['assay']['descr']['project_category'])
 
     @property
     def comments(self):
@@ -1412,30 +1458,30 @@ def create_http_error(e: HTTPError) -> PubChemHTTPError:
 
 
 class BadRequestError(PubChemHTTPError):
-    """Request is improperly formed (syntax error in the URL, POST body, etc.)."""
+    """400: Request is improperly formed (syntax error in the URL, POST body, etc.)."""
 
 
 class NotFoundError(PubChemHTTPError):
-    """The input record was not found (e.g. invalid CID)."""
+    """404: The input record was not found (e.g. invalid CID)."""
 
 
 class MethodNotAllowedError(PubChemHTTPError):
-    """Request not allowed (such as invalid MIME type in the HTTP Accept header)."""
+    """405: Request not allowed (such as invalid MIME type in the HTTP Accept header)."""
 
 class ServerError(PubChemHTTPError):
-    """Some problem on the server side (such as a database server down, etc.)."""
+    """500: Some problem on the server side (such as a database server down, etc.)."""
 
 
 class UnimplementedError(PubChemHTTPError):
-    """The requested operation has not (yet) been implemented by the server."""
+    """501: The requested operation has not (yet) been implemented by the server."""
 
 
 class ServerBusyError(PubChemHTTPError):
-    """Too many requests or server is busy, retry later."""
+    """503: Too many requests or server is busy, retry later."""
 
 
 class TimeoutError(PubChemHTTPError):
-    """The request timed out, from server overload or too broad a request.
+    """504: The request timed out, from server overload or too broad a request.
 
     See :ref:`Avoiding TimeoutError <avoiding_timeouterror>` for more information.
     """

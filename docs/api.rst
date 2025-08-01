@@ -15,6 +15,23 @@ Search functions
 .. autofunction:: get_substances
 .. autofunction:: get_assays
 .. autofunction:: get_properties
+.. autofunction:: get_synonyms
+
+Identifiers
+-----------
+
+.. autofunction:: get_cids
+.. autofunction:: get_sids
+.. autofunction:: get_aids
+
+Request functions
+-----------------
+
+.. autofunction:: download
+.. autofunction:: request
+.. autofunction:: get
+.. autofunction:: get_json
+.. autofunction:: get_sdf
 
 Compound
 --------
@@ -60,18 +77,46 @@ constructed easily.
 .. autofunction:: compounds_to_frame
 .. autofunction:: substances_to_frame
 
+Constants
+---------
+
+.. autodata:: pubchempy.API_BASE
+.. autodata:: pubchempy.ELEMENTS
+.. autodata:: pubchempy.PROPERTY_MAP
+.. autoclass:: pubchempy.CompoundIdType
+   :members:
+.. autoclass:: pubchempy.BondType
+   :members:
+.. autoclass:: pubchempy.CoordinateType
+   :members:
+.. autoclass:: pubchempy.ProjectCategory
+   :members:
+
 Exceptions
 ----------
 
-.. autoexception:: pubchempy.PubChemPyError()
-.. autoexception:: pubchempy.ResponseParseError()
-.. autoexception:: pubchempy.PubChemHTTPError()
-.. autoexception:: pubchempy.BadRequestError()
-.. autoexception:: pubchempy.NotFoundError()
-.. autoexception:: pubchempy.MethodNotAllowedError()
-.. autoexception:: pubchempy.TimeoutError()
-.. autoexception:: pubchempy.UnimplementedError()
-.. autoexception:: pubchempy.ServerError()
+.. autoexception:: pubchempy.PubChemPyError
+   :show-inheritance:
+.. autoexception:: pubchempy.ResponseParseError
+   :show-inheritance:
+.. autoexception:: pubchempy.PubChemHTTPError
+   :show-inheritance:
+.. autoexception:: pubchempy.BadRequestError
+   :show-inheritance:
+.. autoexception:: pubchempy.NotFoundError
+   :show-inheritance:
+.. autoexception:: pubchempy.MethodNotAllowedError
+   :show-inheritance:
+.. autoexception:: pubchempy.ServerError
+   :show-inheritance:
+.. autoexception:: pubchempy.UnimplementedError
+   :show-inheritance:
+.. autoexception:: pubchempy.ServerBusyError
+   :show-inheritance:
+.. autoexception:: pubchempy.TimeoutError
+   :show-inheritance:
+.. autoexception:: pubchempy.PubChemPyDeprecationWarning
+   :show-inheritance:
 
 Changes
 -------
