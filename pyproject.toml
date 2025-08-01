@@ -61,6 +61,6 @@ requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
-addopts = "-v --reruns 3 --reruns-delay 5 --only-rerun TimeoutError --only-rerun ServerBusyError"
+addopts = "-v --reruns 3 --reruns-delay 5 --only-rerun TimeoutError --only-rerun ServerBusyError  --only-rerun RemoteDisconnected"
 testpaths = ["tests"]
 log_cli = true
