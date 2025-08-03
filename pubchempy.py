@@ -1,8 +1,39 @@
-"""
-PubChemPy
+"""PubChemPy: Python Interface for the PubChem Database.
 
-Python interface for the PubChem PUG REST service.
-https://github.com/mcs07/PubChemPy
+PubChemPy provides programmatic access to the PubChem database through the PUG REST API.
+PubChem is a comprehensive chemical information resource that contains millions of
+chemical structures and their associated biological, physical, and toxicological data.
+
+The PubChem database is organized into three main record types:
+
+- **Substances**: Raw chemical records deposited by data contributors
+- **Compounds**: Standardized and deduplicated chemical records derived from substances
+- **BioAssays**: Experimental data from biological screening and testing
+
+Key Features of PubChemPy:
+
+- Retrieve chemical structures, properties, and experimental data
+- Search by various identifiers (CID, SID, AID, names, SMILES, InChI)
+- Access molecular descriptors, fingerprints, and 3D conformer data
+- Query biological assay results and target information
+- Convert between different chemical formats and representations
+
+This library handles the complexity of the PubChem PUG REST API, providing a simple
+Pythonic interface for chemical informatics workflows.
+
+Example:
+    Basic usage for retrieving a compound:
+
+    >>> import pubchempy as pcp
+    >>> compound = pcp.Compound.from_cid(2244)  # Aspirin
+    >>> print(compound.molecular_formula)
+    C9H8O4
+    >>> print(compound.iupac_name)
+    2-acetyloxybenzoic acid
+
+For more information about PubChem: https://pubchem.ncbi.nlm.nih.gov/
+
+PubChemPy project repository: https://github.com/mcs07/PubChemPy
 """
 
 import enum
