@@ -16,7 +16,7 @@ def test_properties():
 
 
 def test_underscore_properties():
-    """Properties can also be specified as underscore-separated words, rather than CamelCase."""
+    """Properties can be specified as snake_case and CamelCase."""
     results = get_properties(
         ["smiles", "molecular_weight"], "tris-(1,10-phenanthroline)ruthenium", "name"
     )
@@ -28,7 +28,7 @@ def test_underscore_properties():
 
 
 def test_comma_string_properties():
-    """Properties can also be specified as a comma-separated string, rather than a list."""
+    """Properties can be specified as a comma-separated string rather than a list."""
     results = get_properties(
         "smiles,InChIKey,molecular_weight",
         "tris-(1,10-phenanthroline)ruthenium",

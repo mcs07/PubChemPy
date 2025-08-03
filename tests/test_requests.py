@@ -4,7 +4,7 @@ from pubchempy import get_json, get_sids, request
 
 
 def test_requests():
-    """Test a variety of basic raw requests and ensure they don't return an error code."""
+    """Test basic raw requests and ensure they don't return an error code."""
     assert request("c1ccccc1", "smiles").getcode() == 200
     assert request("DTP/NCI", "sourceid", "substance", "747285", "SDF").getcode() == 200
     assert (

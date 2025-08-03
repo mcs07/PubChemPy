@@ -43,10 +43,11 @@ def test_atoms_deprecated(c3d):
         assert {a["element"] for a in c3d.atoms} == {"C", "H", "O", "N"}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert (
-            str(w[0].message)
-            == "__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated"
+        expected_message = (
+            "__getitem__ is deprecated: Dictionary style access to Atom attributes is "
+            "deprecated"
         )
+        assert str(w[0].message) == expected_message
 
 
 def test_coordinates(c3d):
@@ -63,7 +64,8 @@ def test_coordinates_deprecated(c3d):
         assert isinstance(c3d.atoms[0]["z"], (float, int))
         assert len(w) == 3
         assert w[0].category == PubChemPyDeprecationWarning
-        assert (
-            str(w[0].message)
-            == "__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated"
+        expected_message = (
+            "__getitem__ is deprecated: Dictionary style access to Atom attributes is "
+            "deprecated"
         )
+        assert str(w[0].message) == expected_message

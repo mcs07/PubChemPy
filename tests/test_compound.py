@@ -44,10 +44,11 @@ def test_atoms_deprecated(c1):
         assert {a["element"] for a in c1.atoms} == {"C", "H"}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert (
-            str(w[0].message)
-            == "__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated"
+        expected_message = (
+            "__getitem__ is deprecated: Dictionary style access to Atom attributes is "
+            "deprecated"
         )
+        assert str(w[0].message) == expected_message
 
 
 def test_single_atom():
@@ -67,10 +68,11 @@ def test_bonds_deprecated(c1):
         assert {b["order"] for b in c1.bonds} == {BondType.SINGLE, BondType.DOUBLE}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert (
-            str(w[0].message)
-            == "__getitem__ is deprecated: Dictionary style access to Bond attributes is deprecated"
+        expected_message = (
+            "__getitem__ is deprecated: Dictionary style access to Bond attributes is "
+            "deprecated"
         )
+        assert str(w[0].message) == expected_message
 
 
 def test_charge(c1):
@@ -91,10 +93,11 @@ def test_coordinates_deprecated(c1):
         assert "z" not in c1.atoms[0]
         assert len(w) == 3
         assert w[0].category == PubChemPyDeprecationWarning
-        assert (
-            str(w[0].message)
-            == "__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated"
+        expected_message = (
+            "__getitem__ is deprecated: Dictionary style access to Atom attributes is "
+            "deprecated"
         )
+        assert str(w[0].message) == expected_message
 
 
 def test_identifiers(c1):
@@ -165,10 +168,11 @@ def test_charged_compound_deprecated(c2):
         assert c2.atoms[0]["charge"] == -1
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert (
-            str(w[0].message)
-            == "__getitem__ is deprecated: Dictionary style access to Atom attributes is deprecated"
+        expected_message = (
+            "__getitem__ is deprecated: Dictionary style access to Atom attributes is "
+            "deprecated"
         )
+        assert str(w[0].message) == expected_message
 
 
 def test_fingerprint(c1):

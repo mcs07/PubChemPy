@@ -36,12 +36,12 @@ def test_source(s1):
 
 
 def test_deposited_compound(s1):
-    """Check that a Compound object can be constructed from the embedded deposited compound record."""
+    """Check Compound object from embedded deposited compound record."""
     assert s1.deposited_compound.record
 
 
 def test_deposited_compound2():
-    """Check that a Compound object can be constructed from the embedded deposited compound record."""
+    """Check Compound object from embedded deposited compound record."""
     s2 = Substance.from_sid(223766453)
     assert s2.deposited_compound.record
 

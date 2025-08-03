@@ -23,7 +23,7 @@ def test_invalid_identifier():
 
 
 def test_notfound_identifier():
-    """NotFoundError should be raised if identifier is a positive integer but record doesn't exist."""
+    """NotFoundError should be raised if the record doesn't exist."""
     with pytest.raises(NotFoundError):
         Compound.from_cid(999999999)
     with pytest.raises(NotFoundError):
