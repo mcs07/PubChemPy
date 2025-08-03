@@ -64,3 +64,21 @@ build-backend = "setuptools.build_meta"
 addopts = "-v --reruns 3 --reruns-delay 5 --only-rerun TimeoutError --only-rerun ServerBusyError  --only-rerun RemoteDisconnected"
 testpaths = ["tests"]
 log_cli = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["B", "D", "E", "F", "I", "W", "UP"]
+ignore = ["D213",  "D203"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["pubchempy"]
