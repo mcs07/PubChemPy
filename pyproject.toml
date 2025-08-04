@@ -2,7 +2,7 @@
 name = "PubChemPy"
 version = "1.0.4"
 description = "A simple Python wrapper around the PubChem PUG REST API."
-readme = "README.rst"
+readme = "README.md"
 authors = [{ name = "Matt Swain", email = "m.swain@me.com" }]
 license = "MIT"
 license-files = ["LICENSE"]
