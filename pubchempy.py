@@ -1,40 +1,4 @@
-"""PubChemPy: Python Interface for the PubChem Database.
-
-PubChemPy provides programmatic access to the PubChem database through the PUG REST API.
-PubChem is a comprehensive chemical information resource that contains millions of
-chemical structures and their associated biological, physical, and toxicological data.
-
-The PubChem database is organized into three main record types:
-
-- **Substances**: Raw chemical records deposited by data contributors
-- **Compounds**: Standardized and deduplicated chemical records derived from substances
-- **BioAssays**: Experimental data from biological screening and testing
-
-Key Features of PubChemPy:
-
-- Retrieve chemical structures, properties, and experimental data
-- Search by various identifiers (CID, SID, AID, names, SMILES, InChI)
-- Access molecular descriptors, fingerprints, and 3D conformer data
-- Query biological assay results and target information
-- Convert between different chemical formats and representations
-
-This library handles the complexity of the PubChem PUG REST API, providing a simple
-Pythonic interface for chemical informatics workflows.
-
-Example:
-    Basic usage for retrieving a compound:
-
-    >>> import pubchempy as pcp
-    >>> compound = pcp.Compound.from_cid(2244)  # Aspirin
-    >>> print(compound.molecular_formula)
-    C9H8O4
-    >>> print(compound.iupac_name)
-    2-acetyloxybenzoic acid
-
-For more information about PubChem: https://pubchem.ncbi.nlm.nih.gov/
-
-PubChemPy project repository: https://github.com/mcs07/PubChemPy
-"""
+"""PubChemPy: Python Interface for the PubChem Database."""
 
 from __future__ import annotations
 
@@ -522,6 +486,10 @@ def get_compounds(
         as_dataframe: Automatically extract the Compound properties into a pandas
             DataFrame and return that.
         **kwargs: Additional query parameters to pass to the API request.
+
+    Returns:
+        List of :class:`~pubchempy.Compound` objects, or a pandas DataFrame if
+        ``as_dataframe=True``.
     """
     results = get_json(identifier, namespace, searchtype=searchtype, **kwargs)
     compounds = [Compound(r) for r in results["PC_Compounds"]] if results else []
@@ -544,6 +512,10 @@ def get_substances(
         as_dataframe: Automatically extract the Substance properties into a pandas
             DataFrame and return that.
         **kwargs: Additional query parameters to pass to the API request.
+
+    Returns:
+        List of :class:`~pubchempy.Substance` objects, or a pandas DataFrame if
+        ``as_dataframe=True``.
     """
     results = get_json(identifier, namespace, "substance", **kwargs)
     substances = [Substance(r) for r in results["PC_Substances"]] if results else []
@@ -562,7 +534,7 @@ def get_assays(
     Args:
         identifier: The assay identifier to use as a search query.
         namespace: The identifier type.
-        **kwargs: Additional parameters to pass to the request.
+        **kwargs: Additional query parameters to pass to the API request.
 
     Returns:
         List of :class:`~pubchempy.Assay` objects.
@@ -868,14 +840,15 @@ class Atom:
         z: float | None = None,
         charge: int = 0,
     ) -> None:
-        """Initialize with an atom ID, atomic number, coordinates and optional change.
+        """Initialize with an atom ID, atomic number, coordinates and optional charge.
 
-        :param int aid: Atom ID
-        :param int number: Atomic number
-        :param float x: X coordinate.
-        :param float y: Y coordinate.
-        :param float z: (optional) Z coordinate.
-        :param int charge: (optional) Formal charge on atom.
+        Args:
+            aid: Atom ID.
+            number: Atomic number.
+            x: X coordinate.
+            y: Y coordinate.
+            z: Z coordinate.
+            charge: Formal charge on atom.
         """
         self.aid = aid
         """The atom ID within the owning Compound."""
@@ -962,9 +935,11 @@ class Bond:
     ) -> None:
         """Initialize with begin and end atom IDs, bond order and bond style.
 
-        :param int aid1: Begin atom ID.
-        :param int aid2: End atom ID.
-        :param int order: Bond order.
+        Args:
+            aid1: Begin atom ID.
+            aid2: End atom ID.
+            order: Bond order.
+            style: Bond style annotation.
         """
         self.aid1 = aid1
         """ID of the begin atom of this bond."""
@@ -1290,12 +1265,22 @@ class Compound:
 
     @property
     def molecular_formula(self) -> str | None:
-        """Molecular formula."""
+        """Molecular formula.
+
+        The molecular formula represents the number of atoms of each element in a
+        compound. It does not contain any information about connectivity or structure.
+        """
         return _parse_prop({"label": "Molecular Formula"}, self.record["props"])
 
     @property
     def molecular_weight(self) -> float | None:
-        """Molecular Weight."""
+        """Molecular weight in g/mol.
+
+        The molecular weight is the sum of all atomic weights of the constituent
+        atoms in a compound, measured in g/mol. In the absence of explicit isotope
+        labelling, averaged natural abundance is assumed. If an atom bears an
+        explicit isotope label, 100% isotopic purity is assumed at this location.
+        """
         sval = _parse_prop({"label": "Molecular Weight"}, self.record["props"])
         return float(sval) if sval else None
 
@@ -1322,11 +1307,12 @@ class Compound:
 
     @property
     def connectivity_smiles(self) -> str | None:
-        """Connectivity SMILES.
+        """Connectivity SMILES string.
 
-        A canonical SMILES string that excludes stereochemical and isotopic information.
+        A canonical SMILES string that includes connectivity information only. It
+        excludes stereochemical and isotopic information.
 
-        Replaces the the deprecated :attr:`canonical_smiles` property.
+        Replaces the deprecated :attr:`canonical_smiles` property.
         """
         return _parse_prop(
             {"label": "SMILES", "name": "Connectivity"}, self.record["props"]
@@ -1334,9 +1320,11 @@ class Compound:
 
     @property
     def smiles(self) -> str | None:
-        """Absolute SMILES (isomeric and canonical).
+        """Absolute SMILES string (isomeric and canonical).
 
-        A canonical SMILES string that includes stereochemical and isotopic information.
+        A canonical SMILES string that includes both stereochemical and isotopic
+        information. This provides the most complete linear representation of the
+        molecular structure.
 
         Replaces the deprecated :attr:`isomeric_smiles` property.
         """
@@ -1346,19 +1334,38 @@ class Compound:
 
     @property
     def inchi(self) -> str | None:
-        """InChI string."""
+        """Standard IUPAC International Chemical Identifier (InChI).
+
+        The InChI provides a unique, standardized representation of molecular
+        structure that is not dependent on the software used to generate it.
+        It includes connectivity, stereochemistry, and isotopic information
+        in a layered format. This standard version does not allow for user
+        selectable options in dealing with stereochemistry and tautomer layers.
+        """
         return _parse_prop({"label": "InChI", "name": "Standard"}, self.record["props"])
 
     @property
     def inchikey(self) -> str | None:
-        """InChIKey."""
+        """Standard InChIKey.
+
+        A hashed version of the full standard InChI, consisting of 27 characters
+        divided into three blocks separated by hyphens. The InChIKey provides a
+        fixed-length identifier that is more suitable for database indexing and
+        web searches than the full InChI string.
+        """
         return _parse_prop(
             {"label": "InChIKey", "name": "Standard"}, self.record["props"]
         )
 
     @property
     def iupac_name(self) -> str | None:
-        """Preferred IUPAC name."""
+        """Preferred IUPAC name.
+
+        The chemical name systematically determined according to IUPAC
+        (International Union of Pure and Applied Chemistry) nomenclature rules.
+        This is the preferred systematic name among the available IUPAC naming
+        styles (Allowed, CAS-like Style, Preferred, Systematic, Traditional).
+        """
         # Note: record has Allowed, CAS-like Style, Preferred, Systematic, Traditional
         return _parse_prop(
             {"label": "IUPAC Name", "name": "Preferred"}, self.record["props"]
@@ -1366,18 +1373,35 @@ class Compound:
 
     @property
     def xlogp(self) -> float | None:
-        """XLogP."""
+        """XLogP octanol-water partition coefficient.
+
+        A computationally generated octanol-water partition coefficient that
+        measures the hydrophilicity or hydrophobicity of a molecule. Higher
+        values indicate more lipophilic (fat-soluble) compounds, while lower
+        values indicate more hydrophilic (water-soluble) compounds.
+        """
         return _parse_prop({"label": "Log P"}, self.record["props"])
 
     @property
     def exact_mass(self) -> float | None:
-        """Exact mass."""
+        """Exact mass in Da (Daltons).
+
+        The mass of the most likely isotopic composition for a single molecule,
+        corresponding to the most intense ion/molecule peak in a mass spectrum.
+        This differs from molecular weight in that it uses the exact masses of
+        specific isotopes rather than averaged atomic weights.
+        """
         sval = _parse_prop({"label": "Mass", "name": "Exact"}, self.record["props"])
         return float(sval) if sval else None
 
     @property
     def monoisotopic_mass(self) -> float | None:
-        """Monoisotopic mass."""
+        """Monoisotopic mass in Da (Daltons).
+
+        The mass of a molecule calculated using the mass of the most abundant
+        isotope of each element. This provides a single, well-defined mass value
+        useful for high-resolution mass spectrometry applications.
+        """
         sval = _parse_prop(
             {"label": "Weight", "name": "MonoIsotopic"}, self.record["props"]
         )
@@ -1385,27 +1409,53 @@ class Compound:
 
     @property
     def tpsa(self) -> float | None:
-        """Topological Polar Surface Area."""
+        """Topological Polar Surface Area (TPSA).
+
+        The topological polar surface area computed using the algorithm described
+        by Ertl et al. TPSA is a commonly used descriptor for predicting drug
+        absorption, as it correlates well with passive molecular transport through
+        membranes. Values are typically expressed in square Ångströms.
+        """
         return _parse_prop({"implementation": "E_TPSA"}, self.record["props"])
 
     @property
     def complexity(self) -> float | None:
-        """Complexity."""
+        """Molecular complexity rating.
+
+        A measure of molecular complexity computed using the Bertz/Hendrickson/
+        Ihlenfeldt formula. This descriptor quantifies the structural complexity
+        of a molecule based on factors such as the number of atoms, bonds,
+        rings, and branching patterns.
+        """
         return _parse_prop({"implementation": "E_COMPLEXITY"}, self.record["props"])
 
     @property
     def h_bond_donor_count(self) -> int | None:
-        """Hydrogen bond donor count."""
+        """Number of hydrogen-bond donors in the structure.
+
+        Counts functional groups that can donate hydrogen bonds, such as
+        -OH, -NH, and -SH groups. This descriptor is important for predicting
+        drug-like properties and molecular interactions.
+        """
         return _parse_prop({"implementation": "E_NHDONORS"}, self.record["props"])
 
     @property
     def h_bond_acceptor_count(self) -> int | None:
-        """Hydrogen bond acceptor count."""
+        """Number of hydrogen-bond acceptors in the structure.
+
+        Counts functional groups that can accept hydrogen bonds, such as
+        oxygen and nitrogen atoms with lone pairs. This descriptor is important
+        for predicting drug-like properties and molecular interactions.
+        """
         return _parse_prop({"implementation": "E_NHACCEPTORS"}, self.record["props"])
 
     @property
     def rotatable_bond_count(self) -> int | None:
-        """Rotatable bond count."""
+        """Number of rotatable bonds.
+
+        Counts single bonds that can freely rotate, excluding bonds in rings
+        and terminal bonds to hydrogen or methyl groups.
+        """
         return _parse_prop({"implementation": "E_NROTBONDS"}, self.record["props"])
 
     @property
@@ -1457,31 +1507,55 @@ class Compound:
 
     @property
     def heavy_atom_count(self) -> int | None:
-        """Heavy atom count."""
+        """Number of heavy atoms (non-hydrogen atoms).
+
+        Counts all atoms in the molecule except hydrogen. This is a basic descriptor of
+        molecular size and is used in various chemical calculations and molecular
+        property predictions.
+        """
         if "count" in self.record and "heavy_atom" in self.record["count"]:
             return self.record["count"]["heavy_atom"]
 
     @property
     def isotope_atom_count(self) -> int | None:
-        """Isotope atom count."""
+        """Number of atoms with enriched isotopes.
+
+        Counts atoms that are specified with non-standard isotopes (e.g., ²H, ¹³C). Most
+        organic molecules have a value of 0 unless they are isotopically labeled for
+        research or analytical purposes.
+        """
         if "count" in self.record and "isotope_atom" in self.record["count"]:
             return self.record["count"]["isotope_atom"]
 
     @property
     def atom_stereo_count(self) -> int | None:
-        """Atom stereocenter count."""
+        """Total number of atoms with tetrahedral (sp³) stereochemistry.
+
+        Counts atoms that have tetrahedral stereochemistry. This includes both defined
+        and undefined stereocenters in the molecule.
+        """
         if "count" in self.record and "atom_chiral" in self.record["count"]:
             return self.record["count"]["atom_chiral"]
 
     @property
     def defined_atom_stereo_count(self) -> int | None:
-        """Defined atom stereocenter count."""
+        """Number of atoms with defined tetrahedral (sp³) stereochemistry.
+
+        Counts stereocenters where the absolute configuration is explicitly specified
+        (e.g. R or S). This excludes stereocenters where the  configuration is unknown
+        or unspecified.
+        """
         if "count" in self.record and "atom_chiral_def" in self.record["count"]:
             return self.record["count"]["atom_chiral_def"]
 
     @property
     def undefined_atom_stereo_count(self) -> int | None:
-        """Undefined atom stereocenter count."""
+        """Number of atoms with undefined tetrahedral (sp³) stereochemistry.
+
+        Counts stereocenters where the absolute configuration is not specified or is
+        unknown. These represent potential stereocenters that could have either R or S
+        configuration, but this is not explicitly defined.
+        """
         if "count" in self.record and "atom_chiral_undef" in self.record["count"]:
             return self.record["count"]["atom_chiral_undef"]
 
@@ -1511,6 +1585,12 @@ class Compound:
 
     @property
     def volume_3d(self) -> float | None:
+        """Analytic volume of the first diverse conformer.
+
+        The 3D molecular volume calculated for the default (first diverse) conformer.
+        This descriptor provides information about the space occupied by the molecule in
+        three dimensions.
+        """
         conf = self.record["coords"][0]["conformers"][0]
         if "data" in conf:
             return _parse_prop({"label": "Shape", "name": "Volume"}, conf["data"])
@@ -1523,18 +1603,37 @@ class Compound:
 
     @property
     def conformer_rmsd_3d(self) -> float | None:
+        """Conformer sampling RMSD in Å.
+
+        The root-mean-square deviation of atomic positions between different conformers
+        in the conformer model. This measures the structural diversity of the generated
+        conformer ensemble.
+        """
         coords = self.record["coords"][0]
         if "data" in coords:
             return _parse_prop({"label": "Conformer", "name": "RMSD"}, coords["data"])
 
     @property
     def effective_rotor_count_3d(self) -> int | None:
+        """Number of effective rotors in the 3D structure.
+
+        A count of rotatable bonds that significantly contribute to conformational
+        flexibility. This is often less than the total rotatable bond count as it
+        excludes rotors that have restricted rotation due to steric or electronic
+        effects.
+        """
         return _parse_prop(
             {"label": "Count", "name": "Effective Rotor"}, self.record["props"]
         )
 
     @property
     def pharmacophore_features_3d(self) -> list[str] | None:
+        """3D pharmacophore features present in the molecule.
+
+        A list of pharmacophore feature types identified in the 3D structure, such as
+        hydrogen bond donors, acceptors, aromatic rings, and hydrophobic regions. These
+        features are important for drug-target interactions.
+        """
         return _parse_prop(
             {"label": "Features", "name": "Pharmacophore"}, self.record["props"]
         )
@@ -1635,6 +1734,9 @@ class Substance:
         Args:
             sid: The PubChem Substance Identifier (SID).
             **kwargs: Additional parameters to pass to the request.
+
+        Example:
+            s = Substance.from_sid(12345)
         """
         response = request(sid, "sid", "substance", **kwargs).read().decode()
         record = json.loads(response)["PC_Substances"][0]
@@ -1807,14 +1909,18 @@ class Assay:
         self._record = record
 
     @classmethod
-    def from_aid(cls, aid: int) -> Assay:
+    def from_aid(cls, aid: int, **kwargs: QueryParam) -> Assay:
         """Retrieve the Assay record for the specified AID.
 
-        :param int aid: The PubChem Assay Identifier (AID).
+        Args:
+            aid: The PubChem Assay Identifier (AID).
+            **kwargs: Additional parameters to pass to the request.
+
+        Example:
+            a = Assay.from_aid(1234)
         """
-        record = json.loads(
-            request(aid, "aid", "assay", "description").read().decode()
-        )["PC_AssayContainer"][0]
+        response = request(aid, "aid", "assay", "description", **kwargs).read().decode()
+        record = json.loads(response)["PC_AssayContainer"][0]
         return cls(record)
 
     @property
@@ -1955,6 +2061,13 @@ class PubChemHTTPError(PubChemPyError):
     """Generic error class to handle HTTP error codes."""
 
     def __init__(self, code: int, msg: str, details: list[str]) -> None:
+        """Initialize with HTTP status code, message, and additional details.
+
+        Args:
+            code: HTTP status code.
+            msg: Error message.
+            details: Additional error details from PubChem API.
+        """
         super().__init__(msg)
         self.code = code
         self.msg = msg
