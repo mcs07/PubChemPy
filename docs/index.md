@@ -81,8 +81,8 @@ Comprehensive API documentation with information on every function, class and me
 api
 ```
 
-[documentation]: https://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html
-[github]: https://github.com/mcs07/PubChemPy
-[issue tracker]: https://github.com/mcs07/PubChemPy/issues
-[pubchem pug rest web service]: https://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST_Tutorial.html
-[tutorial]: https://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST_Tutorial.html
+[documentation]: https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest
+[GitHub]: https://github.com/mcs07/PubChemPy
+[Issue Tracker]: https://github.com/mcs07/PubChemPy/issues
+[PubChem PUG REST web service]: https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest
+[tutorial]: https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest-tutorial
