@@ -11,5 +11,5 @@ pcp.download('PNG', 'asp.png', 'Aspirin', 'name')
 pcp.download('CSV', 's.csv', [1,2,3], operation='property/ConnectivitySMILES,SMILES')
 ```
 
-For PNG images, the `image_size` argument can be used to specfiy `large`, `small`
+For PNG images, the `image_size` argument can be used to specify `large`, `small`
 or `<width>x<height>`.

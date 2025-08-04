@@ -177,11 +177,11 @@ class ProjectCategory(enum.IntEnum):
     #: Assay depositions from MLSCN screen center
     MLSCN = 1
     #: Assay depositions from MLPCN screen center
-    MPLCN = 2
+    MLPCN = 2
     #: Assay depositions from MLSCN assay provider
     MLSCN_AP = 3
     #: Assay depositions from MLPCN assay provider
-    MPLCN_AP = 4
+    MLPCN_AP = 4
     #: To be deprecated and replaced by options 7, 8 & 9
     JOURNAL_ARTICLE = 5
     #: Assay depositions from assay vendors
