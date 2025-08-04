@@ -366,7 +366,11 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
 def get(identifier, namespace='cid', domain='compound', operation=None, output='JSON', searchtype=None, **kwargs):
     """Request wrapper that automatically handles async requests."""
     if (searchtype and searchtype != 'xref') or namespace in ['formula']:
-        response = request(identifier, namespace, domain, None, 'JSON', searchtype, **kwargs).read()
+        # BalooRM - if searchtype == 'fastidentity', pass operation in place of None
+        if searchtype == 'fastidentity':
+            response = request(identifier, namespace, domain, operation, 'JSON', searchtype, **kwargs).read()
+        else:
+            response = request(identifier, namespace, domain, None, 'JSON', searchtype, **kwargs).read()            
         status = json.loads(response.decode())
         if 'Waiting' in status and 'ListKey' in status['Waiting']:
             identifier = status['Waiting']['ListKey']
