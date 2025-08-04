@@ -37,7 +37,7 @@ CS(=O)(=O)C1=CC=C(C=C1)C2=C(C(=O)OC2)C3=CC=CC=C3
 ['rofecoxib', 'Vioxx', 'Ceoxx', '162011-90-7', 'MK 966', ... ]
 ```
 
-:::{note}
+````{note}
 All the code examples in this documentation will assume you have imported PubChemPy as `pcp`. If you prefer, you can alternatively import specific functions and classes by name and use them directly:
 
 ```python
@@ -45,7 +45,7 @@ from pubchempy import Compound, get_compounds
 c = Compound.from_cid(1423)
 cs = get_compounds('Aspirin', 'name')
 ```
-:::
+````
 
 ## Searching
 
@@ -74,9 +74,9 @@ Retrieving the record for a SMILES string is just as easy:
 [Compound(1318)]
 ```
 
-:::{note}
+```{note}
 Beware that line notation inputs like SMILES and InChI can return automatically generated records that aren't actually present in PubChem, and therefore have no CID and are missing many properties that are too complicated to calculate on the fly.
-:::
+```
 
 That's all the most basic things you can do with PubChemPy. Read on for more some more advanced usage examples.
 
