@@ -137,7 +137,7 @@ def test_coordinate_type(c1):
 
 def test_compound_equality():
     assert Compound.from_cid(241) == Compound.from_cid(241)
-    assert get_compounds("Benzene", "name")[0], get_compounds("c1ccccc1" == "smiles")[0]
+    assert get_compounds("Benzene", "name")[0] == get_compounds("c1ccccc1", "smiles")[0]
 
 
 def test_synonyms(c1):
