@@ -26,6 +26,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.ifconfig",
+    "myst_parser",
 ]
 
 templates_path = ["_templates"]

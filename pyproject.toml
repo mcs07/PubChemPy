@@ -50,7 +50,7 @@ dev = [
     "nb-clean>=4.0.1",
     "ipykernel>=6.30.0",
 ]
-docs = ["furo>=2025.7.19", "sphinx>=7.4.7"]
+docs = ["furo>=2025.7.19", "myst-parser>=3.0.1", "sphinx>=7.4.7"]
 test = ["pytest>=8.4.1", "pytest-rerunfailures>=15.1"]
 
 [tool.setuptools]
@@ -71,7 +71,7 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["B", "D", "E", "F", "I", "W", "UP"]
-ignore = ["D213",  "D203"]
+ignore = ["D213", "D203"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D"]
