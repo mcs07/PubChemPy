@@ -142,7 +142,7 @@ def test_compound_equality():
 
 def test_synonyms(c1):
     assert len(c1.synonyms) > 5
-    assert len(c1.synonyms) > 5
+    assert "benzene" in c1.synonyms
 
 
 def test_related_records(c1):
