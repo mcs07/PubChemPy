@@ -14,7 +14,7 @@ Begin by importing PubChemPy:
 >>> import pubchempy as pcp
 ```
 
-Let's get the Compound with [CID 5090]:
+Let's get the {class}`~pubchempy.Compound` with [CID 5090]:
 
 ```python
 >>> c = pcp.Compound.from_cid(5090)

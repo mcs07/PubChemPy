@@ -16,13 +16,9 @@ This part of the documentation is automatically generated from the PubChemPy sou
 
 ```{eval-rst}
 .. autofunction:: get_compounds
-
 .. autofunction:: get_substances
-
 .. autofunction:: get_assays
-
 .. autofunction:: get_properties
-
 .. autofunction:: get_synonyms
 ```
 

@@ -70,11 +70,11 @@ urllib.request.install_opener(opener)
 
 ## Custom requests
 
-If you wish to perform more complicated requests, you can use the `request` function. This is an extremely simple wrapper around the REST API that allows you to construct any sort of request from a few parameters. The [PUG REST Specification] has all the information you will need to formulate your requests.
+If you wish to perform more complicated requests, you can use the {func}`~pubchempy.request` function. This is an extremely simple wrapper around the REST API that allows you to construct any sort of request from a few parameters. The [PUG REST Specification] has all the information you will need to formulate your requests.
 
-The `request` function simply returns the exact response from the PubChem server as a string. This can be parsed in different ways depending on the output format you choose. See the Python [json], [xml] and [csv] packages for more information. Additionally, cheminformatics toolkits such as [Open Babel] and [RDKit] offer tools for handling SDF files in Python.
+The {func}`~pubchempy.request` function simply returns the exact response from the PubChem server as a string. This can be parsed in different ways depending on the output format you choose. See the Python [json], [xml] and [csv] packages for more information. Additionally, cheminformatics toolkits such as [Open Babel] and [RDKit] offer tools for handling SDF files in Python.
 
-The `get` function is very similar to the `request` function, except it handles `listkey` type responses automatically for you. This makes things simpler, however it means you can't take advantage of using the same `listkey` repeatedly to obtain different types of information. See the [PUG REST specification] for more information on how `listkey` responses work.
+The {func}`~pubchempy.get` function is very similar to the {func}`~pubchempy.request` function, except it handles `listkey` type responses automatically for you. This makes things simpler, however it means you can't take advantage of using the same `listkey` repeatedly to obtain different types of information. See the [PUG REST specification] for more information on how `listkey` responses work.
 
 ### Summary of possible inputs
 

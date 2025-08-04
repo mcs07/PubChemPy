@@ -12,7 +12,7 @@ c = pcp.Compound.from_cid(6819)
 
 Each {class}`~pubchempy.Compound` has a `record` property, which is a dictionary that contains the all the information about the compound, produced exactly from the JSON response from the PubChem API. All other properties are derived from this record.
 
-Additionally, each {class}`~pubchempy.Compound` provides a `to_dict()` method that returns PubChemPy's own dictionary representation of the Compound data. As well as being more concisely formatted than the raw `record`, this method also takes an optional parameter to filter the list of the desired properties:
+Additionally, each {class}`~pubchempy.Compound` provides a {meth}`~pubchempy.Compound.to_dict` method that returns PubChemPy's own dictionary representation of the Compound data. As well as being more concisely formatted than the raw `record`, this method also takes an optional parameter to filter the list of the desired properties:
 
 ```python
 >>> c = pcp.Compound.from_cid(962)

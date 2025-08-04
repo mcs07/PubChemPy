@@ -3,9 +3,7 @@
 [![PyPI Version](https://img.shields.io/pypi/v/PubChemPy.svg?style=flat)](https://pypi.python.org/pypi/PubChemPy)
 [![License](https://img.shields.io/pypi/l/PubChemPy.svg?style=flat)](https://github.com/mcs07/PubChemPy/blob/main/LICENSE)
 
-PubChemPy provides a way to interact with PubChem in Python. It allows chemical searches by name, substructure and
-similarity, chemical standardization, conversion between chemical file formats, depiction and retrieval of chemical
-properties.
+PubChemPy provides a way to interact with PubChem in Python. It allows chemical searches by name, substructure and similarity, chemical standardization, conversion between chemical file formats, depiction and retrieval of chemical properties.
 
 ```python
 >>> from pubchempy import get_compounds, Compound

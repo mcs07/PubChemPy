@@ -2,7 +2,7 @@
 
 # Download
 
-The download function is for saving a file to disk. The following formats are available: XML, ASNT/B, JSON, SDF, CSV, PNG, TXT. Beware that not all formats are available for all types of information. SDF and PNG are only available for full Compound and Substance records, and CSV is best suited to tables of properties and identifiers.
+The {func}`~pubchempy.download` function is for saving a file to disk. The following formats are available: XML, ASNT/B, JSON, SDF, CSV, PNG, TXT. Beware that not all formats are available for all types of information. SDF and PNG are only available for full Compound and Substance records, and CSV is best suited to tables of properties and identifiers.
 
 Examples:
 
