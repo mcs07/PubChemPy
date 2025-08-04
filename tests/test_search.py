@@ -1,10 +1,4 @@
-"""
-test_search
-~~~~~~~~~~~
-
-Test searching.
-
-"""
+"""Test searching."""
 
 from pubchempy import get_assays, get_compounds
 
@@ -16,8 +10,13 @@ def test_search_assays():
 
 
 def test_substructure():
-    results = get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles', searchtype='substructure', listkey_count=3)
+    results = get_compounds(
+        "C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1",
+        "smiles",
+        searchtype="substructure",
+        listkey_count=3,
+    )
     assert len(results) == 3
     for result in results:
-        assert all(el in [a.element for a in result.atoms] for el in {'C', 'N', 'H'})
+        assert all(el in [a.element for a in result.atoms] for el in {"C", "N", "H"})
         assert result.heavy_atom_count >= 14

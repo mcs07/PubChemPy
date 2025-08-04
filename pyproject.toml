@@ -2,11 +2,11 @@
 name = "PubChemPy"
 version = "1.0.4"
 description = "A simple Python wrapper around the PubChem PUG REST API."
-readme = "README.rst"
+readme = "README.md"
 authors = [{ name = "Matt Swain", email = "m.swain@me.com" }]
 license = "MIT"
 license-files = ["LICENSE"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = []
 keywords = ["pubchem", "python", "rest", "api", "chemistry", "cheminformatics"]
 classifiers = [
@@ -16,7 +16,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -50,7 +49,7 @@ dev = [
     "nb-clean>=4.0.1",
     "ipykernel>=6.30.0",
 ]
-docs = ["furo>=2025.7.19", "sphinx>=7.4.7"]
+docs = ["furo>=2025.7.19", "myst-parser>=3.0.1", "sphinx>=7.4.7"]
 test = ["pytest>=8.4.1", "pytest-rerunfailures>=15.1"]
 
 [tool.setuptools]
@@ -64,3 +63,21 @@ build-backend = "setuptools.build_meta"
 addopts = "-v --reruns 3 --reruns-delay 5 --only-rerun TimeoutError --only-rerun ServerBusyError  --only-rerun RemoteDisconnected"
 testpaths = ["tests"]
 log_cli = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["B", "D", "E", "F", "I", "W", "UP"]
+ignore = ["D213", "D203"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["pubchempy"]

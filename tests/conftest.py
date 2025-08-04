@@ -1,6 +1,7 @@
 """Pytest configuration for PubChemPy tests."""
 
 import time
+
 import pytest
 
 

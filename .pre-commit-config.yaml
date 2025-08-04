@@ -23,7 +23,8 @@ repos:
       - id: ruff-check
         args:
           - --fix
-          - --select I
+          - --select
+          - I
           - --exit-non-zero-on-fix
       - id: ruff-format
 
@@ -32,6 +33,6 @@ repos:
     hooks:
       - id: nb-clean
         args:
-            - --remove-empty-cells
-            - --remove-all-notebook-metadata
-            - --preserve-cell-outputs
+          - --remove-empty-cells
+          - --remove-all-notebook-metadata
+          - --preserve-cell-outputs

@@ -16,5 +16,9 @@
     },
     "[shellscript]": {
         "editor.tabSize": 2
+    },
+    "[markdown]": {
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 88
     }
 }
