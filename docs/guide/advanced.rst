@@ -1,7 +1,10 @@
 .. _advanced:
 
-Advanced
-========
+Advanced Usage
+==============
+
+This guide covers advanced PubChemPy usage patterns, API best practices, error handling,
+logging, and low-level request functions.
 
 .. _avoiding_timeouterror:
 
@@ -29,12 +32,14 @@ results per page, and the ``listkey_start`` value specifies which page to return
 Logging
 -------
 
-PubChemPy can generate logging statements if required. Just set the desired logging level::
+PubChemPy can generate logging statements if required. Just set the desired logging
+level::
 
     import logging
     logging.basicConfig(level=logging.DEBUG)
 
-The logger is named 'pubchempy'. There is more information on logging in the `Python logging documentation`_.
+The logger is named 'pubchempy'. There is more information on logging in the `Python
+logging documentation`_.
 
 Using behind a proxy
 --------------------
@@ -57,18 +62,21 @@ A simple fix is to specify the proxy information via urllib::
 Custom requests
 ---------------
 
-If you wish to perform more complicated requests, you can use the ``request`` function. This is an extremely simple
-wrapper around the REST API that allows you to construct any sort of request from a few parameters. The
-`PUG REST Specification`_ has all the information you will need to formulate your requests.
+If you wish to perform more complicated requests, you can use the ``request`` function.
+This is an extremely simple wrapper around the REST API that allows you to construct any
+sort of request from a few parameters. The `PUG REST Specification`_ has all the
+information you will need to formulate your requests.
 
-The ``request`` function simply returns the exact response from the PubChem server as a string. This can be parsed in
-different ways depending on the output format you choose. See the Python `json`_, `xml`_ and `csv`_ packages for more
-information. Additionally, cheminformatics toolkits such as `Open Babel`_ and `RDKit`_ offer tools for handling SDF
+The ``request`` function simply returns the exact response from the PubChem server as a
+string. This can be parsed in different ways depending on the output format you choose.
+See the Python `json`_, `xml`_ and `csv`_ packages for more information. Additionally,
+cheminformatics toolkits such as `Open Babel`_ and `RDKit`_ offer tools for handling SDF
 files in Python.
 
-The ``get`` function is very similar to the ``request`` function, except it handles ``listkey`` type responses
-automatically for you. This makes things simpler, however it means you can't take advantage of using the same
-``listkey`` repeatedly to obtain different types of information. See the `PUG REST specification`_ for more information
+The ``get`` function is very similar to the ``request`` function, except it handles
+``listkey`` type responses automatically for you. This makes things simpler, however it
+means you can't take advantage of using the same ``listkey`` repeatedly to obtain
+different types of information. See the `PUG REST specification`_ for more information
 on how `listkey` responses work.
 
 Summary of possible inputs

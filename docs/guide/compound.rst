@@ -3,8 +3,9 @@
 Compound
 ========
 
-The :func:`~pubchempy.get_compounds` function returns a list of :class:`~pubchempy.Compound` objects. You can also
-instantiate a :class:`~pubchempy.Compound` object directly if you know its CID::
+The :func:`~pubchempy.get_compounds` function returns a list of
+:class:`~pubchempy.Compound` objects. You can also instantiate a
+:class:`~pubchempy.Compound` object directly if you know its CID::
 
     c = pcp.Compound.from_cid(6819)
 
@@ -12,13 +13,14 @@ instantiate a :class:`~pubchempy.Compound` object directly if you know its CID::
 Dictionary representation
 -------------------------
 
-Each :class:`~pubchempy.Compound` has a ``record`` property, which is a dictionary that contains the all the information
-about the compound, produced exactly from the JSON response from the PubChem API. All other properties are derived from
-this record.
+Each :class:`~pubchempy.Compound` has a ``record`` property, which is a dictionary that
+contains the all the information about the compound, produced exactly from the JSON
+response from the PubChem API. All other properties are derived from this record.
 
-Additionally, each :class:`~pubchempy.Compound` provides a ``to_dict()`` method that returns PubChemPy's own dictionary
-representation of the Compound data. As well as being more concisely formatted than the raw ``record``, this method also
-takes an optional parameter to filter the list of the desired properties::
+Additionally, each :class:`~pubchempy.Compound` provides a ``to_dict()`` method that
+returns PubChemPy's own dictionary representation of the Compound data. As well as being
+more concisely formatted than the raw ``record``, this method also takes an optional
+parameter to filter the list of the desired properties::
 
 
     >>> c = pcp.Compound.from_cid(962)
@@ -33,7 +35,8 @@ takes an optional parameter to filter the list of the desired properties::
 3D Compounds
 ------------
 
-Many properties are missing from 3D records, and the following properties are *only* available on 3D records:
+Many properties are missing from 3D records, and the following properties are *only*
+available on 3D records:
 
 - ``volume_3d``
 - ``multipoles_3d``

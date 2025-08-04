@@ -3,13 +3,15 @@
 Substance
 =========
 
-The PubChem Substance database contains all chemical records deposited in PubChem in their most raw form, before any
-significant processing is applied. As a result, it contains duplicates, mixtures, and some records that don't make
-chemical sense. This means that Substance records contain fewer calculated properties, however they do have additional
-information about the original source that deposited the record.
+The PubChem Substance database contains all chemical records deposited in PubChem in
+their most raw form, before any significant processing is applied. As a result, it
+contains duplicates, mixtures, and some records that don't make chemical sense. This
+means that Substance records contain fewer calculated properties, however they do have
+additional information about the original source that deposited the record.
 
-The PubChem Compound database is constructed from the Substance database using a standardization and deduplication
-process. Hence each Compound may be derived from a number of different Substances.
+The PubChem Compound database is constructed from the Substance database using a
+standardization and deduplication process. Hence each Compound may be derived from a
+number of different Substances.
 
 Retrieving substances
 ---------------------

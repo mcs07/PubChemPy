@@ -10,49 +10,48 @@ There are a variety of ways to download and install PubChemPy.
 Option 1: Use pip (recommended)
 -------------------------------
 
-The easiest and recommended way to install is using pip::
+The easiest and recommended way to install is using pip, the package installer for
+Python. It comes included with most modern Python distrubtions and you can use it to
+install packages from the `Python Package Index`_. Install PubChemPy using pip by
+running the following command in your terminal or command prompt::
 
     pip install pubchempy
 
-This will download the latest version of PubChemPy, and place it in your `site-packages` folder so it is automatically
-available to all your python scripts.
+This will download the latest version of PubChemPy, and place it in your `site-packages`
+folder so it is automatically available to all your python scripts.
 
-If you don't already have pip installed, you can `install it using get-pip.py`_::
-
-       curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-       python get-pip.py
+If pip is missing from your Python distribution, you can `install it by following the
+official guide`_.
 
 Option 2: Use conda
 -------------------
 
-If you use `Anaconda Python`_, install with conda::
+Conda is a cross-platform package manager that is popular in the scientific Python
+community. It provides an alternative to pip for installing Python packages and managing
+environments. Conda can be installed using the `Miniforge`_ installer, which is free and
+open-source, or the `Anaconda`_ installer, which is a commercial distribution that
+includes many scientific packages by default. Once you have conda installed, you can
+install PubChmePy from the conda-forge channel with the following command::
 
-    conda install -c mcs07 pubchempy
+    conda install -c conda-forge pubchempy
 
-Option 3: Download the latest release
--------------------------------------
+The conda-forge channel is a community-driven collection of conda packages that provides
+up-to-date and well-maintained packages for the conda package manager.
 
-Alternatively, `download the latest release`_ manually and install yourself::
-
-    tar -xzvf PubChemPy-1.0.4.tar.gz
-    cd PubChemPy-1.0.4
-    python setup.py install
-
-The setup.py command will install PubChemPy in your `site-packages` folder so it is automatically available to all your
-python scripts. Instead, you may prefer to just copy the pubchempy.py file into the desired project directory to only
-make it available to that project.
-
-Option 4: Clone the repository
+Option 3: Clone the repository
 ------------------------------
 
-The latest development version of PubChemPy is always `available on GitHub`_. This version is not guaranteed to be
-stable, but may include new features that have not yet been released. Simply clone the repository and install as usual::
+The latest development version of PubChemPy is always `available on GitHub`_. This
+version is not guaranteed to be stable, but may include new features that have not yet
+been released. Simply clone the repository and install as usual::
 
     git clone https://github.com/mcs07/PubChemPy.git
     cd PubChemPy
-    python setup.py install
+    pip install .
 
-.. _`install it using get-pip.py`: https://pip.pypa.io/en/stable/installation/
-.. _`Anaconda Python`: https://www.continuum.io/anaconda-overview
+.. _`Python Package Index`: https://pypi.org/
+.. _`install it by following the official guide`: https://pip.pypa.io/en/stable/installation/
+.. _`Miniforge`: https://conda-forge.org/download/
+.. _`Anaconda`: https://www.anaconda.com/download
 .. _`download the latest release`: https://github.com/mcs07/PubChemPy/releases/
 .. _`available on GitHub`: https://github.com/mcs07/PubChemPy
