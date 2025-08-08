@@ -773,7 +773,7 @@ def get_all_sources(domain: str = "substance") -> list[str]:
 
 def download(
     outformat: str,
-    path: str,
+    path: str | os.PathLike,
     identifier: str | int | list[str | int],
     namespace: str = "cid",
     domain: str = "compound",
