@@ -68,6 +68,7 @@ guide/properties
 guide/pandas
 guide/download
 guide/advanced
+guide/pugrest
 guide/contribute
 ```
 
