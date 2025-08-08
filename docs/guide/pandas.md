@@ -2,15 +2,15 @@
 
 # *pandas* integration
 
-## Getting *pandas*
+## Installing *pandas*
 
-*pandas* must be installed to use its functionality from within PubChemPy. The easiest way is to use pip:
+*pandas* must be installed to use its functionality from within PubChemPy. It is an optional dependency, so it is not installed automatically with PubChemPy. The easiest way is to use pip:
 
 ```bash
 pip install pandas
 ```
 
-See the [pandas documentation] for more information.
+See the [pandas documentation](https://pandas.pydata.org/pandas-docs/stable/) for more information.
 
 ## Usage
 
@@ -28,5 +28,3 @@ An existing list of {class}`~pubchempy.Compound` objects can be converted into a
 cs = pcp.get_compounds('C20H41Br', 'formula')
 df4 = pcp.compounds_to_frame(cs, properties=['smiles', 'xlogp', 'rotatable_bond_count'])
 ```
-
-[pandas documentation]: https://pandas.pydata.org/pandas-docs/stable/

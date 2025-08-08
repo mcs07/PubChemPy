@@ -1,6 +1,6 @@
 (substance)=
 
-# Substance
+# Substances
 
 The PubChem Substance database contains all chemical records deposited in PubChem in their most raw form, before any significant processing is applied. As a result, it contains duplicates, mixtures, and some records that don't make chemical sense. This means that {class}`~pubchempy.Substance` records contain fewer calculated properties, however they do have additional information about the original source that deposited the record.
 

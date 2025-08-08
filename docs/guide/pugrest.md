@@ -6,7 +6,7 @@ PUG (Power User Gateway) REST is a web service that PubChem provides for program
 
 You don't need to worry too much about how the PubChem web service works, because PubChemPy handles all of the details for you. But understanding the underlying architecture can help you use PubChemPy more effectively and troubleshoot issues.
 
-## PUG REST Architecture
+## PUG REST architecture
 
 The PUG REST API is built around a three-part request pattern:
 
@@ -16,7 +16,7 @@ The PUG REST API is built around a three-part request pattern:
 
 This modular design allows for flexible combinations. For example, you can combine structure input via SMILES with property retrieval operations and CSV output - all handled seamlessly by PubChemPy.
 
-## Request Flow
+## Request flow
 
 When you make a request with PubChemPy:
 
@@ -27,7 +27,7 @@ When you make a request with PubChemPy:
 
 PubChem contains over 300 million substance records, over 100 million standardized compound records, and over 1 million biological assays. All this data may be accessed and processed through PubChemPy without requiring local storage or computational resources.
 
-## When to Use Alternatives
+## When to use alternatives
 
 While PubChemPy and PUG REST are excellent for many tasks, consider alternatives for:
 
@@ -35,7 +35,7 @@ While PubChemPy and PUG REST are excellent for many tasks, consider alternatives
 - **Confidential work**: Consider local chemical toolkits for sensitive data
 - **Offline work**: The PUG REST API requires an internet connection
 
-## Further Reading
+## Further reading
 
 If you want to go beyond the capabilities of PubChemPy, there is helpful documentation about programmatic access to PubChem data on the PubChem website:
 

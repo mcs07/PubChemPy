@@ -1,6 +1,6 @@
 (advanced)=
 
-# Advanced Usage
+# Advanced usage
 
 This guide covers advanced PubChemPy usage patterns, API best practices, error handling, logging, and low-level request functions.
 

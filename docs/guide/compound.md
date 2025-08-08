@@ -1,6 +1,6 @@
 (compound)=
 
-# Compound
+# Compounds
 
 The {func}`~pubchempy.get_compounds` function returns a list of {class}`~pubchempy.Compound` objects. You can also instantiate a {class}`~pubchempy.Compound` object directly if you know its CID:
 
@@ -25,7 +25,13 @@ Additionally, each {class}`~pubchempy.Compound` provides a {meth}`~pubchempy.Com
  'inchi': u'InChI=1S/H2O/h1H2'}
 ```
 
-## 3D Compounds
+## 3D compounds
+
+By default, compounds are returned with 2D coordinates. Use the `record_type` keyword argument to specify otherwise:
+
+```python
+pcp.get_compounds('Aspirin', 'name', record_type='3d')
+```
 
 Many properties are missing from 3D records, and the following properties are *only* available on 3D records:
 

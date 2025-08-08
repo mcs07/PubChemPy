@@ -2,17 +2,9 @@
 
 # Searching
 
-## 2D and 3D coordinates
+PubChemPy provides powerful search capabilities that leverage PubChem's extensive chemical databases. Understanding the different search types and their performance characteristics can help you choose the most efficient approach for your needs.
 
-By default, compounds are returned with 2D coordinates. Use the `record_type` keyword argument to specify otherwise:
-
-```python
-pcp.get_compounds('Aspirin', 'name', record_type='3d')
-```
-
-## Advanced search types
-
-By default, requests look for an exact match with the input. Alternatively, you can specify substructure, superstructure, similarity and identity searches using the `searchtype` keyword argument:
+By default, requests look for an exact match with the input. Alternatively, you can specify a search type using the `searchtype` parameter to perform chemical substructure, superstructure, similarity, or identity searches.
 
 ```python
 pcp.get_compounds('CC', 'smiles', searchtype='superstructure', listkey_count=3)
