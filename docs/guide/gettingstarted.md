@@ -49,7 +49,7 @@ cs = get_compounds("Aspirin", "name")
 
 ## Searching
 
-What if you don't know the PubChem CID of the Compound you want? Just use the {func}`~pubchempy.get_compounds` function:
+What if you don't know the PubChem CID of the Compound you want? Just use the {func}`~pubchempy.get_compounds` function, for example with a compound name input:
 
 ```pycon
 >>> results = pcp.get_compounds("Glucose", "name")
@@ -57,7 +57,9 @@ What if you don't know the PubChem CID of the Compound you want? Just use the {f
 [Compound(5793)]
 ```
 
-The first argument is the identifier, and the second argument is the identifier type, which must be one of `name`, `smiles`, `sdf`, `inchi`, `inchikey` or `formula`. It looks like there are 4 compounds in the PubChem Database that have the name Glucose associated with them. Let's take a look at them in more detail:
+The first argument is the identifier, and the second argument is the identifier type, which must be one of `name`, `smiles`, `sdf`, `inchi`, `inchikey` or `formula`. More often than not, only a single result will be returned, but sometimes there are multiple results for a given identifier. Therefore, {func}`~pubchempy.get_compounds` returns a list of {class}`~pubchempy.Compound` objects (even if there is only one result).
+
+It is possible to iterate over this list to get the individual {class}`~pubchempy.Compound` objects:
 
 ```pycon
 >>> for compound in results:
@@ -65,9 +67,15 @@ The first argument is the identifier, and the second argument is the identifier 
 C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)O
 ```
 
-It looks like they all have different stereochemistry information.
+Or you can access the first result directly:
 
-Retrieving the record for a SMILES string is just as easy:
+```pycon
+>>> compound = results[0]
+>>> print(compound.smiles)
+C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)O
+```
+
+Retrieving the compound record(s) for a SMILES input is just as easy:
 
 ```pycon
 >>> pcp.get_compounds("C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1", "smiles")
