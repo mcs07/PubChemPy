@@ -23,11 +23,11 @@ Install PubChemPy using:
 pip install pubchempy
 ```
 
-Alternatively, try one of the other [installation options](https://pubchempy.readthedocs.io/en/latest/guide/install.html).
+Alternatively, try one of the other [installation options](https://docs.pubchempy.org/en/latest/guide/install.html).
 
 ## Documentation
 
-Full documentation is available at https://pubchempy.readthedocs.io.
+Full documentation is available at https://docs.pubchempy.org.
 
 ## Contribute
 

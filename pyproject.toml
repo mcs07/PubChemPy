@@ -32,7 +32,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/mcs07/PubChemPy"
 Repository = "https://github.com/mcs07/PubChemPy"
-Documentation = "https://pubchempy.readthedocs.io"
+Documentation = "https://docs.pubchempy.org"
 Releases = "https://github.com/mcs07/PubChemPy/releases"
 "Issue Tracker" = "https://github.com/mcs07/PubChemPy/issues"
 
