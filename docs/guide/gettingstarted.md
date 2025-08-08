@@ -10,19 +10,19 @@ Retrieving information about a specific Compound in the PubChem database is simp
 
 Begin by importing PubChemPy:
 
-```python
+```pycon
 >>> import pubchempy as pcp
 ```
 
 Let's get the {class}`~pubchempy.Compound` with [CID 5090]:
 
-```python
+```pycon
 >>> c = pcp.Compound.from_cid(5090)
 ```
 
 Now we have a {class}`~pubchempy.Compound` object called `c`. We can get all the information we need from this object:
 
-```python
+```pycon
 >>> print(c.molecular_formula)
 C17H14O4S
 >>> print(c.molecular_weight)
@@ -43,7 +43,7 @@ All the code examples in this documentation will assume you have imported PubChe
 ```python
 from pubchempy import Compound, get_compounds
 c = Compound.from_cid(1423)
-cs = get_compounds('Aspirin', 'name')
+cs = get_compounds("Aspirin", "name")
 ```
 ````
 
@@ -51,15 +51,15 @@ cs = get_compounds('Aspirin', 'name')
 
 What if you don't know the PubChem CID of the Compound you want? Just use the {func}`~pubchempy.get_compounds` function:
 
-```python
->>> results = pcp.get_compounds('Glucose', 'name')
+```pycon
+>>> results = pcp.get_compounds("Glucose", "name")
 >>> print(results)
 [Compound(5793)]
 ```
 
 The first argument is the identifier, and the second argument is the identifier type, which must be one of `name`, `smiles`, `sdf`, `inchi`, `inchikey` or `formula`. It looks like there are 4 compounds in the PubChem Database that have the name Glucose associated with them. Let's take a look at them in more detail:
 
-```python
+```pycon
 >>> for compound in results:
 ...    print(compound.smiles)
 C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)O
@@ -69,8 +69,8 @@ It looks like they all have different stereochemistry information.
 
 Retrieving the record for a SMILES string is just as easy:
 
-```python
->>> pcp.get_compounds('C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1', 'smiles')
+```pycon
+>>> pcp.get_compounds("C1=CC2=C(C3=C(C=CC=N3)C=C2)N=C1", "smiles")
 [Compound(1318)]
 ```
 

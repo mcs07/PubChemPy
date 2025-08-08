@@ -5,7 +5,7 @@
 
 PubChemPy provides a way to interact with PubChem in Python. It allows chemical searches by name, substructure and similarity, chemical standardization, conversion between chemical file formats, depiction and retrieval of chemical properties.
 
-```python
+```pycon
 >>> from pubchempy import get_compounds, Compound
 >>> comp = Compound.from_cid(1423)
 >>> print(comp.smiles)

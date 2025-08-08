@@ -10,15 +10,15 @@ The PubChem Compound database is constructed from the Substance database using a
 
 Retrieve Substances using the {func}`~pubchempy.get_substances` function:
 
-```python
->>> results = pcp.get_substances('Coumarin 343', 'name')
+```pycon
+>>> results = pcp.get_substances("Coumarin 343", "name")
 >>> print(results)
 [Substance(24864499), Substance(85084977), Substance(126686397), Substance(143491255), Substance(152243230), Substance(162092514), Substance(162189467), Substance(186021999), Substance(206257050), ... ]
 ```
 
 You can also instantiate a {class}`~pubchempy.Substance` directly from its SID:
 
-```python
+```pycon
 >>> substance = pcp.Substance.from_sid(223766453)
 >>> print(substance.synonyms)
 ['2-(Acetyloxy)-benzoic acid', '2-(acetyloxy)benzoic acid', '2-acetoxy benzoic acid', '2-acetoxy-benzoic acid', '2-acetoxybenzoic acid', '2-acetyloxybenzoic acid', 'BSYNRYMUTXBXSQ-UHFFFAOYSA-N', 'acetoxybenzoic acid', 'acetyl salicylic acid', 'acetyl-salicylic acid', 'acetylsalicylic acid', 'aspirin', 'o-acetoxybenzoic acid']

@@ -6,7 +6,7 @@ This package handles the complexity of the PubChem PUG REST API, providing a sim
 
 Here's a quick example showing how to get calculated properties for a specific compound:
 
-```python
+```pycon
 >>> import pubchempy as pcp
 >>> compound = pcp.Compound.from_cid(2244)  # Aspirin
 >>> print(compound.molecular_formula)
@@ -21,8 +21,8 @@ C9H8O4
 
 Here's how to search for a compound by name:
 
-```python
->>> for compound in pcp.get_compounds('glucose', 'name'):
+```pycon
+>>> for compound in pcp.get_compounds("glucose", "name"):
 ...     print(compound.cid)
 ...     print(compound.smiles)
 ...

@@ -14,9 +14,9 @@ Each {class}`~pubchempy.Compound` has a `record` property, which is a dictionary
 
 Additionally, each {class}`~pubchempy.Compound` provides a {meth}`~pubchempy.Compound.to_dict` method that returns PubChemPy's own dictionary representation of the Compound data. As well as being more concisely formatted than the raw `record`, this method also takes an optional parameter to filter the list of the desired properties:
 
-```python
+```pycon
 >>> c = pcp.Compound.from_cid(962)
->>> c.to_dict(properties=['atoms', 'bonds', 'inchi'])
+>>> c.to_dict(properties=["atoms", "bonds", "inchi"])
 {'atoms': [{'aid': 1, 'element': 'o', 'x': 2.5369, 'y': -0.155},
            {'aid': 2, 'element': 'h', 'x': 3.0739, 'y': 0.155},
            {'aid': 3, 'element': 'h', 'x': 2, 'y': 0.155}],
@@ -30,7 +30,7 @@ Additionally, each {class}`~pubchempy.Compound` provides a {meth}`~pubchempy.Com
 By default, compounds are returned with 2D coordinates. Use the `record_type` keyword argument to specify otherwise:
 
 ```python
-pcp.get_compounds('Aspirin', 'name', record_type='3d')
+pcp.get_compounds("Aspirin", "name", record_type="3d")
 ```
 
 Many properties are missing from 3D records, and the following properties are *only* available on 3D records:

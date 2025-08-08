@@ -7,8 +7,8 @@ The {func}`~pubchempy.download` function is for saving a file to disk. The follo
 Examples:
 
 ```python
-pcp.download('PNG', 'asp.png', 'Aspirin', 'name')
-pcp.download('CSV', 's.csv', [1,2,3], operation='property/ConnectivitySMILES,SMILES')
+pcp.download("PNG", "asp.png", "Aspirin", "name")
+pcp.download("CSV", "s.csv", [1,2,3], operation="property/ConnectivitySMILES,SMILES")
 ```
 
 For PNG images, the `image_size` argument can be used to specify `large`, `small`

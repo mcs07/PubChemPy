@@ -7,7 +7,7 @@ PubChemPy provides powerful search capabilities that leverage PubChem's extensiv
 By default, requests look for an exact match with the input. Alternatively, you can specify a search type using the `searchtype` parameter to perform chemical substructure, superstructure, similarity, or identity searches.
 
 ```python
-pcp.get_compounds('CC', 'smiles', searchtype='superstructure', listkey_count=3)
+pcp.get_compounds("CC", "smiles", searchtype="superstructure", listkey_count=3)
 ```
 
 The `listkey_count` and `listkey_start` arguments can be used for pagination. Each `searchtype` has its own options that can be specified as keyword arguments. For example, similarity searches have a `Threshold`, and super/substructure searches have `MatchIsotopes`. A full list of options is available in the [PUG REST Specification].
@@ -23,7 +23,7 @@ Unfortunately it isn't directly possible to return to the previous behaviour, bu
 There area a few different ways you can do this using PubChemPy, but the easiest is probably using the {func}`~pubchempy.get_cids` function:
 
 > ```pycon
-> >>> pcp.get_cids('2-nonenal', 'name', 'substance', list_return='flat')
+> >>> pcp.get_cids("2-nonenal", "name", "substance", list_return="flat")
 > [17166, 5283335, 5354833]
 > ```
 
@@ -32,7 +32,7 @@ This searches the substance database for '2-nonenal', and gets the CID for the c
 You can then use {meth}`~pubchempy.Compound.from_cid` to get the full {class}`~pubchempy.Compound` record, equivalent to what is returned by {func}`~pubchempy.get_compounds`:
 
 > ```pycon
-> >>> cids = pcp.get_cids('2-nonenal', 'name', 'substance', list_return='flat')
+> >>> cids = pcp.get_cids("2-nonenal", "name", "substance", list_return="flat")
 > >>> [pcp.Compound.from_cid(cid) for cid in cids]
 > [Compound(17166), Compound(5283335), Compound(5354833)]
 > ```
