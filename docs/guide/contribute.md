@@ -1,6 +1,6 @@
 (contribute)=
 
-# Contribute
+# Contributing
 
 The [Issue Tracker] is the best place to post any feature ideas, requests and bug reports.
 

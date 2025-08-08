@@ -1,6 +1,6 @@
 (advanced)=
 
-# Advanced Usage
+# Advanced usage
 
 This guide covers advanced PubChemPy usage patterns, API best practices, error handling, logging, and low-level request functions.
 
@@ -13,7 +13,7 @@ If there are too many results for a request, you will receive a TimeoutError. Th
 If retrieving full compound or substance records, instead request a list of cids or sids for your input, and then request the full records for those identifiers individually or in small groups. For example:
 
 ```python
-sids = get_sids('Aspirin', 'name')
+sids = get_sids("Aspirin", "name")
 for sid in sids:
     s = Substance.from_sid(sid)
 ```
@@ -21,8 +21,8 @@ for sid in sids:
 When using the `formula` namespace or a `searchtype`, you can also alternatively use the `listkey_count` and `listkey_start` keyword arguments to specify pagination. The `listkey_count` value specifies the number of results per page, and the `listkey_start` value specifies which page to return. For example:
 
 ```python
-get_compounds('CC', 'smiles', searchtype='substructure', listkey_count=5)
-get('C10H21N', 'formula', listkey_count=3, listkey_start=6)
+get_compounds("CC", "smiles", searchtype="substructure", listkey_count=5)
+get("C10H21N", "formula", listkey_count=3, listkey_start=6)
 ```
 
 ## Logging
@@ -61,8 +61,8 @@ A simple fix is to specify the proxy information via urllib:
 ```python
 import urllib
 proxy_support = urllib.request.ProxyHandler({
-    'http': 'http://<proxy.address>:<port>',
-    'https': 'https://<proxy.address>:<port>'
+    "http": "http://<proxy.address>:<port>",
+    "https": "https://<proxy.address>:<port>"
 })
 opener = urllib.request.build_opener(proxy_support)
 urllib.request.install_opener(opener)
