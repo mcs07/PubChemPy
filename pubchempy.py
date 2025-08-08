@@ -601,12 +601,11 @@ def get_properties(
     as_dataframe: bool = False,
     **kwargs: QueryParam,
 ) -> list[dict[str, t.Any]] | pd.DataFrame:
-    """Retrieve the specified properties from PubChem.
+    """Retrieve the specified compound properties from PubChem.
 
     Args:
         properties: The properties to retrieve.
-        identifier: The compound, substance or assay identifier to use as a search
-            query.
+        identifier: The compound  identifier to use as a search query.
         namespace: The identifier type.
         searchtype: The advanced search type, one of substructure, superstructure
             or similarity.
@@ -643,7 +642,7 @@ def get_synonyms(
     Args:
         identifier: The identifier to use as a search query.
         namespace: The identifier type (e.g., cid, name, smiles for compounds).
-        domain: The PubChem domain to search (compound, substance, or assay).
+        domain: The PubChem domain to search (compound or substance).
         searchtype: The advanced search type, one of substructure, superstructure
             or similarity.
         **kwargs: Additional parameters to pass to the request.
