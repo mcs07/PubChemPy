@@ -9,7 +9,7 @@
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
     "files.trimFinalNewlines": true,
-    "python.defaultInterpreterPath": "./venv/bin/python",
+    "python.defaultInterpreterPath": "./.venv/bin/python",
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.rulers": [88]
