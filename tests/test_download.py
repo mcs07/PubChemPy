@@ -1,7 +1,6 @@
 """Test downloading."""
 
 import csv
-import os
 
 import pytest
 
