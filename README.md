@@ -1,10 +1,11 @@
 # PubChemPy
 
-[![PyPI Version](https://img.shields.io/pypi/v/PubChemPy.svg?style=flat)](https://pypi.python.org/pypi/PubChemPy)
-![Conda Version](https://img.shields.io/conda/vn/conda-forge/pubchempy)
-[![License](https://img.shields.io/pypi/l/PubChemPy.svg?style=flat)](https://github.com/mcs07/PubChemPy/blob/main/LICENSE)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.541438.svg)](https://doi.org/10.5281/zenodo.593126)
-[![Tests](https://github.com/mcs07/PubChemPy/actions/workflows/test.yml/badge.svg)](https://github.com/mcs07/PubChemPy/actions/workflows/test.yml)
+[![PyPI Version](https://img.shields.io/pypi/v/PubChemPy?logo=python&logoColor=%23ffffff)](https://pypi.python.org/pypi/PubChemPy)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/pubchempy?logo=anaconda&logoColor=%23ffffff)](https://anaconda.org/conda-forge/pubchempy)
+[![License](https://img.shields.io/pypi/l/PubChemPy)](https://github.com/mcs07/PubChemPy/blob/main/LICENSE)
+[![DOI](https://zenodo.org/badge/7462957.svg)](https://zenodo.org/badge/latestdoi/7462957)
+[![Tests](https://img.shields.io/github/actions/workflow/status/mcs07/pubchempy/test.yml?logo=github&logoColor=%23ffffff&label=tests)](https://github.com/mcs07/PubChemPy/actions/workflows/test.yml)
+[![Docs](https://img.shields.io/readthedocs/pubchempy?logo=readthedocs&logoColor=%23ffffff)](https://docs.pubchempy.org)
 
 PubChemPy provides a way to interact with PubChem in Python. It allows chemical searches by name, substructure and similarity, chemical standardization, conversion between chemical file formats, depiction and retrieval of chemical properties.
 
