@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this software in your work, please cite it using the following metadata."
+title: "PubChemPy"
+type: software
+authors:
+  - family-names: "Swain"
+    given-names: "Matthew"
+    orcid: "https://orcid.org/0000-0001-6428-5189"
+version: 1.0.4
+doi: "10.5281/zenodo.541438"
+date-released: "2017-04-11"
+repository-code: "https://github.com/mcs07/PubChemPy"
+url: "https://pubchempy.org"
+repository-artifact: "https://pypi.org/project/PubChemPy/"
+license: "MIT"
+license-url: "https://spdx.org/licenses/MIT.html"
+identifiers:
+  - type: doi
+    description: Fixed concept DOI for all versions
+    value: "10.5281/zenodo.593126"
+abstract: Python package for interacting with the PubChem database via the PUG REST API service.
+keywords:
+  - cheminformatics
+  - chemistry
+  - API
+  - python
+  - pubchem
+preferred-citation:
+  type: software
+  title: "PubChemPy"
+  authors:
+    - family-names: "Swain"
+      given-names: "Matthew"
+      orcid: "https://orcid.org/0000-0001-6428-5189"
+  version: 1.0.4
+  date-released: "2017-04-11"
+  doi: "10.5281/zenodo.541438"
+  url: "https://pubchempy.org"
