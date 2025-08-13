@@ -1,6 +1,7 @@
 # PubChemPy
 
 [![PyPI Version](https://img.shields.io/pypi/v/PubChemPy.svg?style=flat)](https://pypi.python.org/pypi/PubChemPy)
+![Conda Version](https://img.shields.io/conda/vn/conda-forge/pubchempy)
 [![License](https://img.shields.io/pypi/l/PubChemPy.svg?style=flat)](https://github.com/mcs07/PubChemPy/blob/main/LICENSE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.541438.svg)](https://doi.org/10.5281/zenodo.593126)
 [![Tests](https://github.com/mcs07/PubChemPy/actions/workflows/test.yml/badge.svg)](https://github.com/mcs07/PubChemPy/actions/workflows/test.yml)
@@ -9,13 +10,19 @@ PubChemPy provides a way to interact with PubChem in Python. It allows chemical 
 
 ## Installation
 
-Install PubChemPy using:
+Install PubChemPy with pip:
 
 ```shell
 pip install pubchempy
 ```
 
-Alternatively, try one of the other [installation options](https://docs.pubchempy.org/en/latest/guide/install.html).
+Or with conda:
+
+```shell
+conda install -c conda-forge pubchempy
+```
+
+For detailed instructions, see the [installation guide](https://docs.pubchempy.org/en/latest/guide/install.html).
 
 ## Example usage
 
