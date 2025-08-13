@@ -42,7 +42,7 @@ CC(=O)OC1=CC=CC=C1C(=O)O
 
 ## Documentation
 
-Full documentation is available at https://docs.pubchempy.org.
+Full documentation is available at <https://docs.pubchempy.org>.
 
 This includes a [step-by-step guide on how to use PubChemPy](https://docs.pubchempy.org/en/latest/guide/gettingstarted.html), as well as a [complete API reference](https://docs.pubchempy.org/en/latest/api.html).
 
