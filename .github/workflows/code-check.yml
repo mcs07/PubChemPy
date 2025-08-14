@@ -1,0 +1,37 @@
+name: Code Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  code-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.4"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --group lint
+
+      - name: Check imports with ruff
+        run: uv run ruff check --select I --exit-non-zero-on-fix .
+
+      - name: Check formatting with ruff
+        run: uv run ruff format --check .
+
+      - name: Clean notebooks
+        run: uv run nb-clean --check --remove-empty-cells --remove-all-notebook-metadata --preserve-cell-outputs examples/*.ipynb
