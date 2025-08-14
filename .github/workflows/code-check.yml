@@ -34,4 +34,4 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Clean notebooks
-        run: uv run nb-clean --check --remove-empty-cells --remove-all-notebook-metadata --preserve-cell-outputs examples/*.ipynb
+        run: uv run nb-clean check --remove-empty-cells --remove-all-notebook-metadata --preserve-cell-outputs examples/*.ipynb
