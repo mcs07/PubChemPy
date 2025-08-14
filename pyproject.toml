@@ -42,13 +42,13 @@ ssl = ["certifi>=2025.7.14"]
 
 [dependency-groups]
 dev = [
+    { include-group = "lint" },
     { include-group = "docs" },
     { include-group = "test" },
     "pre-commit>=4.2.0",
-    "ruff>=0.12.5",
-    "nb-clean>=4.0.1",
     "ipykernel>=6.30.0",
 ]
+lint = ["ruff>=0.12.5", "nb-clean>=4.0.1"]
 docs = ["furo>=2025.7.19", "myst-parser>=3.0.1", "sphinx>=7.4.7"]
 test = ["pytest>=8.4.1", "pytest-rerunfailures>=15.1"]
 
