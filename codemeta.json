@@ -27,7 +27,7 @@
     "license": "https://spdx.org/licenses/MIT",
     "name": "PubChemPy",
     "programmingLanguage": "Python",
-    "softwareVersion": "1.0.4",
+    "softwareVersion": "1.0.5",
     "continuousIntegration": "https://github.com/mcs07/PubChemPy/actions",
     "readme": "https://github.com/mcs07/PubChemPy/blob/main/README.md",
     "url": "https://docs.pubchempy.org",

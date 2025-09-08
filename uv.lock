@@ -1014,7 +1014,7 @@ wheels = [
 
 [[package]]
 name = "pubchempy"
-version = "1.0.4"
+version = "1.0.5"
 source = { editable = "." }
 
 [package.optional-dependencies]

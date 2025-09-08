@@ -1,6 +1,6 @@
 [project]
 name = "PubChemPy"
-version = "1.0.4"
+version = "1.0.5"
 description = "A simple Python wrapper around the PubChem PUG REST API."
 readme = "README.md"
 authors = [{ name = "Matt Swain", email = "m.swain@me.com" }]

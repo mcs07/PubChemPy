@@ -33,7 +33,7 @@ if not _CA_FILE:
 
 __author__ = "Matt Swain"
 __email__ = "m.swain@me.com"
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 __license__ = "MIT"
 
 __all__ = [
