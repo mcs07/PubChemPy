@@ -1983,8 +1983,9 @@ class Assay:
     def comments(self) -> list[str]:
         """Comments and additional information."""
         return [
-            comment for comment in self.record["assay"]["descr"]["comment"] if comment
+            comment for comment in self.record["assay"]["descr"].get("comment", "") if comment
         ]
+
 
     @property
     def results(self) -> list[dict[str, t.Any]]:
