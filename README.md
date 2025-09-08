@@ -11,6 +11,15 @@ PubChemPy provides a way to interact with PubChem in Python. It allows chemical 
 
 ## Installation
 
+To get the latest version, it is recommended to install from the source directly:
+```shell
+pip install git+https://github.com/mcs07/PubChemPy
+```
+
+This version is not guaranteed to be stable, but may include new features and bug fixes that have not yet been released.
+
+*Note: If you installed PubChemPy from pypi in the passed, you must uninstall it before installing the source code version using `pip uninstall pubchempy` for example*
+
 Install PubChemPy with pip:
 
 ```shell

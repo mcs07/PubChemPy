@@ -28,15 +28,24 @@ conda install -c conda-forge pubchempy
 
 The conda-forge channel is a community-driven collection of conda packages that provides up-to-date and well-maintained packages for the conda package manager.
 
-## Option 3: Clone the repository
+## Option 3: Install from the source code
 
-The latest development version of PubChemPy is always [available on GitHub]. This version is not guaranteed to be stable, but may include new features that have not yet been released. Simply clone the repository and install as usual:
+The latest development version of PubChemPy is always [available on GitHub]. This version is not guaranteed to be stable, but may include new features and bug fixes that have not yet been released.
+
+```shell
+pip install git+https://github.com/mcs07/PubChemPy
+```
+
+
+Or manually: clone the repository and install as usual:
 
 ```shell
 git clone https://github.com/mcs07/PubChemPy.git
 cd PubChemPy
 pip install .
 ```
+
+*Note: If you installed PubChemPy from pypi in the passed, you must uninstall it before installing the source code version using `pip uninstall pubchempy` for example*
 
 [anaconda]: https://www.anaconda.com/download
 [available on github]: https://github.com/mcs07/PubChemPy
